@@ -1,0 +1,43 @@
+{
+  "main": "app://host/frames/movies.html",
+  "name": "Flixtor",
+  "description": "Movie and serie streamer",
+  "version": "2.0.0",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/FlixtorMe/FlixtorMe.git"
+  },
+  "window": {
+    "title": "Flixtor",
+    "icon": "images/flixtor-ico.png",
+    "toolbar": false,
+    "frame": false,
+    "width": 1280,
+    "height": 790,
+    "position": "center",
+    "min_width": 640,
+    "min_height": 600
+  },
+  "webkit": {
+    "plugin": true
+  },
+  "dependencies": {
+    "network-address": "~0.0.4",
+    "numeral": "~1.5.3",
+    "opensubtitles-client": "~1.1.0",
+    "peerflix": "~0.8.6",
+    "request": "~2.34.0",
+    "jschardet": "~1.1.0",
+    "iconv-lite": "~0.4.3",
+    "adm-zip": "~0.4.4",
+    "dateformat": "~1.0.8-1.2.3 ",
+    "i18n": "~0.5.0",
+    "unorm": "~1.3.3",
+    "cheerio": "~0.13.0"
+  },
+  "devDependencies": {
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}

@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Flixtor</title>
+    <!-- CSS -->
+    <link href="../styles/bootstrap.min.css" rel="stylesheet">
+    <link href="../styles/bootly.css" rel="stylesheet">
+
+    <!-- Scripts -->
+    <script type='text/javascript' src="../js/extensions/jquery.min.js"></script>
+    <script type='text/javascript' src="../js/extensions/bootstrap.min.js"></script>
+    <script src="../js/extensions/bootstrap-paginator.min.js"></script>
+
+    <!-- Modules -->
+    <script>
+        var main = require('../js/main.js');
+        var translations = require('../js/translations.js');
+
+        $(document).ready(function() {
+
+            translations.initialize();
+            translations.translateDefaults();
+
+            //Scroll bar
+            $(window).resize(function() {
+                $("#settings").css('max-height', ($(window).height() - 95) + "px");
+            });
+
+            $(window).resize();
+        });
+    </script>
+</head>
+
+<body>
+<div id="wrapper">
+    <div id="top-bar">
+        <div type="button" class="top-titlebar-back-button" title="" onclick="main.goBack();">
+            <span class="glyphicon glyphicon-share-alt"></span>
+        </div>
+        <div type="button" class="top-titlebar-minimize-button" title="" onclick="main.minimize();">
+            <span class="glyphicon glyphicon-minus"></span>
+        </div>
+        <div type="button" class="top-titlebar-fullscreen-button" title="" onclick="main.toggleFullScreen();">
+            <span class="glyphicon glyphicon-fullscreen"></span>
+        </div>
+        <div class="top-titlebar-close-button" onclick="main.closeApp();" title="">
+            <span class="glyphicon glyphicon-remove"></span>
+        </div>
+        <div class="top-titlebar-text">Flixtor</div>
+    </div>
+    <div id="content-wrapper">
+        <div id="side-bar-full" class="hidden-xs side-bar">
+            <ul>
+                <li id="side-bar-li-movies" onclick="main.changeFrame('movies')">
+                    <a class="menuMovies" href="#">
+                        <span class="glyphicon glyphicon-film"></span></a>
+                </li>
+                <li id="side-bar-li-series" onclick="main.changeFrame('series')">
+                    <a class="menuSeries" href="#">
+                        <span class="glyphicon glyphicon-expand"></span></a>
+                </li>
+                <li id="side-bar-li-torrents" onclick="main.changeFrame('torrents')">
+                    <a class="menuTorrents" href="#">
+                        <span class="glyphicon glyphicon-th-list"></span></a>
+                </li>
+                <br><br>
+                <li id="side-bar-li-settings" class="on" onclick="main.changeFrame('settings')">
+                    <a class="menuSettings" href="#">
+                        <span class="glyphicon glyphicon-cog"></span></a>
+                </li>
+            </ul>
+        </div>
+        <div id="side-bar-small" class="visible-xs side-bar">
+            <ul>
+                <li id="side-bar-li-movies-sm" onclick="main.changeFrame('movies')">
+                    <a href="#">
+                        <span class="glyphicon glyphicon-film"></span>
+                    </a>
+                </li>
+                <li id="side-bar-li-series-sm" onclick="main.changeFrame('series')">
+                    <a href="#">
+                        <span class="glyphicon glyphicon-expand"></span>
+                    </a>
+                </li>
+                <li id="side-bar-li-torrents-sm" onclick="main.changeFrame('torrents')">
+                    <a href="#">
+                        <span class="glyphicon glyphicon-th-list"></span>
+                    </a>
+                </li>
+                <br><br>
+                <li id="side-bar-li-settings-sm" class="on" onclick="main.changeFrame('settings')">
+                    <a href="#">
+                        <span class="glyphicon glyphicon-cog"></span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <div id="popup"></div>
+        <div id="content">
+            <script type="text/javascript">
+                $(document).ready(function () {
+                    var localization = require('../js/localization.js');
+                    var settings = require('../js/settings.js');
+
+                    var saved = translations.translate('Saved');
+                    var restored = translations.translate('Restored');
+                    var random = translations.translate('Random');
+
+                    //Get prefered language
+                    var language = settings.readConfig('language');
+                    var languageDropdown = document.getElementById("language");
+                    var i;
+                    for (i = 0; i < languageDropdown.options.length; i++) {
+                        if( languageDropdown.options[i].value === language) {
+                            languageDropdown.options[i].selected = true;
+                        }
+                    }
+                    $('#languageSaved').append(saved+' &nbsp;<span class="glyphicon glyphicon-ok"></span>');
+                    //Set prefered language
+                    $('#language').change(function() {
+                        var newLanguage = $(this).val();
+                        settings.writeConfig('language', newLanguage);
+                        //$('#languageSaved').show();
+                        $('#languageSaved').fadeIn('fast', function(){
+                            $('#languageSaved').fadeOut(1500);
+                        });
+                    });
+
+                    //Get subtitle
+                    /*var subtitle = settings.readConfig('subtitle');
+                    var subtititles = localization.subtitles;
+                    for (var lang in subtititles) {
+                        if( subtitle === lang ) {
+                            $('#subtitles').append("<option selected value="+lang+">"+lang+"</option>");
+                        }
+                        else {
+                            $('#subtitles').append("<option value="+lang+">"+lang+"</option>");
+                        }
+                    }
+                    $('#subtitlesSaved').append(saved+' &nbsp;<span class="glyphicon glyphicon-ok"></span>');
+                    //Set subtitle
+                    $('#subtitles').change(function() {
+                        var newSubtitle = $(this).val();
+                        settings.writeConfig('subtitle', newSubtitle);
+                        $('#subtitlesSaved').fadeIn('fast', function(){
+                            $('#subtitlesSaved').fadeOut(1500);
+                        });
+                    });*/
+
+                    //Get connection limit
+                    var connectionLimit = settings.readConfig('connectionLimit');
+                    $('#connectionLimit').attr("placeholder",connectionLimit);
+                    $('#connectionLimitSaved').append(saved+'&nbsp;<span class="glyphicon glyphicon-ok"></span>');
+                    // Set connection limit
+                    $('#connectionLimit').focusout(function() {
+                        var newconnectionLimit = $(this).val();
+                        // check if new value is numeric
+                        if( isNaN(newconnectionLimit) === false && newconnectionLimit.length >= 1 ) {
+                            settings.writeConfig('connectionLimit', newconnectionLimit);
+                            $(this).attr("placeholder", newconnectionLimit);
+                            $('#connectionLimitSaved').fadeIn('fast', function(){
+                                $('#connectionLimitSaved').fadeOut(1500);
+                            });
+                        }
+                        else {
+                            settings.writeConfig('connectionLimit', connectionLimit);
+                            $(this).attr('placeholder', connectionLimit);
+                            $('#connectionLimitSaved').fadeIn('fast', function(){
+                                $('#connectionLimitSaved').fadeOut(1500);
+                            });
+                        }
+
+                    });
+
+                    //Get dht
+                    var dht = settings.readConfig('dht');
+                    $('#dht').attr("placeholder",dht);
+                    $('#dhtSaved').append(saved+'&nbsp;<span class="glyphicon glyphicon-ok"></span>');
+                    // Set connection limit
+                    $('#dht').focusout(function() {
+                        var newDht = $(this).val();
+                        // check if new value is numeric
+                        if( isNaN(newDht) === false && newDht.length >= 1 ) {
+                            settings.writeConfig('dht', newDht);
+                            $(this).attr("placeholder", newDht);
+                            $('#dhtSaved').fadeIn('fast', function(){
+                                $('#dhtSaved').fadeOut(1500);
+                            });
+                        }
+                        else {
+                            settings.writeConfig('dht', dht);
+                            $(this).attr('placeholder', dht);
+                            $('#dhtSaved').fadeIn('fast', function(){
+                                $('#dhtSaved').fadeOut(1500);
+                            });
+                        }
+
+                    });
+
+                    //Get streaming port
+                    var streamingPort = settings.readConfig('streamingPort');
+                    if( streamingPort === '' ) {
+                        $('#streamingPort').attr("placeholder", random);
+                    }
+                    else {
+                        $('#streamingPort').attr("placeholder", streamingPort);
+                    }
+                    $('#streamingPortSaved').append(saved+' &nbsp;<span class="glyphicon glyphicon-ok"></span>');
+                    // Set streaming port
+                    $('#streamingPort').focusout(function() {
+                        var newstreamingPort = $(this).val();
+                        // check if new value is numeric
+                        if( isNaN(newstreamingPort) === false && newstreamingPort.length >= 1 ) {
+                            settings.writeConfig('streamingPort', newstreamingPort);
+                            $(this).attr("placeholder", newstreamingPort);
+                            $('#streamingPortSaved').fadeIn('fast', function(){
+                                $('#streamingPortSaved').fadeOut(1500);
+                            });
+                        }
+                        else {
+                            $(this).val('');
+                            if( streamingPort === '' ) {
+                                $(this).attr("placeholder", random);
+                            }
+                            else {
+                                $(this).attr("placeholder", streamingPort);
+                            }
+                            $('#streamingPortSaved').fadeIn('fast', function(){
+                                $('#streamingPortSaved').fadeOut(1500);
+                            });
+                        }
+                    });
+
+                    //Get cache directory
+                    var cacheDir = settings.readConfig('cacheDir');
+                    $('#cacheDir').attr("placeholder", cacheDir);
+                    $('#cacheDirSaved').append(saved+' &nbsp;<span class="glyphicon glyphicon-ok"></span>');
+                    //Set cache directory
+                    $('#cacheDir').click(function() {
+                        $('#tmpLocation').click();
+                    });
+                    $('#tmpLocation').change(function() {
+                        var newCacheDir = $(this).val();
+                        if( newCacheDir !== '' ) {
+                            $('#cacheDir').attr("placeholder", newCacheDir);
+                            settings.writeConfig('cacheDir', newCacheDir);
+                            $('#cacheDirSaved').fadeIn('fast', function(){
+                                $('#cacheDirSaved').fadeOut(1500);
+                            });
+                        }
+                        else {
+                            cacheDir = settings.readConfig('cacheDir');
+                            $('#cacheDir').attr('placeholder', cacheDir);
+                        }
+                    });
+
+                    //Get clear cache status
+                    var clearCache = settings.readConfig('clearCache');
+                    if( clearCache === true ) {
+                        $('#clearCache').prop('checked', true);
+                    }
+                    else {
+                        $('#clearCache').prop('checked', false);
+                    }
+                    $('#clearCacheSaved').append(saved+' &nbsp;<span class="glyphicon glyphicon-ok"></span>');
+                    //Set clear cache status
+                    $('#clearCache').change(function() {
+                        if($(this).is(':checked')) {
+                            settings.writeConfig('clearCache', true);
+                            $('#clearCacheSaved').fadeIn('fast', function(){
+                                $('#clearCacheSaved').fadeOut(1500);
+                            });
+                        }
+                        else {
+                            settings.writeConfig('clearCache', false);
+                            $('#clearCacheSaved').fadeIn('fast', function(){
+                                $('#clearCacheSaved').fadeOut(1500);
+                            });
+                        }
+                    });
+
+                    $('#restoreDefaults').click(function() {
+                        settings.restoreConfig();
+
+                        var defaultLanguage = $('#language option[value="en"]');
+                        defaultLanguage.attr('selected', 'selected');
+                        var defaultsubtitle = $('#subtitles option[value=""]');
+                        defaultsubtitle.attr('selected', 'selected');
+                        $('#streamingPort').attr("placeholder", random);
+                        $('#streamingPort').val('');
+                        $('#connectionLimit').attr("placeholder", '100');
+                        $('#connectionLimit').val('');
+                        $('#dht').attr("placeholder", '500');
+                        $('#dht').val('');
+                        $('#cacheDir').attr("placeholder", './data');
+                        $('#clearCache').prop('checked', true);
+                        $('#restoreDefaultsSuccess').fadeIn('fast', function(){
+                            $('#restoreDefaultsSuccess').fadeOut(1500);
+                        });
+                    })
+                    $('#restoreDefaultsSuccess').append('&nbsp;&nbsp;'+restored+' &nbsp;<span class="glyphicon glyphicon-ok"></span>');
+                });
+            </script>
+
+
+            <div class="p-10">
+                <div id="settings">
+                    <div class="form-horizontal">
+                        <div><h3 class="defaultSettings"></h3></div>
+                        <div class="form-group">
+                            <div style="padding-top: 7px" class="col-sm-2 settingsLanguage"></div>
+                            <div class="col-sm-4">
+                                <select id="language" class="form-control">
+                                    <option value="en">English</option>
+                                    <option value="de">German</option>
+                                    <option value="nl">Dutch</option>
+                                </select>
+                            </div>
+                            <label id="languageSaved" style="display: none" class="control-label"></label>
+                        </div>
+                        <!--<div class="form-group">
+                       <div style="padding-top: 7px" class="col-sm-2 settingsSubtitle"></div>
+                           <div class="col-sm-4">
+                               <select id="subtitles" class="form-control">
+                                   <option value="">None</option>
+                               </select>
+                           </div>
+                           <label id="subtitlesSaved" style="display: none" class="control-label"></label>
+                       </div>-->
+
+                       <div style="margin-top: 60px"><h3 class="advancedSettings"></h3></div>
+                       <div class="form-group">
+                           <div style="padding-top: 7px" class="col-sm-2 settingsConnectionLimit"></div>
+                           <div class="col-sm-4">
+                               <input type="text" class="form-control" id="connectionLimit" placeholder="">
+                           </div>
+                           <label id="connectionLimitSaved" style="display: none" class="control-label"></label>
+                       </div>
+                        <div class="form-group">
+                            <div style="padding-top: 7px" class="col-sm-2 settingsDht"></div>
+                            <div class="col-sm-4">
+                                <input type="text" class="form-control" id="dht" placeholder="">
+                            </div>
+                            <label id="dhtSaved" style="display: none" class="control-label"></label>
+                        </div>
+                        <div class="form-group">
+                            <div style="padding-top: 7px" class="col-sm-2 settingsStreamingPort"></div>
+                            <div class="col-sm-4">
+                                <input type="text" class="form-control" id="streamingPort" placeholder="">
+                            </div>
+                            <label id="streamingPortSaved" style="display: none" class="control-label"></label>
+                        </div>
+                        <div class="form-group">
+                            <div style="padding-top: 7px" class="col-sm-2 settingsCacheDir"></div>
+                            <div class="col-sm-4">
+                                <input type="text" class="form-control" id="cacheDir" readonly="readonly" placeholder="">
+                                <input type="file" name="tmpLocation" id="tmpLocation" nwdirectory style="display: none;" />
+                            </div>
+                            <label id="cacheDirSaved" style="display: none" class="control-label"></label>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-sm-2 settingsClearCache"></div>
+                            <div class="col-sm-1">
+                                <input type="checkbox" id="clearCache" value="">
+                            </div>
+                            <label id="clearCacheSaved" style="display: none"></label>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-2">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-2">
+                                <button id="restoreDefaults" type="button" class="btn btn-primary btn-sm"></button>
+                            </div>
+                            <label id="restoreDefaultsSuccess" style="display: none" class="control-label"></label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+
+</html>

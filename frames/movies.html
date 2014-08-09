@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Flixtor</title>
+        <!-- CSS -->
+        <link href="../styles/bootstrap.min.css" rel="stylesheet">
+        <link href="../styles/bootly.css" rel="stylesheet">
+
+        <!-- Scripts -->
+        <script type='text/javascript' src="../js/extensions/jquery.min.js"></script>
+        <script type='text/javascript' src="../js/extensions/bootstrap.min.js"></script>
+        <script src="../js/extensions/jquery.isotope.min.js"></script>
+
+        <!-- Modules -->
+        <script>
+            var main = require('../js/main.js');
+            var callwcf = require('../js/callwcf.js');
+            var gui = require('nw.gui');
+            var yifysubtitle = require('../js/yifysubtitle.js');
+            var translations = require('../js/translations.js');
+
+            $(document).ready(function() {
+
+                translations.initialize();
+                translations.translateDefaults();
+
+                //Scroll bar
+                $(window).resize(function() {
+                    $("#movieContainer").css('max-height', ($(window).height() - 95) + "px");
+                }).trigger("resize");
+
+                //Search key press (enter)
+                $('#txtMovieSearch').keypress(function(e) {
+                    if (e.keyCode == 13) {
+                        $('#btnSearchMovie').click();
+                    }
+                });
+
+                //By default we filter by most downloaded
+                changeFilterCategory("Most downloaded");
+
+                //Persistence
+                if(sessionStorage.movie) {
+                    var movie = $.parseJSON(sessionStorage.movie);
+                    //showDetails(movie.MovieId);
+                }
+
+                $("#txtMovieSearch").bind('keyup paste', function() {
+                    clearTimeout($(this).data('timeout'));
+                    $(this).data('timeout', setTimeout(function(){
+                        var movieSearchValue = $('#txtMovieSearch').val();
+
+                        if(movieSearchValue.indexOf('magnet:?xt=urn:btih:') == 0) {
+                            $("#btnSearchMovie").text('Play');
+                        }
+                        else {
+                            $( "#btnSearchMovie" ).empty();
+                            $("#btnSearchMovie").append('<span class="glyphicon glyphicon-search"></span>');
+                        }
+                    }, 200));
+                });
+
+                $.fn.inView = function(){
+                    //Window Object
+                    var win = $(window);
+                    //Object to Check
+                    obj = $(this);
+                    //the top Scroll Position in the page
+                    var scrollPosition = win.scrollTop();
+                    //the end of the visible area in the page, starting from the scroll position
+                    var visibleArea = win.scrollTop() + win.height();
+                    //the end of the object to check
+                    var objEndPos = (obj.offset().top + obj.outerHeight());
+
+                    return(visibleArea >= objEndPos && scrollPosition <= objEndPos ? true : false)
+
+                };
+
+                $('#movieContainer').scroll(function() {
+                    var element = $('.last').on('find');
+                    if(element.length > 0) {
+                        if(element.inView() === true) {
+                            movieFilter.page = movieFilter.page+1;
+                            element.removeClass('last');
+                            applySearch();
+                        }
+                    }
+                });
+            });
+        </script>
+
+        <!-- Custom page style -->
+        <style>
+            body {
+                background-color: #141414;
+            }
+            .shadow {
+                display: block;
+                position: relative;
+            }
+            .shadow img {
+                display: block;
+            }
+            .shadow:hover::before {
+                box-shadow: none;
+            }
+            .shadow::before {
+                display: block;
+                content: '';
+                position: absolute;
+                width: 160px;
+                height: 100%;
+                box-shadow: inset 0px 0px 50px 1px rgba(0, 0, 0, 0.8);
+            }
+        </style>
+    </head>
+
+    <body>
+        <div id="customCSS"></div>
+        <div id="wrapper">
+            <div id="top-bar">
+                <div type="button" class="top-titlebar-back-button" title="" onclick="closeMovieDetail();">
+                    <span class="glyphicon glyphicon-share-alt"></span>
+                </div>
+                <div type="button" class="top-titlebar-minimize-button" title="" onclick="main.minimize();">
+                    <span class="glyphicon glyphicon-minus"></span>
+                </div>
+                <div type="button" class="top-titlebar-fullscreen-button" title="" onclick="main.toggleFullScreen();">
+                    <span class="glyphicon glyphicon-fullscreen"></span>
+                </div>
+                <div class="top-titlebar-close-button" onclick="main.closeApp();" title="">
+                    <span class="glyphicon glyphicon-remove"></span>
+                </div>
+                <div class="top-titlebar-text">Flixtor</div>
+            </div>
+            <div id="content-wrapper">
+                <div id="side-bar-full" class="hidden-xs side-bar">
+                    <ul>
+                        <li id="side-bar-li-movies" class="on" onclick="main.changeFrame('movies')">
+                            <a class="menuMovies" href="#">
+                                <span class="glyphicon glyphicon-film"></span></a>
+                        </li>
+                        <li id="side-bar-li-series" onclick="main.changeFrame('series')">
+                            <a class="menuSeries" href="#">
+                                <span class="glyphicon glyphicon-expand"></span></a>
+                        </li>
+                        <li id="side-bar-li-torrents" onclick="main.changeFrame('torrents')">
+                            <a class="menuTorrents" href="#">
+                                <span class="glyphicon glyphicon-th-list"></span></a>
+                        </li>
+                        <br><br>
+                        <li id="side-bar-li-settings" onclick="main.changeFrame('settings')">
+                            <a class="menuSettings" href="#">
+                                <span class="glyphicon glyphicon-cog"></span></a>
+                        </li>
+                    </ul>
+
+                </div>
+                <div id="side-bar-small" class="visible-xs side-bar">
+                    <ul>
+                        <li id="side-bar-li-movies-sm" class="on" onclick="main.changeFrame('movies')">
+                            <a href="#">
+                                <span class="glyphicon glyphicon-film"></span>
+                            </a>
+                        </li>
+                        <li id="side-bar-li-series-sm" onclick="main.changeFrame('series')">
+                            <a href="#">
+                                <span class="glyphicon glyphicon-expand"></span>
+                            </a>
+                        </li>
+                        <li id="side-bar-li-torrents-sm" onclick="main.changeFrame('torrents')">
+                            <a href="#">
+                                <span class="glyphicon glyphicon-th-list"></span>
+                            </a>
+                        </li>
+                        <br><br>
+                        <li id="side-bar-li-settings-sm" onclick="main.changeFrame('settings')">
+                            <a href="#">
+                                <span class="glyphicon glyphicon-cog"></span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                <div id="content">
+                    <script type="text/javascript">
+                        var results = null;
+                        var movieFilter = {};
+
+                        function applySearch() {
+                            //Display the spinner while we wait for the data.
+                            $("#wrapper").append("<div class='spinner-overlay'></div>");
+
+                            //We skip to 0
+                            if (!movieFilter.page) {
+                                movieFilter.page = 1;
+                            }
+
+                            //Display maximum of 75 movies per request
+                            if (!movieFilter.max) {
+                                movieFilter.max = 50;
+                            }
+
+                            if (!movieFilter.searchValue) {
+                                movieFilter.searchValue = '';
+                            }
+
+                            //Search for movies
+                            callwcf.searchMovies(movieFilter.sort, movieFilter.searchValue, movieFilter.genre, movieFilter.max, movieFilter.page, function(results) {
+                                var content = "";
+                                $(results).each(function(index) {
+                                    var movie = results[index];
+
+                                    if ($('#'+movie.imdbCode).length > 0){
+                                        return true;
+                                    }
+
+                                    if (typeof movie.poster !== 'undefined') {
+                                        var newChars = '-300';
+                                        var position = movie.poster.lastIndexOf(".");
+                                        var tmpOne = movie.poster.substr(0, position);
+                                        var tmpTwo = movie.poster.substr(position, movie.poster.length);
+                                        var moviePoster = tmpOne + newChars + tmpTwo;
+                                    }
+                                    else {
+                                        var moviePoster = '../images/no-poster.png';
+                                    }
+                                    if (typeof movie.genres !== 'undefined') {
+                                        var splitGem = movie.genres.split(',');
+                                        var translatedGen;
+                                        var translatedGenres = [];
+                                        $(splitGem).each(function(index) {
+                                            var gen = splitGem[index];
+                                            gen = gen.trim();
+                                            translatedGen = translations.translate(gen);
+                                             translatedGenres.push(translatedGen);
+                                        })
+
+                                        for (var i = 0; i < translatedGenres.length; ++i) {
+                                            translatedGenres[i] = translatedGenres[i].replace(" ", "-");
+                                        }
+                                        var genres = translatedGenres.join(", ");
+
+                                    }
+                                    else {
+                                        var genres = '';
+                                    }
+
+                                    content += "<div id='" + movie.imdbCode + "' class='element transition m-10 isotope-item'>" +
+                                            "<a class='shadow' onClick='showDetails(this);'>" +
+                                            "<div style='display: none'>"+JSON.stringify(movie)+"</div> " +
+                                            "<img alt='image' src='" + moviePoster + "' style='width:160px; height:230px;'>" +
+                                            "</a>" +
+                                            "<div class='p-5' style='max-width:160px;'>" +
+                                            "<div style='font-size:14px;'>" + movie.title + "</div>" +
+                                            "<div style='font-size:10px; color:#A8A8A8;'>" + genres + "</div>" +
+                                            "</div>" +
+                                            "<div style='clear:both'></div>" +
+                                            "</div>";
+                                });
+
+                                $('.spinner-overlay').remove();
+
+                                if (content !== "") {
+
+                                    var $container = $('#movieContainer');
+                                    $container.append(content);
+                                    $container.isotope("insert", $container);
+
+                                    $( ".element" ).last().addClass('last');
+                                }
+                            });
+                        }
+
+                        function showDetails(movieJson) {
+                            var movie=  $.parseJSON(movieJson.firstChild.innerHTML);
+
+                            $('#title' ).empty();
+                            $('#genres').empty();
+                            $('#rating').css('width', '0% !important');
+                            $('#plot').empty();
+                            $('#runtime').empty();
+                            $('#runtime').append('<span class="glyphicon glyphicon-time"></span>&nbsp;&nbsp');
+                            $('#date').empty();
+                            $('#date').append('<span class="glyphicon glyphicon-calendar"></span>&nbsp;&nbsp;');
+
+                            console.log(movie);
+                            //Insert backdrop path
+                            $( "<style> #customCSS {position: absolute; top: 0; bottom: 0;left: 0; right: 0; z-index: -100; background: url("+movie.fanart+") no-repeat center center fixed; -webkit-background-size: cover; background-size: cover; color: #e9e9e9;}</style>" ).appendTo("#customCSS");
+
+                            //Set variables to html
+                            if (typeof movie.poster !== 'undefined') {
+                                var newChars = '-300';
+                                var position = movie.poster.lastIndexOf(".");
+                                var tmpOne = movie.poster.substr(0, position);
+                                var tmpTwo = movie.poster.substr(position, movie.poster.length);
+                                var moviePoster = tmpOne + newChars + tmpTwo;
+                                $("#poster").attr('src', moviePoster);
+
+                            }
+                            else {
+                                $("#poster").attr('src', '../images/no-poster.png');
+                            }
+
+                            if (typeof movie.genres !== 'undefined') {
+                                var splitGem = movie.genres.split(',');
+                                var translatedGen;
+                                var translatedGenres = [];
+                                $(splitGem).each(function(index) {
+                                    var gen = splitGem[index];
+                                    gen = gen.trim();
+                                    translatedGen = translations.translate(gen);
+                                    translatedGenres.push(translatedGen);
+                                })
+
+                                for (var i = 0; i < translatedGenres.length; ++i) {
+                                    translatedGenres[i] = translatedGenres[i].replace(" ", "-");
+                                }
+                                var genres = translatedGenres.join(", ");
+
+                                $("#genres").append(genres);
+                            }
+
+                            $("#title").html(movie.title);
+                            $("#rating").attr("style", "width:" + (movie.rating * 10) + "% !important");
+                            $("#date").append(movie.movieYear);
+
+                            if (typeof movie.overview !== 'undefined') {
+                                $("#plot").html(movie.overview);
+                            }
+                            if (typeof movie.runtime !== 'undefined') {
+                                $("#runtime").append(movie.runtime +" min");
+                            }
+
+                            if(movie.trailer !== "" || typeof movie.poster !== 'undefined') {
+                                $("#btnTrailer").click(function () {
+                                    $("#wrapper").append("<div class='spinner-overlay'></div>");
+                                    $("#content-overlay").hide();
+                                    $(".top-titlebar-back-button").attr("onclick","closeTrailerOverlay()");
+
+                                    var ytID = main.getYoutubeID(movie.trailer);
+                                    $("#video-container-trailer").html("<iframe id='trailerPlayer' type='text/html' width='100%' src='https://www.youtube.com/embed/" + ytID + "?autoplay=1&rel=0&showinfo=0&iv_load_policy=3&modestbranding=0' frameborder='0'></iframe>");
+                                    $( "#trailerPlayer" ).load(function() {
+                                        $(".spinner-overlay").remove();
+                                    });
+                                    $(window).resize(function () {
+                                        $("iframe").css("width", $(window).width());
+                                        $("iframe").css("height", $(window).height());
+                                    }).trigger("resize");
+                                });
+                            }else {
+                                $("#btnTrailer").addClass("hide");
+                            }
+
+                            $("#btnBuy").click(function () {
+                                var shoppingUrl = 'https://www.google.com/search?q='+movie.title+' movie&tbm=shop';
+                                gui.Shell.openExternal(shoppingUrl);
+
+                            });
+
+                            $("#btnPlay").click(function () {
+                                if(movie.torrents !== "") {
+                                    var movieB64 = new Buffer(JSON.stringify(movie)).toString('base64');
+                                    main.go("players/movie-player.html?movieId=" + movieB64);
+                                }
+                            });
+
+                            $("#head-bar").hide();
+                            $("#content-overlay").show();
+                            $("#movie").show();
+                            $("#side-bar-full").hide();
+                            $("#content").css("opacity", "0");
+                            $('#side-bar-small').attr("style", "display: none !important");
+                            $('#customCSS').animate({opacity: 0}, 0).animate({opacity: 1}, 2000);
+                        }
+
+                        function changeSearchText() {
+                            movieFilter.page = 1;
+                            movieFilter.searchValue = $('#txtMovieSearch').val();
+                            $('#movieContainer').empty();
+                            $('#movieContainer').isotope("destroy");
+                            $('#movieContainer').isotope({
+                                itemSelector: '.element',
+                                animationEngine: 'jquery',
+                                layoutMode: 'fitRows',
+                                animationOptions: {
+                                    duration: 600,
+                                    easing: 'linear',
+                                    queue: false
+                                }
+                            });
+
+                            if(movieFilter.searchValue.indexOf('magnet:?xt=urn:btih:') == 0) {
+                                var infoHash = movieFilter.searchValue.split('magnet:?xt=urn:btih:');
+                                main.go("players/player.html?torrentId=" + infoHash[1]);
+                            }
+                            else {
+                                applySearch();
+                            }
+                        }
+
+                        function changeFilterGenre(name) {
+                            movieFilter.genre =  name;
+                            movieFilter.page = 1;
+                            var translatedGenre = translations.translate(name);
+                            $("#filterByGenre").text(": " + translatedGenre);
+                            $('#movieContainer').empty();
+                            $('#movieContainer').isotope("destroy");
+                            $('#movieContainer').isotope({
+                                itemSelector: '.element',
+                                animationEngine: 'jquery',
+                                layoutMode: 'fitRows',
+                                animationOptions: {
+                                    duration: 600,
+                                    easing: 'linear',
+                                    queue: false
+                                }
+                            });
+
+                            applySearch();
+                        }
+
+                        function changeFilterCategory(name) {
+                            movieFilter.category = name;
+                            movieFilter.page = 1;
+
+                            var translatedCategory = translations.translate(name);
+                            $("#filterByCategory").text(" : " + translatedCategory);
+                            $('#movieContainer').empty();
+                            $('#movieContainer').isotope("destroy");
+                            $('#movieContainer').isotope({
+                                itemSelector: '.element',
+                                animationEngine: 'jquery',
+                                layoutMode: 'fitRows',
+                                animationOptions: {
+                                    duration: 600,
+                                    easing: 'linear',
+                                    queue: false
+                                }
+                            });
+
+                            //Create the category filter
+                            switch (movieFilter.category) {
+                            case "Most downloaded":
+                                movieFilter.sort = "seeds";
+                                break;
+                            case "Date":
+                                movieFilter.sort = "date";
+                                break;
+                            case "Year":
+                                movieFilter.sort = "year";
+                                break;
+                            case "Rating":
+                                movieFilter.sort = "rating";
+                                break;
+                            case "Alphabetic":
+                                movieFilter.sort = "alphabet";
+                                break;
+                            }
+
+                            applySearch();
+                        }
+
+                        function closeMovie()
+                        {
+                            $('#divMD').addClass('hide');
+                            sessionStorage.removeItem('movie');
+                        }
+
+                        function closeMovieDetail()
+                        {
+                            try{
+                                var subManager = yifysubtitle.getSubManager();
+                                if( subManager ) {
+                                    subManager.server.listen(0);
+                                    subManager.server.close();
+                                }
+                            }
+                            catch(e){
+                                console.log(e);
+                            }
+
+                            $("#customCSS").empty();
+                            $("#content-overlay").hide();
+                            $("#movie").hide();
+                            $("#side-bar-full").show();
+                            $("#side-bar-small").removeAttr( 'style' );
+                            $("#content").css("opacity", "1");
+                            $("#head-bar").show();
+                            $( "#btnBuy").unbind( "click" );
+                        }
+
+                        function closeTrailerOverlay()
+                        {
+                            $("#video-container-trailer").empty();
+                            $("#content-overlay").show();
+                            $(".top-titlebar-back-button").attr("onclick","closeMovieDetail()");
+                        }
+
+                    </script>
+                    <div id="movies">
+                        <div id="head-bar" class="p-10">
+                            <div class="row" style="margin-right:0;">
+                                <div class="col-lg-10">
+                                    <div class="input-group">
+                                        <input id="txtMovieSearch" type="text" class="form-control black-input" placeholder="">
+                                        <span class="input-group-btn">
+                                            <button class="btn btn-default" id="btnSearchMovie" type="button" onclick="changeSearchText();">
+                                                <span class="glyphicon glyphicon-search"></span>
+                                            </button>
+                                            <span class="ml-10">
+                                                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">Genre
+                                                    <span id="filterByGenre"></span>
+                                                    <span class="caret"></span>
+                                                </button>
+                                                <ul class="dropdown-menu" style="max-height:400px;overflow-y:auto;" role="menu" id="ddmGenres">
+                                                    <li>
+                                                        <a class="genreAll" onclick="changeFilterGenre('All');"></a>
+                                                    </li>
+                                                    <li>
+                                                        <a class="genreAction" onclick="changeFilterGenre('Action');"></a>
+                                                    </li>
+                                                    <li>
+                                                        <a class="genreAdventure" onclick="changeFilterGenre('Adventure');"></a>
+                                                    </li>
+                                                    <li>
+                                                        <a class="genreAnimation" onclick="changeFilterGenre('Animation');"></a>
+                                                    </li>
+                                                    <li>
+                                                        <a class="genreComedy" onclick="changeFilterGenre('Comedy');"></a>
+                                                    </li>
+                                                    <li>
+                                                        <a class="genreCrime" onclick="changeFilterGenre('Crime');"></a>
+                                                    </li>
+                                                    <li>
+                                                        <a class="genreDocumentary" onclick="changeFilterGenre('Documentary');"></a>
+                                                    </li>
+                                                    <li>
+                                                        <a class="genreDrama" onclick="changeFilterGenre('Drama');"></a>
+                                                    </li>
+                                                    <li>
+                                                        <a class="genreFamily" onclick="changeFilterGenre('Family');"></a>
+                                                    </li>
+                                                    <li>
+                                                        <a class="genreFantasy" onclick="changeFilterGenre('Fantasy');"></a>
+                                                    </li>
+                                                    <li>
+                                                        <a class="genreFilm-Noir" onclick="changeFilterGenre('Film-Noir');"></a>
+                                                    </li>
+                                                    <li>
+                                                        <a class="genreHistory" onclick="changeFilterGenre('History');"></a>
+                                                    </li>
+                                                    <li>
+                                                        <a class="genreHorror" onclick="changeFilterGenre('Horror');"></a>
+                                                    </li>
+                                                    <li>
+                                                        <a class="genreMusic" onclick="changeFilterGenre('Music');"></a>
+                                                    </li>
+                                                    <li>
+                                                        <a class="genreMusical" onclick="changeFilterGenre('Musical');"></a>
+                                                    </li>
+                                                    <li>
+                                                        <a class="genreMystery" onclick="changeFilterGenre('Mystery');"></a>
+                                                    </li>
+                                                    <li>
+                                                        <a class="genreRomance" onclick="changeFilterGenre('Romance');"></a>
+                                                    </li>
+                                                    <li>
+                                                        <a class="genreSci-Fi" onclick="changeFilterGenre('Sci-Fi');"></a>
+                                                    </li>
+                                                    <li>
+                                                        <a class="genreSport" onclick="changeFilterGenre('Sport');"></a>
+                                                    </li>
+                                                    <li>
+                                                        <a class="genreThriller" onclick="changeFilterGenre('Thriller');"></a>
+                                                    </li>
+                                                    <li>
+                                                        <a class="genreWar" onclick="changeFilterGenre('War');"></a>
+                                                    </li>
+                                                    <li>
+                                                        <a class="genreWestern" onclick="changeFilterGenre('Western');"></a>
+                                                    </li>
+                                                </ul>
+                                            </span>
+                                            <span class="ml-10">
+                                                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">Filter
+                                                    <span id="filterByCategory"></span>
+                                                    <span class="caret"></span>
+                                                </button>
+                                                <ul class="dropdown-menu pull-right" role="menu" id="ddmFilter">
+                                                    <li>
+                                                        <a class="filterMostDownloaded" onclick="changeFilterCategory('Most downloaded')"></a>
+                                                    </li>
+                                                    <li>
+                                                        <a class="filterDate" onclick="changeFilterCategory('Date')"></a>
+                                                    </li>
+                                                    <li>
+                                                        <a class="filterYear" onclick="changeFilterCategory('Year')"></a>
+                                                    </li>
+                                                    <li>
+                                                        <a class="filterRating" onclick="changeFilterCategory('Rating')"></a>
+                                                    </li>
+                                                    <li>
+                                                        <a class="filterAlphabetic" onclick="changeFilterCategory('Alphabetic')"></a>
+                                                    </li>
+                                                </ul>
+                                            </span>
+                                        </span>
+
+                                    </div>
+                                </div>
+                                <div class="clearfix"></div>
+                            </div>
+                        </div>
+                        <div id="movieContainer" class="isotope" style="overflow-y:auto !important; margin-right:10px;">
+                            <!-- Dynamic content here-->
+                        </div>
+                    </div>
+                    <div id="popup"></div>
+                </div>
+
+                <div id="content-overlay" style="display: none;">
+                    <div id="movie" class="modal fade in p-30">
+                        <div class="container center-block">
+                            <div class="row">
+                                <div class="col-sm-3 hidden-sm hidden-xs">
+                                    <img id="poster" alt="" src="" width="200" class="img-responsive img-thumbnail"  /></div>
+                                <div class="col-sm-9" style="padding:10px;">
+                                    <a class="pull-right font-24 color-white" onclick="closeMovieDetail();"><i class='glyphicon glyphicon-remove-circle'></i></a>
+                                    <h1 id="title"></h1>
+                                    <h4 id="genres" class="mr-10" style="display:inline-block;"></h4>
+                                    <div class="stars-template" style="display:inline-block;">
+                                        <div id="rating" class="current-rating"></div>
+                                    </div>
+                                    <div id="plot" class="ptb-10" style="max-width:800px;"></div>
+                                    <div class="ptb-10">
+                                        <button id="btnPlay" class="btn btn-success btn-sm"><i class='glyphicon glyphicon-play'></i>&nbsp;&nbsp;</button>
+                                        <button id="btnTrailer" class="btn btn-primary btn-sm"><i class='glyphicon glyphicon-film'></i>&nbsp;&nbsp;</button>
+                                        <button id="btnBuy" class="btn btn-danger btn-sm"><i class='glyphicon glyphicon-shopping-cart'></i>&nbsp;&nbsp;</button>
+                                    </div>
+                                    <div id="runtime" class="pt-5"><span class="glyphicon glyphicon-time"></span>&nbsp;&nbsp;</div>
+                                    <div id="date" class="pt-5"><span class="glyphicon glyphicon-calendar"></span>&nbsp;&nbsp;</div>
+                                    <div id="quality" class="pt-5"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-backdrop fade in" style="opacity:0.85;"></div>
+                </div>
+                <div id="video-container-trailer">
+                </div>
+            </div>
+        </div>
+    </body>
+
+</html>

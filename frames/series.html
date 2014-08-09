@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html>
+
+    <head>
+        <title>Flixtor</title>
+        <!-- CSS -->
+        <link href="../styles/bootstrap.min.css" rel="stylesheet">
+        <link href="../styles/bootly.css" rel="stylesheet">
+
+        <!-- Scripts -->
+        <script type='text/javascript' src="../js/extensions/jquery.min.js"></script>
+        <script type='text/javascript' src="../js/extensions/bootstrap.min.js"></script>
+        <script src="../js/extensions/jquery.isotope.min.js"></script>
+
+        <!-- Modules -->
+        <script>
+            var main = require('../js/main.js');
+            var callwcf = require('../js/callwcf.js');
+            var gui = require('nw.gui');
+            var yifysubtitle = require('../js/yifysubtitle.js');
+            var translations = require('../js/translations.js');
+
+            $(document).ready(function() {
+
+                translations.initialize();
+                translations.translateDefaults();
+
+                //Scroll bar
+                $(window).resize(function() {
+                    $("#serieContainer").css('max-height', ($(window).height() - 95) + "px");
+                }).trigger("resize");
+
+                //Search key press (enter)
+                $('#txtSerieSearch').keypress(function(e) {
+                    if (e.keyCode == 13)
+                        $('#btnSearchSerie').click();
+                });
+
+                //By default we filter by most downloaded.
+                changeFilterCategory("Most downloaded");
+
+                //Persistence
+                if(sessionStorage.serie){
+                    var serie = $.parseJSON(sessionStorage.serie);
+                    //showDetails(serie.SerieId , true);
+                }
+
+                $.fn.inView = function(){
+                    //Window Object
+                    var win = $(window);
+                    //Object to Check
+                    obj = $(this);
+                    //the top Scroll Position in the page
+                    var scrollPosition = win.scrollTop();
+                    //the end of the visible area in the page, starting from the scroll position
+                    var visibleArea = win.scrollTop() + win.height();
+                    //the end of the object to check
+                    var objEndPos = (obj.offset().top + obj.outerHeight());
+
+                    return(visibleArea >= objEndPos && scrollPosition <= objEndPos ? true : false)
+
+                };
+
+                $('#serieContainer').scroll(function() {
+                    var element = $('.last').on('find');
+                    if(element.length > 0) {
+                        if(element.inView() === true) {
+                            serieFilter.page = serieFilter.page+1;
+                            element.removeClass('last');
+                            serieApplySearch();
+                        }
+                    }
+                });
+            });
+        </script>
+
+        <!-- Custom page style -->
+        <style>
+            body {
+                background-color: #141414;
+            }
+            .shadow {
+                display: block;
+                position: relative;
+            }
+            .shadow img {
+                display: block;
+            }
+            .shadow:hover::before {
+                box-shadow: none;
+            }
+            .shadow::before {
+                display: block;
+                content: '';
+                position: absolute;
+                width: 160px;
+                height: 100%;
+                box-shadow: inset 0px 0px 50px 1px rgba(0, 0, 0, 0.8);
+            }
+        </style>
+    </head>
+    <body>
+    <div id="customCSS"></div>
+    <div id="wrapper">
+            <div id="top-bar">
+                <div type="button" class="top-titlebar-back-button" title="" onclick="closeSerieDetail();">
+                    <span class="glyphicon glyphicon-share-alt"></span>
+                </div>
+                <div type="button" class="top-titlebar-minimize-button" title="" onclick="main.minimize();">
+                    <span class="glyphicon glyphicon-minus"></span>
+                </div>
+                <div type="button" class="top-titlebar-fullscreen-button" title="" onclick="main.toggleFullScreen();">
+                    <span class="glyphicon glyphicon-fullscreen"></span>
+                </div>
+                <div class="top-titlebar-close-button" onclick="main.closeApp();" title="">
+                    <span class="glyphicon glyphicon-remove"></span>
+                </div>
+                <div class="top-titlebar-text">Flixtor</div>
+            </div>
+            <div id="content-wrapper">
+                <div id="side-bar-full" class="hidden-xs side-bar">
+                    <ul>
+                        <li id="side-bar-li-movies" onclick="main.changeFrame('movies')">
+                            <a class="menuMovies" href="#">
+                                <span class="glyphicon glyphicon-film"></span></a>
+                        </li>
+                        <li id="side-bar-li-series" class="on" onclick="main.changeFrame('series')">
+                            <a class="menuSeries" href="#">
+                                <span class="glyphicon glyphicon-expand"></span></a>
+                        </li>
+                        <li id="side-bar-li-torrents" onclick="main.changeFrame('torrents')">
+                            <a class="menuTorrents" href="#">
+                                <span class="glyphicon glyphicon-th-list"></span></a>
+                        </li>
+                        <br><br>
+                        <li id="side-bar-li-settings" onclick="main.changeFrame('settings')">
+                            <a class="menuSettings" href="#">
+                                <span class="glyphicon glyphicon-cog"></span></a>
+                        </li>
+                    </ul>
+                </div>
+                <div id="side-bar-small" class="visible-xs side-bar">
+                    <ul>
+                        <li id="side-bar-li-movies-sm" onclick="main.changeFrame('movies')">
+                            <a href="#">
+                                <span class="glyphicon glyphicon-film"></span>
+                            </a>
+                        </li>
+                        <li id="side-bar-li-series-sm" class="on" onclick="main.changeFrame('series')">
+                            <a href="#">
+                                <span class="glyphicon glyphicon-expand"></span>
+                            </a>
+                        </li>
+                        <li id="side-bar-li-torrents-sm" onclick="main.changeFrame('torrents')">
+                            <a href="#">
+                                <span class="glyphicon glyphicon-th-list"></span>
+                            </a>
+                        </li>
+                        <br><br>
+                        <li id="side-bar-li-settings-sm" onclick="main.changeFrame('settings')">
+                            <a href="#">
+                                <span class="glyphicon glyphicon-cog"></span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                <div id="content">
+                    <script>
+                        var serieFilter = {};
+
+                        function serieApplySearch() {
+                            //Show the spinner while we wait to display all the series.
+                            $("#wrapper").append("<div id='main-spinner' class='spinner-overlay'></div>");
+
+                            //By default we skip to 0.
+                            if (!serieFilter.page) {
+                                serieFilter.page = 1;
+                            }
+
+                            //We display a maximum of 50 series.
+                            if (!serieFilter.max) {
+                                serieFilter.max = 50;
+                            }
+
+                            //Search for series
+                            callwcf.searchSeries( serieFilter.sort, serieFilter.searchValue, serieFilter.genre, serieFilter.max, serieFilter.page, function(results) {
+
+                                var content = "";
+                                $(results).each(function(index) {
+                                    var serie = results[index];
+
+                                    if (typeof serie.images.poster !== 'undefined') {
+                                        var newChars = "-300";
+                                        var position = serie.images.poster.lastIndexOf(".");
+                                        var tmpOne = serie.images.poster.substr(0, position);
+                                        var tmpTwo = serie.images.poster.substr(position, serie.images.poster.length);
+                                        var seriePoster = tmpOne + newChars + tmpTwo;
+                                    }
+                                    else {
+                                        var seriePoster = '../images/no-poster.png';
+                                    }
+                                    content += "<div class='element transition m-10 isotope-item'>" +
+                                        "<a class='shadow' onClick='showDetails(this);'>" +
+                                        "<div style='display: none'>"+serie._id+"</div> " +
+                                        "<img alt='image' src='" + seriePoster + "' style='width:160px; height:230px;'/>" +
+                                        "</a>" +
+                                        "<div class='p-5' style='max-width:160px;'>" +
+                                        "<div style='font-size:14px;'>" + serie.title + "</div>" +
+                                        "</div>" +
+                                        "<div style='clear:both'></div>" +
+                                        "</div>";
+                                });
+
+                                if (content != "") {
+
+                                    var $container = $('#serieContainer');
+                                    $container.append(content);
+                                    $container.isotope("insert", $container);
+
+                                    $( ".element" ).last().addClass('last');
+                                }
+
+                                //Remove the spinner since we got the data we wanted
+                                $("#main-spinner").remove();
+                            });
+
+                        }
+
+                        function changeSearchText() {
+                            serieFilter.page = 1;
+                            serieFilter.searchValue = $("#txtSerieSearch").val();
+                            $("#serieContainer").empty();
+                            $('#serieContainer').isotope("destroy");
+                            $('#serieContainer').isotope({
+                                itemSelector: '.element',
+                                animationEngine: 'jquery',
+                                layoutMode: 'fitRows',
+                                animationOptions: {
+                                    duration: 600,
+                                    easing: 'linear',
+                                    queue: false
+                                }
+                            });
+                            serieApplySearch();
+                        }
+
+                        function startTorrent(infoHash) {
+                            //Hide view episodes panel and start the torrent
+                            $("#divSD").addClass("hide");
+                            main.playTorrent(infoHash);
+                        }
+
+                        function showDetails(serieID) {
+                            $("#wrapper").append("<div id='main-spinner' class='spinner-overlay'></div>");
+                            $('#title' ).empty();
+                            $('#genres').empty();
+                            $('#rating').css('width', '0% !important');
+                            $('#plot').empty();
+                            $('#network').empty();
+                            $('#runtime').empty();
+                            $('#runtime').append('<span class="glyphicon glyphicon-time"></span>&nbsp;&nbsp');
+                            $('#date').empty();
+                            $('#date').append('<span class="glyphicon glyphicon-calendar"></span>&nbsp;&nbsp;');
+                            $('#info').empty();
+                            $('#info').append('<span class="glyphicon glyphicon-info-sign"></span>&nbsp;&nbsp;');
+
+                            var serie=  serieID.firstChild.innerHTML;
+
+                            callwcf.searchSerieDetail( serie, function(results) {
+                                console.log(results);
+                                serie = results;
+
+                                //Insert backdrop path
+                                $( "<style> #customCSS {position: absolute; top: 0; bottom: 0;left: 0; right: 0; z-index: -100; background: url("+serie.images.fanart+") no-repeat center center fixed; -webkit-background-size: cover; background-size: cover; color: #e9e9e9;}</style>" ).appendTo("#customCSS");
+
+                                //Set variables to html
+                                var newChars = '-300';
+                                var position = serie.images.poster.lastIndexOf(".");
+                                var tmpOne = serie.images.poster.substr(0, position);
+                                var tmpTwo = serie.images.poster.substr(position, serie.images.poster.length);
+                                var seriePoster = tmpOne + newChars + tmpTwo;
+                                $("#poster").attr('src', seriePoster);
+
+                                $("#title").html(serie.title);
+
+                                var translatedGen;
+                                var translatedGenres = [];
+                                $(serie.genres).each(function(index) {
+                                    var gen = serie.genres[index];
+                                    gen = gen.trim();
+                                    translatedGen = translations.translate(gen);
+                                    translatedGenres.push(translatedGen);
+                                })
+                                var genres = translatedGenres.join(", ");
+                                $("#genres").append(genres);
+
+                                if(serie.synopsis) {
+                                    $("#plot").html(serie.synopsis);
+                                }else {
+                                    $("#plot").addClass("hide");
+                                }
+
+                                var translatedepisodes = translations.translate('episode');
+                                if(serie.runtime) {
+                                    $("#runtime").append(serie.runtime + "m / "+translatedepisodes);
+                                } else {
+                                    $("#runtime").addClass("hide");
+                                }
+
+                                if(serie.year) {
+                                    $("#date").append(serie.year);
+                                } else {
+                                    $("#date").addClass("hide");
+                                }
+
+                                if( serie.num_seasons <= 1 ) {
+                                    var translatedSeasons = translations.translate('season');
+                                }
+                                else {
+                                    var translatedSeasons = translations.translate('seasons');
+                                }
+                                $("#info").append(+ serie.num_seasons + " "+translatedSeasons);
+
+                                var translatedStatus = translations.translate(serie.status);
+                                $("#status").html(translatedStatus);
+
+                                if(serie.network) {
+                                    $("#network").append(serie.network);
+                                } else {
+                                    $("#network").addClass("hide");
+                                }
+
+                                $("#rating").attr("style", "width:" + serie.rating.percentages + "% !important");
+
+                                $("#btnBuy").click(function () {
+                                    var shoppingUrl = 'https://www.google.com/search?q='+serie.title+' series/season&tbm=shop';
+                                    gui.Shell.openExternal(shoppingUrl);
+
+                                });
+
+                                $("#btnEpisodeList").click(function () {
+                                    main.go("players/serie-player.html?serieId=" + serie._id);
+                                });
+
+                                $("#content-overlay").show();
+                                $("#serie").show();
+                                $("#side-bar-full").hide();
+                                $("#content").css("opacity", "0");
+                                $('#side-bar-small').attr("style", "display: none !important");
+                                $('.spinner-overlay').remove();
+                                $("#head-bar").hide();
+                                $('#customCSS').animate({opacity: 0}, 0).animate({opacity: 1}, 2000);
+                            });
+
+                        }
+
+                        function changeFilterGenre(name) {
+                            serieFilter.page = 1;
+                            serieFilter.genre =  name;
+
+                            var translatedGenre = translations.translate(name);
+                            $("#filterByGenre").text(": " + translatedGenre);
+                            $("#serieContainer").empty();
+                            $('#serieContainer').isotope("destroy");
+                            $('#serieContainer').isotope({
+                                itemSelector: '.element',
+                                animationEngine: 'jquery',
+                                layoutMode: 'fitRows',
+                                animationOptions: {
+                                    duration: 600,
+                                    easing: 'linear',
+                                    queue: false
+                                }
+                            });
+
+                            serieApplySearch();
+                        }
+
+                        function changeFilterCategory(name) {
+                            //Change category name
+                            serieFilter.category = name;
+                            serieFilter.page = 1;
+
+                            var translatedCategory = translations.translate(name);
+                            $("#filterByCategory").text(" : " + translatedCategory);
+                            $("#serieContainer").empty();
+                            $('#serieContainer').isotope("destroy");
+                            $('#serieContainer').isotope({
+                                itemSelector: '.element',
+                                animationEngine: 'jquery',
+                                layoutMode: 'fitRows',
+                                animationOptions: {
+                                    duration: 600,
+                                    easing: 'linear',
+                                    queue: false
+                                }
+                            });
+
+                            //Create the category filter
+                            switch (serieFilter.category) {
+                                case "Most downloaded":
+                                    serieFilter.sort = "seeds";
+                                    break;
+                                case "Updated":
+                                    serieFilter.sort = "updated";
+                                    break;
+                                case "Year":
+                                    serieFilter.sort = "year";
+                                    break;
+                                case "Name":
+                                    serieFilter.sort = "name";
+                                    break;
+                            }
+
+                            //Apply the setting to search
+                            serieApplySearch();
+                        }
+
+                        function closeSerieDetail()
+                        {
+                            try{
+                                var subManager = yifysubtitle.getSubManager();
+                                if( subManager ) {
+                                    subManager.server.listen(0);
+                                    subManager.server.close();
+                                }
+                            }
+                            catch(e){
+                                console.log(e);
+                            }
+
+                            $("#customCSS").empty();
+                            $("#content-overlay").hide();
+                            $("#serie").hide();
+                            $("#side-bar-full").show();
+                            $("#side-bar-small").removeAttr( 'style' );
+                            $("#content").css("opacity", "1");
+                            $("#head-bar").show();
+                            $( "#btnBuy").unbind( "click" );
+                        }
+                    </script>
+
+                    <div id="head-bar" class="p-10">
+                        <div class="row" style="margin-right:0;">
+                            <div class="col-lg-10">
+                                <div class="input-group">
+                                    <input id="txtSerieSearch" type="text" class="form-control black-input" placeholder="">
+                                    <span class="input-group-btn">
+                                        <button class="btn btn-default" type="button" id="btnSearchSerie" onclick="changeSearchText();">
+                                            <span class="glyphicon glyphicon-search"></span>
+                                        </button>
+                                        <span class="ml-10">
+                                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">Genres
+                                                <span id="filterByGenre"></span>
+                                                <span class="caret"></span>
+                                            </button>
+                                            <ul class="dropdown-menu" style="Max-height:400px;overflow-y:auto;" role="menu" id="ddmGenres">
+                                                <li>
+                                                    <a class="genreAll" onclick="changeFilterGenre('All');"></a>
+                                                </li>
+                                                <li>
+                                                    <a class="genreAction" onclick="changeFilterGenre('Action');"></a>
+                                                </li>
+                                                <li>
+                                                    <a class="genreAdventure" onclick="changeFilterGenre('Adventure');"></a>
+                                                </li>
+                                                <li>
+                                                    <a class="genreAnimation" onclick="changeFilterGenre('Animation');"></a>
+                                                </li>
+                                                <li>
+                                                    <a class="genreChildren" onclick="changeFilterGenre('Children');"></a>
+                                                </li>
+                                                <li>
+                                                    <a class="genreComedy" onclick="changeFilterGenre('Comedy');"></a>
+                                                </li>
+                                                <li>
+                                                    <a class="genreCrime" onclick="changeFilterGenre('Crime');"></a>
+                                                </li>
+                                                <li>
+                                                    <a class="genreDocumentary" onclick="changeFilterGenre('Documentary');"></a>
+                                                </li>
+                                                <li>
+                                                    <a class="genreDrama" onclick="changeFilterGenre('Drama');"></a>
+                                                </li>
+                                                <li>
+                                                    <a class="genreFamily" onclick="changeFilterGenre('Family');"></a>
+                                                </li>
+                                                <li>
+                                                    <a class="genreFantasy" onclick="changeFilterGenre('Fantasy');"></a>
+                                                </li>
+                                                <li>
+                                                    <a class="genreGameShow" onclick="changeFilterGenre('Game Show');"></a>
+                                                </li>
+                                                <li>
+                                                    <a class="genreHomeandGarden" onclick="changeFilterGenre('Home and Garden');"></a>
+                                                </li>
+                                                <li>
+                                                    <a class="genreHorror" onclick="changeFilterGenre('Horror');"></a>
+                                                </li>
+                                                <li>
+                                                    <a class="genreMiniSeries" onclick="changeFilterGenre('Mini Series');"></a>
+                                                </li>
+                                                <li>
+                                                    <a class="genreMystery" onclick="changeFilterGenre('Mystery');"></a>
+                                                </li>
+                                                <li>
+                                                    <a class="genreNews" onclick="changeFilterGenre('News');"></a>
+                                                </li>
+                                                <li>
+                                                    <a class="genreReality" onclick="changeFilterGenre('Reality');"></a>
+                                                </li>
+                                                <li>
+                                                    <a class="genreRomance" onclick="changeFilterGenre('Romance');"></a>
+                                                </li>
+                                                <li>
+                                                    <a class="genreSci-Fi" onclick="changeFilterGenre('Science Fiction');"></a>
+                                                </li>
+                                                <li>
+                                                    <a class="genreSoap" onclick="changeFilterGenre('Soap');"></a>
+                                                </li>
+                                                <li>
+                                                    <a class="genreSpecialInterest" onclick="changeFilterGenre('Special Interest');"></a>
+                                                </li>
+                                                <li>
+                                                    <a class="genreSport" onclick="changeFilterGenre('Sport');"></a>
+                                                </li>
+                                                <li>
+                                                    <a class="genreSuspense" onclick="changeFilterGenre('Suspense');"></a>
+                                                </li>
+                                                <li>
+                                                    <a class="genreTalkShow" onclick="changeFilterGenre('Talk Show');"></a>
+                                                </li>
+                                                <li>
+                                                    <a class="genreThriller" onclick="changeFilterGenre('Thriller');"></a>
+                                                </li>
+                                                <li>
+                                                    <a class="genreWestern" onclick="changeFilterGenre('Western');"></a>
+                                                </li>
+                                            </ul>
+                                        </span>
+                                        <span class="ml-10">
+                                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">Filter
+                                                <span id="filterByCategory"></span>
+                                                <span class="caret"></span>
+                                            </button>
+                                            <ul class="dropdown-menu pull-right" role="menu" id="ddmFilter">
+                                                <li>
+                                                    <a class="filterMostDownloaded" onclick="changeFilterCategory('Most downloaded')"></a>
+                                                </li>
+                                                <li>
+                                                    <a class="filterUpdated" onclick="changeFilterCategory('Updated')"></a>
+                                                </li>
+                                                <li>
+                                                    <a class="filterYear" onclick="changeFilterCategory('Year')"></a>
+                                                </li>
+                                                <li>
+                                                    <a class="filterName" onclick="changeFilterCategory('Name')"></a>
+                                                </li>
+                                            </ul>
+                                        </span>
+                                    </span>
+
+                                </div>
+                                <!-- /input-group -->
+                            </div>
+                            <!-- /.col-lg-6 -->
+                            <div class="clearfix"></div>
+                        </div>
+                    </div>
+
+                    <div id="serieContainer" class="isotope" style="overflow-y:auto !important;  margin-right:10px;">
+                        <!-- Dynamic content here -->
+                    </div>
+                    <div id="popup"></div>
+                </div>
+
+                <div id="content-overlay" style="display: none;">
+                    <div id="serie" class="modal fade in p-30">
+                        <div class="container center-block">
+                            <div class="row">
+                                <div class="col-sm-3 hidden-xs">
+                                    <img id="poster" alt="" src="" width="200" class="img-responsive img-thumbnail"  />
+                                    <div class="p-5 font-12">
+                                        <div id="status"></div>
+                                        <div id="inProduction"></div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-9 p-10">
+                                    <a class="pull-right font-24 color-white" onclick="closeSerieDetail();"><i class='glyphicon glyphicon-remove-circle'></i></a>
+                                    <h1 id="title"></h1>
+                                    <h4 id="genres" class="mr-10" style="display:inline-block;"></h4>
+                                    <div class="stars-template" style="display:inline-block;">
+                                        <div id="rating" class="current-rating"></div>
+                                    </div>
+                                    <div id="plot" class="ptb-10" style="max-width:800px;"></div>
+                                    <div id="network">This serie is aired on </div>
+                                    <div class="ptb-10">
+                                        <button id="btnEpisodeList" class="btn btn-primary btn-sm"><i class='glyphicon glyphicon-list'></i>&nbsp;&nbsp;</button>
+                                        <button id="btnBuy" class="btn btn-danger btn-sm"><i class='glyphicon glyphicon-shopping-cart'></i>&nbsp;&nbsp;</button>
+                                    </div>
+                                    <div id="runtime" class="pt-5"><span class="glyphicon glyphicon-time"></span>&nbsp;&nbsp;</div>
+                                    <div id="date" class="pt-5"><span class="glyphicon glyphicon-calendar"></span>&nbsp;&nbsp;</div>
+                                    <div id="info" class="pt-5"><span class="glyphicon glyphicon-info-sign"></span>&nbsp;&nbsp;</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-backdrop fade in" style="opacity:0.85;"></div>
+                </div>
+            </div>
+        </body>
+    </html>
