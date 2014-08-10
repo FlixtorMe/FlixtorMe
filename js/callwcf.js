@@ -11,7 +11,7 @@ var searchMovies = function (sort, keywords, genre, limit, page, order, callback
     console.log("http://yts.re/api/list.json?sort="+sort+"&limit="+limit+"&genre="+genre+"&keywords="+keywords+"&order="+order+"&set="+page+"");
     var movies = [];
     var imdbIds = [];
-    $.getJSON("http://yts.re/api/list.json?sort="+sort+"&limit="+limit+"&genre="+genre+"&keywords="+keywords+"&order="+order+"&set="+page+"", function (data) {
+    $.getJSON("https://yts.re/api/list.json?sort="+sort+"&limit="+limit+"&genre="+genre+"&keywords="+keywords+"&order="+order+"&set="+page+"", function (data) {
         if (data.status !== 'fail' || data.MovieList !== undefined ) {
             $.each(data.MovieList, function (key, val) {
 
@@ -101,7 +101,99 @@ var searchMovies = function (sort, keywords, genre, limit, page, order, callback
             });
         }
         else {
-            callback("error");
+            $.getJSON("https://yts.im/api/list.json?sort="+sort+"&limit="+limit+"&genre="+genre+"&keywords="+keywords+"&order="+order+"&set="+page+"", function (data) {
+                if (data.status !== 'fail' || data.MovieList !== undefined ) {
+                    $.each(data.MovieList, function (key, val) {
+
+                        var movie =  {
+                            "title" : val.MovieTitleClean.replace(/\([^)]*\)|1080p|DIRECTORS CUT|EXTENDED|UNRATED|3D|[()]/g, ''),
+                            "movieYear" : val.MovieYear,
+                            "imdbCode" : val.ImdbCode,
+                            "rating" : val.MovieRating,
+                            "torrents":[{
+                                "1080p":"",
+                                "720p":"",
+                                "unknown":""
+                            }]
+                        };
+
+                        if( val.Quality === '1080p' ) {
+                            movie.torrents[0]['1080p'] = val.TorrentMagnetUrl;
+                        }
+                        else if( val.Quality === '720p' ) {
+                            movie.torrents[0]['720p'] = val.TorrentMagnetUrl;
+                        }
+                        else {
+                            movie.torrents[0]['unknown'] = val.TorrentMagnetUrl;
+                        }
+
+
+                        var state = false;
+                        $.each(movies, function (index, movie) {
+                            if( val.ImdbCode === movie['imdbCode'] ) {
+                                if( val.Quality === '1080p' ) {
+                                    movie.torrents[0]['1080p'] = val.TorrentMagnetUrl;
+                                }
+                                else if( val.Quality === '720p' ) {
+                                    movie.torrents[0]['720p'] = val.TorrentMagnetUrl;
+                                }
+                                else {
+                                    movie.torrents[0]['unknown'] = val.TorrentMagnetUrl;
+                                }
+
+                                state = true;
+                                return false;
+                            }
+
+                        });
+                        if( state === true ) {
+                            return true;
+                        }
+
+                        imdbIds.push(val.ImdbCode);
+                        movies.push(movie);
+                    });
+
+                    var API_ENDPOINT = "http://api.trakt.tv/";
+                    var MOVIE_PATH = 'movie';
+                    var API_KEY = "24f87043f125cd2f9e8b48c114c0d6b3";
+                    var url = API_ENDPOINT+MOVIE_PATH+"/summaries.json/"+API_KEY+"/"+imdbIds.join(',')+"/full";
+
+                    console.log(url);
+                    $.getJSON(url, function (data) {
+                        if( data.status === "failure" ) {
+                            callback("error");
+                        }
+                        else {
+                            $.each(data, function (key, item) {
+                                $.each(movies, function (index, movie) {
+                                    if( item.imdb_id === movie['imdbCode'] ) {
+                                        movie.trailer = item.trailer;
+                                        movie.runtime = item.runtime;
+                                        movie.overview = item.overview;
+                                        movie.tagline = item.tagline;
+                                        movie.runtime = item.runtime;
+                                        movie.poster = item.images.poster;
+                                        movie.fanart = item.images.fanart;
+                                        var genres = item.genres;
+                                        for (var i = 0; i < genres.length; ++i) {
+                                            genres[i] = genres[i].replace(" ", "-");
+                                        }
+                                        genres = genres.join(", ");
+                                        movie.genres = genres;
+                                    }
+                                });
+                            });
+
+                            console.log(movies);
+                            callback(movies);
+                        }
+                    });
+                }
+                else {
+                    callback("error");
+                }
+            });
         }
     });
 };
