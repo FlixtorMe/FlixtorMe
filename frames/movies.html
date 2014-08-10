@@ -204,8 +204,12 @@
                                 movieFilter.searchValue = '';
                             }
 
+                            if (!movieFilter.order) {
+                                movieFilter.order = 'desc';
+                            }
+
                             //Search for movies
-                            callwcf.searchMovies(movieFilter.sort, movieFilter.searchValue, movieFilter.genre, movieFilter.max, movieFilter.page, function(results) {
+                            callwcf.searchMovies(movieFilter.sort, movieFilter.searchValue, movieFilter.genre, movieFilter.max, movieFilter.page, movieFilter.order, function(results) {
                                 var content = "";
                                 $(results).each(function(index) {
                                     var movie = results[index];
@@ -454,6 +458,7 @@
                                 break;
                             case "Alphabetic":
                                 movieFilter.sort = "alphabet";
+                                movieFilter.order = 'asc';
                                 break;
                             }
 

@@ -2,16 +2,16 @@ var utilities = require('../js/utilities.js');
 var ts = require('../js/kickasstorrents/torrentScraper.js');
 
 //External functions
-var searchMovies = function (sort, keywords, genre, limit, page, callback) {
+var searchMovies = function (sort, keywords, genre, limit, page, order, callback) {
     if( genre === undefined ) {
         genre = 'All';
     }
     $ = window.$;
 
-    console.log("http://yts.re/api/list.json?sort="+sort+"&limit="+limit+"&genre="+genre+"&keywords="+keywords+"&order=desc&set="+page+"");
+    console.log("http://yts.re/api/list.json?sort="+sort+"&limit="+limit+"&genre="+genre+"&keywords="+keywords+"&order="+order+"&set="+page+"");
     var movies = [];
     var imdbIds = [];
-    $.getJSON("http://yts.re/api/list.json?sort="+sort+"&limit="+limit+"&genre="+genre+"&keywords="+keywords+"&order=desc&set="+page+"", function (data) {
+    $.getJSON("http://yts.re/api/list.json?sort="+sort+"&limit="+limit+"&genre="+genre+"&keywords="+keywords+"&order="+order+"&set="+page+"", function (data) {
         if (data.status !== 'fail' || data.MovieList !== undefined ) {
             $.each(data.MovieList, function (key, val) {
 
