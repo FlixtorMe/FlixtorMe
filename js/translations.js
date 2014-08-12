@@ -10,7 +10,7 @@ var Translations = function () {
         $ = window.$;
         var localesDirectory = path.resolve(__dirname, '..')+'/locales';
         i18n.configure({
-            locales:['en', 'de', 'nl', 'fr', 'tr'],
+            locales:['en', 'de', 'nl', 'fr', 'tr', 'be', 'gr'],
             directory: localesDirectory,
             defaultLocale: defaultLanguage
         });
