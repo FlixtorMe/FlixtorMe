@@ -10,7 +10,7 @@ Based with the peerflix module and mixed with services. All of this packaged wit
 ![Alt text](http://i.imgur.com/tDeJw0B.png  "Flixtor - Torrent sction")
 
 ## Latest build
-Flixtor 2.0.0
+Flixtor 2.1.0
 
 ## Websites
 [Flixtor](http://www.flixtor.me)
