@@ -9,6 +9,7 @@ var fs = require('fs');
 var charset = require('jschardet');
 var iconv = require('iconv-lite');
 var AdmZip  = require('adm-zip');
+var localization = require('../js/localization.js');
 
 var manager;
 
@@ -209,17 +210,18 @@ var SubManager = function(port)
         var charsetData = charset.detect(data);
         var detecdedEncoding = charsetData.encoding;
         var targetEncoding = 'utf8';
-        /*
+
         //Charset is not detecting the good encoding for certain language like pt-br (WTF I get IBM855 when choosing brazillian :O)
         if(detecdedEncoding == 'IBM855' || detecdedEncoding == 'windows-1250' || detecdedEncoding == 'windows-1251' || detecdedEncoding == 'windows-1252' || detecdedEncoding == 'windows-1254' || detecdedEncoding == 'windows-1255') {
             if(iso639) {
                 var lang = localization.languages[iso639];
+
                 if(lang) {
                     detecdedEncoding = lang.encoding[0]; //We take the true real encoding now!
                     console.log(detecdedEncoding);
                 }
             }
-        }*/
+        }
 
         //We don't need to convert UTF-8
         if(detecdedEncoding != 'utf-8') {

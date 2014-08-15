@@ -119,7 +119,6 @@ var SubManager = function(port)
         var detecdedEncoding = charsetData.encoding;
         var targetEncoding = 'utf8';
 
-        /*
         //Charset is not detecting the good encoding for certain language like pt-br (WTF I get IBM855 when choosing brazillian :O)
         if(detecdedEncoding == 'IBM855' || detecdedEncoding == 'windows-1250' || detecdedEncoding == 'windows-1251' || detecdedEncoding == 'windows-1252' || detecdedEncoding == 'windows-1254' || detecdedEncoding == 'windows-1255') {
             if(iso639) {
@@ -129,7 +128,7 @@ var SubManager = function(port)
                     console.log(detecdedEncoding);
                 }
             }
-        }*/
+        }
 
         //We don't need to convert UTF-8
         if(detecdedEncoding != 'utf-8') {

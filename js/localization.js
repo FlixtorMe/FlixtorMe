@@ -3,23 +3,23 @@ var Localization = function() {
     this.languages = {
         "af" : {
             lang : "Afrikaans",
-            encoding : [ "iso-8859-1", "windows-1252" ]
+            encoding : [ "windows-1252" ]
         },
         "sq" : {
             lang : "Albanian",
-            encoding : [ "iso-8859-1", "windows-1252" ]
+            encoding : [ "windows-1252" ]
         },
         "ar" : {
             lang : "Arabic",
-            encoding : [ "iso-8859-6", "windows-1256" ]
+            encoding : [ "windows-1256" ]
         },
         "bat" : {
             lang : "Baltic",
-            encoding : [ "iso-8859-4", "iso-8859-13", "windows-1257" ]
+            encoding : [ "windows-1257" ]
         },
         "eu" : {
             lang : "Basque",
-            encoding : [ "iso-8859-1", "windows-1252" ]
+            encoding : [ "windows-1252" ]
         },
         "pb" : {
             lang : "Brazillian",
@@ -27,19 +27,19 @@ var Localization = function() {
         },
         "bg" : {
             lang : "Bulgarian",
-            encoding : [ "iso-8859-5" ]
+            encoding : [ "Windows-1251" ]
         },
         "be" : {
             lang : "Byelorussian",
-            encoding : [ "iso-8859-6" ]
+            encoding : [ "iso-8859-5" ]
         },
         "ca" : {
             lang : "Catalan",
-            encoding : [ "iso-8859-1", "windows-1252" ]
+            encoding : [ "windows-1252" ]
         },
         "hr" : {
             lang : "Croatian",
-            encoding : [ "iso-8859-2", "windows-1250" ]
+            encoding : [ "windows-1250" ]
         },
         "cs" : {
             lang : "Czech",
@@ -47,15 +47,15 @@ var Localization = function() {
         },
         "da" : {
             lang : "Danish",
-            encoding : [ "iso-8859-1", "windows-1252" ]
+            encoding : [ "iso-8859-1" ]
         },
         "nl" : {
             lang : "Dutch",
-            encoding : [ "iso-8859-1", "windows-1252" ]
+            encoding : [ "iso-8859-1" ]
         },
         "en" : {
             lang : "English",
-            encoding : [ "iso-8859-1", "windows-1252" ]
+            encoding : [ "iso-8859-1" ]
         },
         "eo" : {
             lang : "Esperanto",
@@ -63,35 +63,35 @@ var Localization = function() {
         },
         "et" : {
             lang : "Estonian",
-            encoding : [ "iso-8859-15" ]
+            encoding : [ "iso-8859-4" ]
         },
         "fo" : {
             lang : "Faroese",
-            encoding : [ "iso-8859-1", "windows-1252" ]
+            encoding : [ "windows-1252" ]
         },
         "fi" : {
             lang : "Finnish",
-            encoding : [ "iso-8859-1", "windows-1252" ]
+            encoding : [ "iso-8859-1" ]
         },
         "fr" : {
             lang : "French",
-            encoding : [ "iso-8859-1", "windows-1252" ]
+            encoding : [ "windows-1252" ]
         },
         "gl" : {
             lang : "Galician",
-            encoding : [ "iso-8859-1", "windows-1252" ]
+            encoding : [ "iso-8859-9" ]
         },
         "de" : {
             lang : "German",
-            encoding : [ "iso-8859-1", "windows-1252" ]
+            encoding : [ "windows-1252" ]
         },
         "el" : {
             lang : "Greek",
-            encoding : [ "iso-8859-7", "windows-1253" ]
+            encoding : [ "windows-1253" ]
         },
         "iw" : {
             lang : "Hebrew",
-            encoding : [ "iso-8859-8", "windows-1255" ]
+            encoding : [ "iso-8859-8" ]
         },
         "hu" : {
             lang : "Hungarian",
@@ -99,19 +99,19 @@ var Localization = function() {
         },
         "is" : {
             lang : "Icelandic",
-            encoding : [ "iso-8859-1", "windows-1252" ]
+            encoding : [ "iso-8859-1" ]
         },
         "ga" : {
             lang : "Irish",
-            encoding : [ "iso-8859-1", "windows-1252" ]
+            encoding : [ "iso-8859-1" ]
         },
         "it" : {
             lang : "Italian",
-            encoding : [ "iso-8859-1", "windows-1252" ]
+            encoding : [ "iso-8859-1" ]
         },
         "ja" : {
             lang : "Japanese",
-            encoding : [ "shift_jis", "iso-2022-jp", "euc-jp" ]
+            encoding : [ "shift_jis" ]
         },
         "ko" : {
             lang : "Korean",
@@ -119,15 +119,15 @@ var Localization = function() {
         },
         "lv" : {
             lang : "Latvian",
-            encoding : [ "iso-8859-13", "windows-1257" ]
+            encoding : [ "iso-8859-13" ]
         },
         "lt" : {
             lang : "Lithuanian",
-            encoding : [ "iso-8859-13", "windows-1257" ]
+            encoding : [ "iso-8859-13" ]
         },
         "mk" : {
             lang : "Macedonian",
-            encoding : [ "iso-8859-5", "windows-1251" ]
+            encoding : [ "iso-8859-5" ]
         },
         "mt" : {
             lang : "Maltese",
@@ -135,7 +135,7 @@ var Localization = function() {
         },
         "no" : {
             lang : "Norwegian",
-            encoding : [ "iso-8859-1", "windows-1252" ]
+            encoding : [ "iso-8859-1" ]
         },
         "pl" : {
             lang : "Polish",
@@ -143,7 +143,11 @@ var Localization = function() {
         },
         "pt" : {
             lang : "Portuguese",
-            encoding : [ "iso-8859-1", "windows-1252" ]
+            encoding : [ "iso-8859-1" ]
+        },
+        "pt-br" : {
+            lang : "Portuguese",
+            encoding : [ "iso-8859-1" ]
         },
         "ro" : {
             lang : "Romanian",
@@ -151,19 +155,15 @@ var Localization = function() {
         },
         "ru" : {
             lang : "Russian",
-            encoding : [ "koi8-r", "iso-8859-5" ]
+            encoding : [ "Windows-1251" ]
         },
         "gd" : {
             lang : "Scottish",
-            encoding : [ "iso-8859-1", "windows-1252" ]
+            encoding : [ "iso-8859-1" ]
         },
         "sr" : {
             lang : "Serbian cyrillic",
-            encoding : [ "windows-1251", "iso-8859-5" ]
-        },
-        "sr" : {
-            lang : "Serbian latin",
-            encoding : [ "iso-8859-2", "windows-1250" ]
+            encoding : [ "Windows-1250" ]
         },
         "sk" : {
             lang : "Slovak",
@@ -171,19 +171,19 @@ var Localization = function() {
         },
         "sl" : {
             lang : "Slovenian",
-            encoding : [ "iso-8859-2", "windows-1250" ]
+            encoding : [ "windows-1250" ]
         },
         "es" : {
             lang : "Spanish",
-            encoding : [ "iso-8859-1", "windows-1252" ]
+            encoding : [ "iso-8859-1" ]
         },
         "sv" : {
             lang : "Swedish",
-            encoding : [ "iso-8859-1", "windows-1252" ]
+            encoding : [ "iso-8859-1" ]
         },
         "tr" : {
             lang : "Turkish",
-            encoding : [ "iso-8859-9", "windows-1254" ]
+            encoding : [ "iso-8859-9" ]
         },
         "uk" : {
             lang : "Ukrainian",
