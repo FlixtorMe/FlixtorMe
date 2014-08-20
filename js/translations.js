@@ -220,6 +220,9 @@ var Translations = function () {
         var sectionVideos = i18n.__('Videos');
         $('.sectionVideos').append(sectionVideos);
 
+        var section3D = i18n.__('3D');
+        $('.section3D').append(section3D);
+
         var playerErrorTitle = i18n.__('An error has occured');
         $('.playerErrorTitle').append(playerErrorTitle);
 
