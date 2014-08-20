@@ -72,7 +72,10 @@ var searchMovies = function (sort, keywords, genre, limit, page, order, callback
 
             console.log(url);
             $.getJSON(url, function (data) {
+            }).success(function (data) {
                 if( data.status === "failure" ) {
+                    utilities.showPrompt("An uncaughtException was found", "<span class='text-danger'>An uncaughtException was found</span>.", "ok", function(answer) {
+                    });
                     callback("error");
                 }
                 else {
@@ -99,13 +102,20 @@ var searchMovies = function (sort, keywords, genre, limit, page, order, callback
                     console.log(movies);
                     callback(movies);
                 }
+            }).error(function () {
+                utilities.showPrompt("An uncaughtException was found", "<span class='text-danger'>Trakt service is unavailable. Please try it again later</span>.", "ok", function(answer) {
+                });
+                callback("error");
             });
         }
         else {
+            utilities.showPrompt("An uncaughtException was found", "<span class='text-danger'>An uncaughtException was found</span>.", "ok", function(answer) {
+            });
             callback("error");
         }
     }).error(function () {
         $.getJSON("https://yts.im/api/list.json?sort="+sort+"&limit="+limit+"&genre="+genre+"&keywords="+keywords+"&order="+order+"&set="+page+"", function (data) {
+        }).success(function (data) {
             if (data.status !== 'fail' || data.MovieList !== undefined ) {
                 $.each(data.MovieList, function (key, val) {
 
@@ -165,7 +175,10 @@ var searchMovies = function (sort, keywords, genre, limit, page, order, callback
 
                 console.log(url);
                 $.getJSON(url, function (data) {
+                }).success(function (data) {
                     if( data.status === "failure" ) {
+                        utilities.showPrompt("An uncaughtException was found", "<span class='text-danger'>An uncaughtException was found</span>.", "ok", function(answer) {
+                        });
                         callback("error");
                     }
                     else {
@@ -192,11 +205,21 @@ var searchMovies = function (sort, keywords, genre, limit, page, order, callback
                         console.log(movies);
                         callback(movies);
                     }
+                }).error(function () {
+                    utilities.showPrompt("An uncaughtException was found", "<span class='text-danger'>Trakt service is unavailable. Please try it again later</span>.", "ok", function(answer) {
+                    });
+                    callback("error");
                 });
             }
             else {
+                utilities.showPrompt("An uncaughtException was found", "<span class='text-danger'>An uncaughtException was found</span>.", "ok", function(answer) {
+                });
                 callback("error");
             }
+        }).error(function () {
+            utilities.showPrompt("An uncaughtException was found", "<span class='text-danger'>An uncaughtException was found</span>.", "ok", function(answer) {
+            });
+            callback("error");
         });
     });
 };
@@ -214,13 +237,19 @@ var searchSeries = function (sort, keywords, genre, limit, page, callback) {
 
     console.log("http://eztvapi.re/shows/"+page+"?sort="+sort+"&limit="+limit+"&genre="+genre+"&keywords"+keywords+"&order=-1");
     $.getJSON("http://eztvapi.re/shows/"+page+"?sort="+sort+"&limit="+limit+"&genre="+genre+"&keywords="+keywords+"&order=-1", function (data) {
+    }).success(function (data) {
         if (data !== undefined) {
             callback(data);
         }
         else {
-            //utilities.showMsg("Error","Services are unavailable at the moment, please try again later.</a>");
+            utilities.showPrompt("An uncaughtException was found", "<span class='text-danger'>An uncaughtException was found</span>.", "ok", function(answer) {
+            });
             callback("error");
         }
+    }).error(function () {
+        utilities.showPrompt("An uncaughtException was found", "<span class='text-danger'>Eztv is unavailable. Please try it again later</span>.", "ok", function(answer) {
+        });
+        callback("error");
     });
 };
 
@@ -230,13 +259,19 @@ var searchSerieDetail = function (id, callback) {
 
     console.log("http://eztvapi.re/show/"+id+"");
     $.getJSON("http://eztvapi.re/show/"+id+"", function (data) {
+    }).success(function (data) {
         if (data._id !== '') {
             callback(data);
         }
         else {
-            utilities.showMsg("Error","Services are unavailable at the moment, please try again later.</a>");
+            utilities.showPrompt("An uncaughtException was found", "<span class='text-danger'>An uncaughtException was found</span>.", "ok", function(answer) {
+            });
             callback("error");
         }
+    }).error(function () {
+        utilities.showPrompt("An uncaughtException was found", "<span class='text-danger'>Eztv is unavailable. Please try it again later</span>.", "ok", function(answer) {
+        });
+        callback("error");
     });
 };
 
