@@ -74,8 +74,6 @@ var searchMovies = function (sort, keywords, genre, limit, page, order, callback
             $.getJSON(url, function (data) {
             }).success(function (data) {
                 if( data.status === "failure" ) {
-                    utilities.showPrompt("An uncaughtException was found", "<span class='text-danger'>An uncaughtException was found</span>.", "ok", function(answer) {
-                    });
                     callback("error");
                 }
                 else {
@@ -109,8 +107,6 @@ var searchMovies = function (sort, keywords, genre, limit, page, order, callback
             });
         }
         else {
-            utilities.showPrompt("An uncaughtException was found", "<span class='text-danger'>An uncaughtException was found</span>.", "ok", function(answer) {
-            });
             callback("error");
         }
     }).error(function () {
@@ -177,8 +173,6 @@ var searchMovies = function (sort, keywords, genre, limit, page, order, callback
                 $.getJSON(url, function (data) {
                 }).success(function (data) {
                     if( data.status === "failure" ) {
-                        utilities.showPrompt("An uncaughtException was found", "<span class='text-danger'>An uncaughtException was found</span>.", "ok", function(answer) {
-                        });
                         callback("error");
                     }
                     else {
@@ -212,8 +206,6 @@ var searchMovies = function (sort, keywords, genre, limit, page, order, callback
                 });
             }
             else {
-                utilities.showPrompt("An uncaughtException was found", "<span class='text-danger'>An uncaughtException was found</span>.", "ok", function(answer) {
-                });
                 callback("error");
             }
         }).error(function () {
@@ -242,8 +234,6 @@ var searchSeries = function (sort, keywords, genre, limit, page, callback) {
             callback(data);
         }
         else {
-            utilities.showPrompt("An uncaughtException was found", "<span class='text-danger'>An uncaughtException was found</span>.", "ok", function(answer) {
-            });
             callback("error");
         }
     }).error(function () {
@@ -264,8 +254,6 @@ var searchSerieDetail = function (id, callback) {
             callback(data);
         }
         else {
-            utilities.showPrompt("An uncaughtException was found", "<span class='text-danger'>An uncaughtException was found</span>.", "ok", function(answer) {
-            });
             callback("error");
         }
     }).error(function () {
