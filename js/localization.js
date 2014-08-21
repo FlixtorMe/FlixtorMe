@@ -163,11 +163,11 @@ var Localization = function() {
         },
         "sr" : {
             lang : "Serbian cyrillic",
-            encoding : [ "windows-1251", "iso-8859-5" ]
+            encoding : [ "windows-1251" ]
         },
         "sr" : {
             lang : "Serbian latin",
-            encoding : [ "iso-8859-2", "windows-1250" ]
+            encoding : [ "windows-1250" ]
         },
         "sk" : {
             lang : "Slovak",
