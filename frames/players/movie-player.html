@@ -23,6 +23,11 @@
             var main = require('../js/main.js');
             var translations = require('../js/translations.js');
             var settings = require('../js/settings.js');
+            var xbmc = require( 'airplay-xbmc' );
+            var chromecast = require('chromecast-js');
+
+            var playerType;
+            var deviceId;
 
             $(document).ready(function() {
                 translations.initialize();
@@ -30,6 +35,8 @@
 
                 $("#wrapper").append("<div class='spinner-overlay'></div>");
                 var queryString = utilities.getQueryString('movieId');
+                playerType = utilities.getQueryString('playerType');
+                deviceId = utilities.getQueryString('deviceId');
 
                 if(queryString.indexOf('magnet:?xt=urn:btih:') == 0) {
                     var infoHash = queryString.split('magnet:?xt=urn:btih:');
@@ -139,7 +146,15 @@
 
                         //Show the video player
                         $("#loader").addClass("hide");
-                        startDefaultPlayer();
+                        if( playerType === 'xbmc' && deviceId !== undefined ) {
+                            startXBMC(deviceId);
+                        }
+                        else if( playerType === 'chromecast' && deviceId === undefined ) {
+                            startChromecast();
+                        }
+                        else {
+                            startDefaultPlayer();
+                        }
                     } else {
                         console.log("Not ready yet!");
 
@@ -251,14 +266,50 @@
                 });
             }
 
+            function startXBMC(deviceId) {
+                $("#btnDefaultPlayer").removeClass("hide");
+                $("#btnVLC").removeClass("hide");
+
+                var port = main.getEnginePort();
+                var ip = utilities.getIP();
+                var browser = xbmc.createBrowser();
+
+                browser.on( 'deviceOn', function( device ) {
+                    device.play( 'http://'+ip+':'+port+'', deviceId, function() {
+                    });
+                });
+                browser.on( 'deviceOff', function( device ) {
+                });
+                browser.start();
+            }
+
+            function startChromecast() {
+                $("#btnDefaultPlayer").removeClass("hide");
+                $("#btnVLC").removeClass("hide");
+
+                var browser = new chromecast.Browser();
+                var port = main.getEnginePort();
+                var ip = utilities.getIP();
+
+                browser.on('deviceOn', function(device){
+                    device.connect();
+                    device.on('connected', function(){
+                        device.play('http://'+ip+':'+port+'', 0, function(){
+                        })
+                    });
+                });
+            }
+
             function startVLC() {
                 //Remove error msg 
                 $("#error").addClass("hide");
                 $("#btnDefaultPlayer").removeClass("hide");
                 $("#btnVLC").addClass("hide");
-                var video = videojs("torrentVideo");
-                video.dispose();
-                $('#torrentVideo').remove();
+                if ($("#torrentVideo").length > 0){
+                    var video = videojs("torrentVideo");
+                    video.dispose();
+                    $('#torrentVideo').remove();
+                }
                 var port = main.getEnginePort();
                 $("#video-container").html("<embed id='VLC' type='application/x-vlc-plugin' pluginspage='http://www.videolan.org' style='position:absolute; top:40px;' width='100%' height='94%' autoplay='yes' target='http://127.0.0.1:"+port+"/' />");
                 setVLC();

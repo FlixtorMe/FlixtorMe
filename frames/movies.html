@@ -16,9 +16,12 @@
         <script>
             var main = require('../js/main.js');
             var callwcf = require('../js/callwcf.js');
+            var utilities = require('../js/utilities.js');
             var gui = require('nw.gui');
             var yifysubtitle = require('../js/yifysubtitle.js');
             var translations = require('../js/translations.js');
+            var xbmc = require( 'airplay-xbmc' );
+            var chromecastjs = require('chromecast-js');
 
             $(document).ready(function() {
 
@@ -288,6 +291,7 @@
                             $('#genres').empty();
                             $('#rating').css('width', '0% !important');
                             $('#plot').empty();
+                            $('#movie .dropdown-menu').empty();
                             $('#runtime').empty();
                             $('#runtime').append('<span class="glyphicon glyphicon-time"></span>&nbsp;&nbsp');
                             $('#date').empty();
@@ -311,6 +315,22 @@
                                 $("#poster").attr('src', '../images/no-poster.png');
                             }
 
+                            var chromecastBrowser = new chromecastjs.Browser();
+                            chromecastBrowser.on('deviceOn', function(device){
+                                $( "#movie .dropdown-toggle" ).removeClass( "disabled" );
+                                $('#movie .dropdown-menu').append('<li class="chromecastPlay"><a><i class="glyphicon glyphicon-play"></i>&nbsp;&nbsp;'+device.config.name+'</a></li>');
+                            });
+
+                            var xbmcBrowser = xbmc.createBrowser();
+                            xbmcBrowser.on( 'deviceOn', function( device ) {
+                                $( "#movie .dropdown-toggle" ).removeClass( "disabled" );
+                                $('#movie .dropdown-menu').append('<li class="xmbcPlay" data-id="'+device.id+'"><a><i class="glyphicon glyphicon-play"></i>&nbsp;&nbsp;'+device.name+'</a></li>');
+                            });
+                            xbmcBrowser.on( 'deviceOff', function( device ) {
+                                $(".xmbcPlay[data-id='" + device.id +"']").remove();
+                            });
+                            xbmcBrowser.start();
+
                             if (typeof movie.genres !== 'undefined') {
                                 var splitGem = movie.genres.split(',');
                                 var translatedGen;
@@ -320,7 +340,7 @@
                                     gen = gen.trim();
                                     translatedGen = translations.translate(gen);
                                     translatedGenres.push(translatedGen);
-                                })
+                                });
 
                                 for (var i = 0; i < translatedGenres.length; ++i) {
                                     translatedGenres[i] = translatedGenres[i].replace(" ", "-");
@@ -370,7 +390,22 @@
                             $("#btnPlay").click(function () {
                                 if(movie.torrents !== "") {
                                     var movieB64 = new Buffer(JSON.stringify(movie)).toString('base64');
-                                    main.go("players/movie-player.html?movieId=" + movieB64);
+                                    main.go("players/movie-player.html?movieId=" + movieB64+"&playerType=intenal");
+                                }
+                            });
+
+                            $("body").on("click", ".xmbcPlay", function () {
+                                var deviceId = $(this).data("id");
+                                if(movie.torrents !== "") {
+                                    var movieB64 = new Buffer(JSON.stringify(movie)).toString('base64');
+                                    main.go("players/movie-player.html?movieId=" + movieB64+"&playerType=xbmc&deviceId="+deviceId+"");
+                                }
+                            });
+
+                            $("body").on("click", ".chromecastPlay", function () {
+                                if(movie.torrents !== "") {
+                                    var movieB64 = new Buffer(JSON.stringify(movie)).toString('base64');
+                                    main.go("players/movie-player.html?movieId=" + movieB64+"&playerType=chromecast");
                                 }
                             });
 
@@ -490,6 +525,8 @@
                                 console.log(e);
                             }
 
+                            $( "#movie .dropdown-toggle" ).addClass( "disabled" );
+                            $("#customCSS").removeAttr('style');
                             $("#customCSS").empty();
                             $("#content-overlay").hide();
                             $("#movie").hide();
@@ -644,7 +681,14 @@
                                     </div>
                                     <div id="plot" class="ptb-10" style="max-width:800px;"></div>
                                     <div class="ptb-10">
-                                        <button id="btnPlay" class="btn btn-success btn-sm"><i class='glyphicon glyphicon-play'></i>&nbsp;&nbsp;</button>
+                                        <div class="btn-group">
+                                            <button type="button" id="btnPlay" class="btn btn-success btn-sm"><i class='glyphicon glyphicon-play'></i>&nbsp;&nbsp;</button>
+                                            <button type="button" class="btn btn-success dropdown-toggle btn-sm disabled" data-toggle="dropdown">
+                                                <span class="caret"></span>
+                                            </button>
+                                            <ul class="dropdown-menu" role="menu">
+                                            </ul>
+                                        </div>
                                         <button id="btnTrailer" class="btn btn-primary btn-sm"><i class='glyphicon glyphicon-film'></i>&nbsp;&nbsp;</button>
                                         <button id="btnBuy" class="btn btn-danger btn-sm"><i class='glyphicon glyphicon-shopping-cart'></i>&nbsp;&nbsp;</button>
                                     </div>
