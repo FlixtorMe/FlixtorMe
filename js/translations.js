@@ -52,7 +52,7 @@ var Translations = function () {
         var moviesSearchPlaceholder = i18n.__('Movie title or magnet link...');
         $('#txtMovieSearch').attr('placeholder', moviesSearchPlaceholder);
 
-        var seriesSearchPlaceholder = i18n.__('Serie title...');
+        var seriesSearchPlaceholder = i18n.__('Serie title or magnet link...');
         $('#txtSerieSearch').attr('placeholder', seriesSearchPlaceholder);
 
         var seriesTorrentPlaceholder = i18n.__('Torrent name...');

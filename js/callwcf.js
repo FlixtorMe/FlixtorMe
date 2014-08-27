@@ -209,7 +209,7 @@ var searchMovies = function (sort, keywords, genre, limit, page, order, callback
                 callback("error");
             }
         }).error(function () {
-            utilities.showPrompt("An uncaughtException was found", "<span class='text-danger'>An uncaughtException was found</span>.", "ok", function(answer) {
+            utilities.showPrompt("An uncaughtException was found", "<span class='text-danger'>Yts is unavailable. Please try it again later</span>.", "ok", function(answer) {
             });
             callback("error");
         });

@@ -40,26 +40,29 @@
                 //By default we filter by most downloaded.
                 changeFilterCategory("Most downloaded");
 
-                //Persistence
-                if(sessionStorage.serie){
-                    var serie = $.parseJSON(sessionStorage.serie);
-                    //showDetails(serie.SerieId , true);
-                }
+                $("#txtSerieSearch").bind('keyup paste', function() {
+                    clearTimeout($(this).data('timeout'));
+                    $(this).data('timeout', setTimeout(function(){
+                        var serieSearchValue = $('#txtSerieSearch').val();
+
+                        if(serieSearchValue.indexOf('magnet:?xt=urn:btih:') == 0) {
+                            $("#btnSearchSerie").text('Play');
+                        }
+                        else {
+                            $( "#btnSearchSerie" ).empty();
+                            $("#btnSearchSerie").append('<span class="glyphicon glyphicon-search"></span>');
+                        }
+                    }, 200));
+                });
 
                 $.fn.inView = function(){
-                    //Window Object
                     var win = $(window);
-                    //Object to Check
                     obj = $(this);
-                    //the top Scroll Position in the page
                     var scrollPosition = win.scrollTop();
-                    //the end of the visible area in the page, starting from the scroll position
                     var visibleArea = win.scrollTop() + win.height();
-                    //the end of the object to check
                     var objEndPos = (obj.offset().top + obj.outerHeight());
 
                     return(visibleArea >= objEndPos && scrollPosition <= objEndPos ? true : false)
-
                 };
 
                 $('#serieContainer').scroll(function() {
@@ -248,7 +251,14 @@
                                     queue: false
                                 }
                             });
-                            serieApplySearch();
+
+                            if(serieFilter.searchValue.indexOf('magnet:?xt=urn:btih:') == 0) {
+                                var infoHash = serieFilter.searchValue.split('magnet:?xt=urn:btih:');
+                                main.go("players/player.html?torrentId=" + infoHash[1]);
+                            }
+                            else {
+                                serieApplySearch();
+                            }
                         }
 
                         function startTorrent(infoHash) {
@@ -275,7 +285,6 @@
 
                             callwcf.searchSerieDetail( serie, function(results) {
                                 if( results !== 'error' ) {
-                                    console.log(results);
                                     serie = results;
 
                                     //Insert backdrop path
@@ -356,7 +365,7 @@
                                     $("#content").css("opacity", "0");
                                     $('#side-bar-small').attr("style", "display: none !important");
                                     $("#head-bar").hide();
-                                    $('#customCSS').animate({opacity: 0}, 0).animate({opacity: 1}, 2000);
+                                    $('#customCSS').animate({opacity: 0}, 0).animate({opacity: 1}, 3500);
                                 }
                                 else {
                                     console.log("Service not available");
@@ -442,6 +451,8 @@
                                 console.log(e);
                             }
 
+                            $("#customCSS").stop();
+                            $("#customCSS").removeAttr('style');
                             $("#customCSS").empty();
                             $("#content-overlay").hide();
                             $("#serie").hide();
@@ -463,7 +474,7 @@
                                             <span class="glyphicon glyphicon-search"></span>
                                         </button>
                                         <span class="ml-10">
-                                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">Genres
+                                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">Genre
                                                 <span id="filterByGenre"></span>
                                                 <span class="caret"></span>
                                             </button>
