@@ -167,7 +167,7 @@ var Localization = function() {
         },
         "sr" : {
             lang : "Serbian latin",
-            encoding : [ "windows-1250" ]
+            encoding : [ "iso-8859-2" ]
         },
         "sk" : {
             lang : "Slovak",
