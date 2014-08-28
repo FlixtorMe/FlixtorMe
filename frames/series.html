@@ -272,6 +272,7 @@
                             $('#title' ).empty();
                             $('#genres').empty();
                             $('#rating').css('width', '0% !important');
+                            $('#rating').attr('title', '');
                             $('#plot').empty();
                             $('#network').empty();
                             $('#runtime').empty();
@@ -347,7 +348,9 @@
                                         $("#network").addClass("hide");
                                     }
 
-                                    $("#rating").attr("style", "width:" + serie.rating.percentages + "% !important");
+                                    console.log(serie.rating.percentage)
+                                    $("#rating").attr("style", "width:" + serie.rating.percentage + "% !important");
+                                    $("#rating").attr("title", (0.1*serie.rating.percentage)+"/10");
 
                                     $("#btnBuy").click(function () {
                                         var shoppingUrl = 'https://www.google.com/search?q='+serie.title+' series/season&tbm=shop';
@@ -614,7 +617,7 @@
                                     <h1 id="title"></h1>
                                     <h4 id="genres" class="mr-10" style="display:inline-block;"></h4>
                                     <div class="stars-template" style="display:inline-block;">
-                                        <div id="rating" class="current-rating"></div>
+                                        <div title="" id="rating" class="current-rating"></div>
                                     </div>
                                     <div id="plot" class="ptb-10" style="max-width:800px;"></div>
                                     <div id="network">This serie is aired on </div>

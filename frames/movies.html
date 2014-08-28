@@ -75,6 +75,7 @@
                         }
                     }
                 });
+
             });
         </script>
 
@@ -275,6 +276,7 @@
                             $('#title' ).empty();
                             $('#genres').empty();
                             $('#rating').css('width', '0% !important');
+                            $('#rating').attr('title', '');
                             $('#plot').empty();
                             $('#runtime').empty();
                             $('#runtime').append('<span class="glyphicon glyphicon-time"></span>&nbsp;&nbsp');
@@ -319,6 +321,7 @@
 
                             $("#title").html(movie.title);
                             $("#rating").attr("style", "width:" + (movie.rating * 10) + "% !important");
+                            $("#rating").attr("title", movie.rating+"/10");
                             $("#date").append(movie.movieYear);
 
                             if (typeof movie.overview !== 'undefined') {
@@ -629,7 +632,7 @@
                                     <h1 id="title"></h1>
                                     <h4 id="genres" class="mr-10" style="display:inline-block;"></h4>
                                     <div class="stars-template" style="display:inline-block;">
-                                        <div id="rating" class="current-rating"></div>
+                                        <label title="" id="rating" class="current-rating"></label>
                                     </div>
                                     <div id="plot" class="ptb-10" style="max-width:800px;"></div>
                                     <div class="ptb-10">
