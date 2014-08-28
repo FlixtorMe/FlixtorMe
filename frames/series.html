@@ -350,7 +350,7 @@
 
                                     console.log(serie.rating.percentage)
                                     $("#rating").attr("style", "width:" + serie.rating.percentage + "% !important");
-                                    $("#rating").attr("title", (0.1*serie.rating.percentage)+"/10");
+                                    $("#rating").attr("title", (0.1*serie.rating.percentage).toFixed(1)+"/10");
 
                                     $("#btnBuy").click(function () {
                                         var shoppingUrl = 'https://www.google.com/search?q='+serie.title+' series/season&tbm=shop';
