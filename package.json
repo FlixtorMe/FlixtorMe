@@ -2,7 +2,7 @@
   "main": "app://host/frames/movies.html",
   "name": "Flixtor",
   "description": "Movie and serie streamer",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "repository": {
     "type": "git",
     "url": "git://github.com/FlixtorMe/FlixtorMe.git"

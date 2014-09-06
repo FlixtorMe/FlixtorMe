@@ -71,7 +71,7 @@
 	"Quality": "Qualidade",
 	"An error has occured": "Um erro aconteceu",
 	"The video player is unable to start the video. You can switch to VLC or select another source from the list.": "O reprodutor de vídeo é incapaz de iniciar o vídeo. Você pode alternar para VLC ou selecionar outra fonte da lista.",
-	"Note: If you switch to VLC and you get 'Couldn't load plug-in.' You will need to install the latest version of VLC (Web plugin)": "Nota: Se você alternar para VLC e receber \"Não foi possível carregar o plug-in.\" Você vai precisar instalar a última versão do VLC (Web plugin)",
+	"Note: If you switch to VLC and you get 'Couldn't load plug-in.' You will need to install the latest version of VLC (Web plugin)": "Nota: Se você alternar para VLC e receber 'Não foi possível carregar o plug-in.' Você vai precisar instalar a última versão do VLC (Web plugin)",
 	"Switch to VLC": "Alternar para VLC",
 	"Info": "Informação",
 	"Switch to Default player": "Alternar para reprodutor padrão",
@@ -115,5 +115,6 @@
 	"Cut": "Cut",
 	"Copy": "Copy",
 	"Paste": "Paste",
+	"Serie title or magnet link...": "Serie title or magnet link...",
 	"3D": "3D"
 }

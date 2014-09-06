@@ -71,7 +71,7 @@
 	"Quality": "Kvalita",
 	"An error has occured": "Vyskytla sa chyba",
 	"The video player is unable to start the video. You can switch to VLC or select another source from the list.": "Video prehrávač nieje schopný spustiť video. Môžete sa prepnúť do VLC alebo si vybrať iný zdroj zo zoznamu.",
-	"Note: If you switch to VLC and you get 'Couldn't load plug-in.' You will need to install the latest version of VLC (Web plugin)": "Poznámka: Ak sa prepnete do VLC a zobrazí sa vám správa \"Nemožno načítať Plug-in.\", budete musieť nainštalovať najnovšiu verziu VLC (Webový plugin).",
+	"Note: If you switch to VLC and you get 'Couldn't load plug-in.' You will need to install the latest version of VLC (Web plugin)": "Poznámka: Ak sa prepnete do VLC a zobrazí sa vám správa 'Nemožno načítať Plug-in.', budete musieť nainštalovať najnovšiu verziu VLC (Webový plugin).",
 	"Switch to VLC": "Prepnúť do VLC",
 	"Info": "Info",
 	"Switch to Default player": "Prepnúť na Pôvodný prehrávač",
@@ -115,5 +115,6 @@
 	"Cut": "Cut",
 	"Copy": "Copy",
 	"Paste": "Paste",
+	"Serie title or magnet link...": "Serie title or magnet link...",
 	"3D": "3D"
 }

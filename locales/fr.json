@@ -71,7 +71,7 @@
 	"Quality": "Qualité",
 	"An error has occured": "Une erreur s'est produite",
 	"The video player is unable to start the video. You can switch to VLC or select another source from the list.": "Le lecteur vidéo n'arrive pas à lire la vidéo. Vous pouvez passer par VLC ou choisir une autre source dans la liste",
-	"Note: If you switch to VLC and you get 'Couldn't load plug-in.' You will need to install the latest version of VLC (Web plugin)": "Note :Si vous passez sur VLC et si vous avez 'Impossible de charger le plug-in'. Vous devez installer la dernière version de VLC (Web Plug-in)",
+	"Note: If you switch to VLC and you get 'Couldn't load plug-in.' You will need to install the latest version of VLC (Web plugin)": "Note :Si vous passez sur VLC et si vous avez \"Impossible de charger le plug-in\". Vous devez installer la dernière version de VLC (Web Plug-in)",
 	"Switch to VLC": "Passer à VLC",
 	"Info": "Info",
 	"Switch to Default player": "Passer sur le lecteur par défaut",
@@ -112,8 +112,9 @@
 	"Buy": "Acheter",
 	"DHT:": "DHT :",
 	"Random": "Aléatoire",
-	"Cut": "Cut",
-	"Copy": "Copy",
-	"Paste": "Paste",
+	"Cut": "Couper",
+	"Copy": "Copier",
+	"Paste": "Coller",
+	"Serie title or magnet link...": "Serie title or magnet link...",
 	"3D": "3D"
 }
