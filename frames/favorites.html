@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Flixtor</title>
+        <!-- CSS -->
+        <link href="../styles/bootstrap.min.css" rel="stylesheet">
+        <link href="../styles/bootly.css" rel="stylesheet">
+
+        <!-- Scripts -->
+        <script type='text/javascript' src="../js/extensions/jquery.min.js"></script>
+        <script type='text/javascript' src="../js/extensions/bootstrap.min.js"></script>
+        <script src="../js/extensions/jquery.isotope.min.js"></script>
+        <script src="../js/extensions/nwcontextmenu.js"></script>
+
+        <!-- Modules -->
+        <script>
+            var main = require('../js/main.js');
+            var callwcf = require('../js/callwcf.js');
+            var gui = require('nw.gui');
+            var yifysubtitle = require('../js/yifysubtitle.js');
+            var favorites = require('../js/favorites.js');
+            var translations = require('../js/translations.js');
+
+            $(document).ready(function() {
+
+                translations.initialize();
+                translations.translateDefaults();
+
+                //Scroll bar
+                $(window).resize(function() {
+                    $("#movieContainer").css('max-height', ($(window).height() - 95) + "px");
+                }).trigger("resize");
+
+                applySearch();
+
+            });
+        </script>
+
+        <!-- Custom page style -->
+        <style>
+            body {
+                background-color: #141414;
+            }
+            .shadow {
+                display: block;
+                position: relative;
+            }
+            .shadow img {
+                display: block;
+            }
+            .shadow:hover::before {
+                box-shadow: none;
+            }
+            .shadow::before {
+                display: block;
+                content: '';
+                position: absolute;
+                width: 160px;
+                height: 100%;
+                box-shadow: inset 0px 0px 50px 1px rgba(0, 0, 0, 0.8);
+            }
+        </style>
+    </head>
+
+    <body>
+        <div id="customCSS"></div>
+        <div id="wrapper">
+            <div id="top-bar">
+                <div type="button" class="top-titlebar-back-button" title="" onclick="closeMovieDetail();">
+                    <span class="glyphicon glyphicon-share-alt"></span>
+                </div>
+                <div type="button" class="top-titlebar-minimize-button" title="" onclick="main.minimize();">
+                    <span class="glyphicon glyphicon-minus"></span>
+                </div>
+                <div type="button" class="top-titlebar-fullscreen-button" title="" onclick="main.toggleFullScreen();">
+                    <span class="glyphicon glyphicon-fullscreen"></span>
+                </div>
+                <div class="top-titlebar-close-button" onclick="main.closeApp();" title="">
+                    <span class="glyphicon glyphicon-remove"></span>
+                </div>
+                <div class="top-titlebar-text">Flixtor</div>
+            </div>
+            <div id="content-wrapper">
+                <div id="side-bar-full" class="hidden-xs side-bar">
+                    <ul>
+                        <li id="side-bar-li-movies" onclick="main.changeFrame('movies')">
+                            <a class="menuMovies" href="#">
+                                <span class="glyphicon glyphicon-film"></span></a>
+                        </li>
+                        <li id="side-bar-li-series" onclick="main.changeFrame('series')">
+                            <a class="menuSeries" href="#">
+                                <span class="glyphicon glyphicon-expand"></span></a>
+                        </li>
+                        <li id="side-bar-li-torrents" onclick="main.changeFrame('torrents')">
+                            <a class="menuTorrents" href="#">
+                                <span class="glyphicon glyphicon-th-list"></span></a>
+                        </li>
+                        <br><br>
+                        <li id="side-bar-li-favorites" class="on" onclick="main.changeFrame('favorites')">
+                            <a class="menuFavorites" href="#">
+                                <span class="glyphicon glyphicon-heart"></span></a>
+                        </li>
+                        <li id="side-bar-li-settings" onclick="main.changeFrame('settings')">
+                            <a class="menuSettings" href="#">
+                                <span class="glyphicon glyphicon-cog"></span></a>
+                        </li>
+                    </ul>
+
+                </div>
+                <div id="side-bar-small" class="visible-xs side-bar">
+                    <ul>
+                        <li id="side-bar-li-movies-sm" onclick="main.changeFrame('movies')">
+                            <a href="#">
+                                <span class="glyphicon glyphicon-film"></span>
+                            </a>
+                        </li>
+                        <li id="side-bar-li-series-sm" onclick="main.changeFrame('series')">
+                            <a href="#">
+                                <span class="glyphicon glyphicon-expand"></span>
+                            </a>
+                        </li>
+                        <li id="side-bar-li-torrents-sm" onclick="main.changeFrame('torrents')">
+                            <a href="#">
+                                <span class="glyphicon glyphicon-th-list"></span>
+                            </a>
+                        </li>
+                        <br><br>
+                        <li id="side-bar-li-favorites-sm" class="on" onclick="main.changeFrame('favorites')">
+                            <a href="#">
+                                <span class="glyphicon glyphicon-heart"></span></a>
+                        </li>
+                        <li id="side-bar-li-settings-sm" onclick="main.changeFrame('settings')">
+                            <a href="#">
+                                <span class="glyphicon glyphicon-cog"></span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                <div id="content">
+                    <script type="text/javascript">
+
+                        function applySearch() {
+
+                            $('#movieContainer').empty();
+                            $('#movieContainer').isotope("destroy");
+                            $('#movieContainer').isotope({
+                                itemSelector: '.element',
+                                animationEngine: 'jquery',
+                                layoutMode: 'fitRows',
+                                animationOptions: {
+                                    duration: 600,
+                                    easing: 'linear',
+                                    queue: false
+                                }
+                            });
+
+                            //Display the spinner while we wait for the data.
+                            $("#wrapper").append("<div class='spinner-overlay'></div>");
+
+                            //Get favorite movies/series
+                            favorites.getFavorites( function(results) {
+                                var content = "";
+                                if( results !== '' ) {
+                                    $(results).each(function(index) {
+
+                                        if( results[index].type == 'movie' ) {
+                                            var movie = results[index];
+
+                                            if ($('#'+movie.imdbCode).length > 0){
+                                                return true;
+                                            }
+
+                                            if (typeof movie.poster !== 'undefined') {
+                                                var newChars = '-300';
+                                                var position = movie.poster.lastIndexOf(".");
+                                                var tmpOne = movie.poster.substr(0, position);
+                                                var tmpTwo = movie.poster.substr(position, movie.poster.length);
+                                                var moviePoster = tmpOne + newChars + tmpTwo;
+                                            }
+                                            else {
+                                                var moviePoster = '../images/no-poster.png';
+                                            }
+                                            if (typeof movie.genres !== 'undefined') {
+                                                var splitGem = movie.genres.split(',');
+                                                var translatedGen;
+                                                var translatedGenres = [];
+                                                $(splitGem).each(function(index) {
+                                                    var gen = splitGem[index];
+                                                    gen = gen.trim();
+                                                    translatedGen = translations.translate(gen);
+                                                    translatedGenres.push(translatedGen);
+                                                })
+
+                                                for (var i = 0; i < translatedGenres.length; ++i) {
+                                                    translatedGenres[i] = translatedGenres[i].replace(" ", "-");
+                                                }
+                                                var genres = translatedGenres.join(", ");
+
+                                            }
+                                            else {
+                                                var genres = '';
+                                            }
+
+                                            content += "<div id='" + movie.imdbCode + "' class='element transition m-10 isotope-item'>" +
+                                                    "<a class='shadow' onClick='showMovieDetails(this);'>" +
+                                                    "<div style='display: none'>"+JSON.stringify(movie)+"</div> " +
+                                                    "<img alt='image' src='" + moviePoster + "' style='width:160px; height:230px;'>" +
+                                                    "</a>" +
+                                                    "<div class='p-5' style='max-width:160px;'>" +
+                                                    "<div style='font-size:14px;'>" + movie.title + "</div>" +
+                                                    "<div style='font-size:10px; color:#A8A8A8;'>" + genres + "</div>" +
+                                                    "</div>" +
+                                                    "<div style='clear:both'></div>" +
+                                                    "</div>";
+                                        }
+                                        else if( results[index].type == 'series' ) {
+                                            var serie = results[index];
+
+                                            if (typeof serie.images.poster !== 'undefined') {
+                                                var newChars = "-300";
+                                                var position = serie.images.poster.lastIndexOf(".");
+                                                var tmpOne = serie.images.poster.substr(0, position);
+                                                var tmpTwo = serie.images.poster.substr(position, serie.images.poster.length);
+                                                var seriePoster = tmpOne + newChars + tmpTwo;
+                                            }
+                                            else {
+                                                var seriePoster = '../images/no-poster.png';
+                                            }
+                                            content += "<div class='element transition m-10 isotope-item'>" +
+                                                    "<a class='shadow' onClick='showSeriesDetails(this);'>" +
+                                                    "<div style='display: none'>"+serie._id+"</div> " +
+                                                    "<img alt='image' src='" + seriePoster + "' style='width:160px; height:230px;'/>" +
+                                                    "</a>" +
+                                                    "<div class='p-5' style='max-width:160px;'>" +
+                                                    "<div style='font-size:14px;'>" + serie.title + "</div>" +
+                                                    "</div>" +
+                                                    "<div style='clear:both'></div>" +
+                                                    "</div>";
+                                        }
+                                    });
+                                }
+                                else {
+                                    console.log("Service not available");
+                                }
+
+                                if (content !== "") {
+
+                                    var $container = $('#movieContainer');
+                                    $container.append(content);
+                                    $container.isotope("insert", $container);
+
+                                    $( ".element" ).last().addClass('last');
+                                }
+
+                                $('.spinner-overlay').remove();
+                            });
+                        }
+
+                        function startTorrent(infoHash) {
+                            //Hide view episodes panel and start the torrent
+                            $("#divSD").addClass("hide");
+                            main.playTorrent(infoHash);
+                        }
+
+                        function showSeriesDetails(serieID) {
+                            $("#wrapper").append("<div id='main-spinner' class='spinner-overlay'></div>");
+                            $('#series-title' ).empty();
+                            $('#series-genres').empty();
+                            $('.favorites-template').empty();
+                            $('#series-rating').css('width', '0% !important');
+                            $('#series-rating').attr('title', '');
+                            $('#series-plot').empty();
+                            $('#network').empty();
+                            $('#series-runtime').empty();
+                            $('#series-runtime').append('<span class="glyphicon glyphicon-time"></span>&nbsp;&nbsp');
+                            $('#series-date').empty();
+                            $('#series-date').append('<span class="glyphicon glyphicon-calendar"></span>&nbsp;&nbsp;');
+                            $('#info').empty();
+                            $('#info').append('<span class="glyphicon glyphicon-info-sign"></span>&nbsp;&nbsp;');
+
+                            var serie = serieID.firstChild.innerHTML;
+
+                            callwcf.searchSerieDetail( serie, function(results) {
+                                if( results !== 'error' ) {
+                                    serie = results;
+
+                                    favorites.checkIfFavorite( serie.imdb_id, function(result) {
+                                        if( result == true ) {
+                                            $(".favorites-template").append('<label onclick="removeSeriesFromFavorites(this)" title="Remove from favorites" class="current-favorites"><div style="display: none">'+JSON.stringify(serie)+'</div>&nbsp;&nbsp;<i class="glyphicon glyphicon-heart"></i></label>');
+                                        }
+                                        else {
+                                            $(".favorites-template").append('<label onclick="addSeriesToFavorites(this);" title="Add to favorites" class="current-favorites"><div style="display: none">'+JSON.stringify(serie)+'</div>&nbsp;&nbsp;<i class="glyphicon glyphicon-heart-empty"></i></label>');
+                                        }
+                                    })
+
+                                    //Insert backdrop path
+                                    $( "<style> #customCSS {position: absolute; top: 0; bottom: 0;left: 0; right: 0; z-index: -100; background: url("+serie.images.fanart+") no-repeat center center fixed; -webkit-background-size: cover; background-size: cover; color: #e9e9e9;}</style>" ).appendTo("#customCSS");
+
+                                    //Set variables to html
+                                    var newChars = '-300';
+                                    var position = serie.images.poster.lastIndexOf(".");
+                                    var tmpOne = serie.images.poster.substr(0, position);
+                                    var tmpTwo = serie.images.poster.substr(position, serie.images.poster.length);
+                                    var seriePoster = tmpOne + newChars + tmpTwo;
+                                    $("#series-poster").attr('src', seriePoster);
+
+                                    $("#series-title").html(serie.title);
+
+                                    var translatedGen;
+                                    var translatedGenres = [];
+                                    $(serie.genres).each(function(index) {
+                                        var gen = serie.genres[index];
+                                        gen = gen.trim();
+                                        translatedGen = translations.translate(gen);
+                                        translatedGenres.push(translatedGen);
+                                    })
+                                    var genres = translatedGenres.join(", ");
+                                    $("#series-genres").append(genres);
+
+                                    if(serie.synopsis) {
+                                        $("#series-plot").html(serie.synopsis);
+                                    }else {
+                                        $("#series-plot").addClass("hide");
+                                    }
+
+                                    var translatedepisodes = translations.translate('episode');
+                                    if(serie.runtime) {
+                                        $("#series-runtime").append(serie.runtime + "m / "+translatedepisodes);
+                                    } else {
+                                        $("#series-runtime").addClass("hide");
+                                    }
+
+                                    if(serie.year) {
+                                        $("#series-date").append(serie.year);
+                                    } else {
+                                        $("#series-date").addClass("hide");
+                                    }
+
+                                    if( serie.num_seasons <= 1 ) {
+                                        var translatedSeasons = translations.translate('season');
+                                    }
+                                    else {
+                                        var translatedSeasons = translations.translate('seasons');
+                                    }
+                                    $("#info").append(+ serie.num_seasons + " "+translatedSeasons);
+
+                                    var translatedStatus = translations.translate(serie.status);
+                                    $("#status").html(translatedStatus);
+
+                                    if(serie.network) {
+                                        $("#network").append(serie.network);
+                                    } else {
+                                        $("#network").addClass("hide");
+                                    }
+
+                                    console.log(serie.rating.percentage)
+                                    $("#series-rating").attr("style", "width:" + serie.rating.percentage + "% !important");
+                                    $("#series-rating").attr("title", (0.1*serie.rating.percentage).toFixed(1)+"/10");
+
+                                    $("#series-btnBuy").click(function () {
+                                        var shoppingUrl = 'https://www.google.com/search?q='+serie.title+' series/season&tbm=shop';
+                                        gui.Shell.openExternal(shoppingUrl);
+
+                                    });
+
+                                    $("#btnEpisodeList").click(function () {
+                                        main.go("players/serie-player.html?serieId=" + serie._id);
+                                    });
+
+                                    $("#content-overlay").show();
+                                    $("#serie").show();
+                                    $("#side-bar-full").hide();
+                                    $("#content").css("opacity", "0");
+                                    $('#side-bar-small').attr("style", "display: none !important");
+                                    $("#head-bar").hide();
+                                    $('#customCSS').animate({opacity: 0}, 0).animate({opacity: 1}, 3500);
+                                }
+                                else {
+                                    console.log("Service not available");
+                                }
+
+                                $('.spinner-overlay').remove();
+                            });
+
+                        }
+
+                        function showMovieDetails(movieJson) {
+                            var movie = $.parseJSON(movieJson.firstChild.innerHTML);
+
+                            $('#title' ).empty();
+                            $('#genres').empty();
+                            $('.favorites-template').empty();
+                            $('#rating').css('width', '0% !important');
+                            $('#rating').attr('title', '');
+                            $('#plot').empty();
+                            $('#runtime').empty();
+                            $('#runtime').append('<span class="glyphicon glyphicon-time"></span>&nbsp;&nbsp');
+                            $('#date').empty();
+                            $('#date').append('<span class="glyphicon glyphicon-calendar"></span>&nbsp;&nbsp;');
+
+                            //Insert backdrop path
+                            $( "<style> #customCSS {position: absolute; top: 0; bottom: 0;left: 0; right: 0; z-index: -100; background: url("+movie.fanart+") no-repeat center center fixed; -webkit-background-size: cover; background-size: cover; color: #e9e9e9;}</style>" ).appendTo("#customCSS");
+
+                            favorites.checkIfFavorite( movie.imdbCode, function(result) {
+                                if( result == true ) {
+                                    $(".favorites-template").append('<label onclick="removeMovieFromFavorites(this)" title="Remove from favorites" class="current-favorites"><div style="display: none">'+JSON.stringify(movie)+'</div>&nbsp;&nbsp;<i class="glyphicon glyphicon-heart"></i></label>');
+                                }
+                                else {
+                                    $(".favorites-template").append('<label onclick="addMovieToFavorites(this);" title="Add to favorites" class="current-favorites"><div style="display: none">'+JSON.stringify(movie)+'</div>&nbsp;&nbsp;<i class="glyphicon glyphicon-heart-empty"></i></label>');
+                                }
+                            })
+
+                            //Set variables to html
+                            if (typeof movie.poster !== 'undefined') {
+                                var newChars = '-300';
+                                var position = movie.poster.lastIndexOf(".");
+                                var tmpOne = movie.poster.substr(0, position);
+                                var tmpTwo = movie.poster.substr(position, movie.poster.length);
+                                var moviePoster = tmpOne + newChars + tmpTwo;
+                                $("#poster").attr('src', moviePoster);
+
+                            }
+                            else {
+                                $("#poster").attr('src', '../images/no-poster.png');
+                            }
+
+                            if (typeof movie.genres !== 'undefined') {
+                                var splitGem = movie.genres.split(',');
+                                var translatedGen;
+                                var translatedGenres = [];
+                                $(splitGem).each(function(index) {
+                                    var gen = splitGem[index];
+                                    gen = gen.trim();
+                                    translatedGen = translations.translate(gen);
+                                    translatedGenres.push(translatedGen);
+                                })
+
+                                for (var i = 0; i < translatedGenres.length; ++i) {
+                                    translatedGenres[i] = translatedGenres[i].replace(" ", "-");
+                                }
+                                var genres = translatedGenres.join(", ");
+
+                                $("#genres").append(genres);
+                            }
+
+                            $("#title").html(movie.title);
+                            $("#rating").attr("style", "width:" + (movie.rating * 10) + "% !important");
+                            $("#rating").attr("title", movie.rating+"/10");
+                            $("#date").append(movie.movieYear);
+
+                            if (typeof movie.overview !== 'undefined') {
+                                $("#plot").html(movie.overview);
+                            }
+                            if (typeof movie.runtime !== 'undefined') {
+                                $("#runtime").append(movie.runtime +" min");
+                            }
+
+                            if(movie.trailer !== "" || typeof movie.poster !== 'undefined') {
+                                $("#btnTrailer").click(function () {
+                                    $("#wrapper").append("<div class='spinner-overlay'></div>");
+                                    $("#content-overlay").hide();
+                                    $(".top-titlebar-back-button").attr("onclick","closeTrailerOverlay()");
+
+                                    var ytID = main.getYoutubeID(movie.trailer);
+                                    $("#video-container-trailer").html("<iframe id='trailerPlayer' type='text/html' width='100%' src='https://www.youtube.com/embed/" + ytID + "?autoplay=1&rel=0&showinfo=0&iv_load_policy=3&modestbranding=0' frameborder='0'></iframe>");
+                                    $( "#trailerPlayer" ).load(function() {
+                                        $(".spinner-overlay").remove();
+                                    });
+                                    $(window).resize(function () {
+                                        $("iframe").css("width", $(window).width());
+                                        $("iframe").css("height", $(window).height());
+                                    }).trigger("resize");
+                                });
+                            }else {
+                                $("#btnTrailer").addClass("hide");
+                            }
+
+                            $("#btnBuy").click(function () {
+                                var shoppingUrl = 'https://www.google.com/search?q='+movie.title+' movie&tbm=shop';
+                                gui.Shell.openExternal(shoppingUrl);
+
+                            });
+
+                            $("#btnPlay").click(function () {
+                                if(movie.torrents !== "") {
+                                    var movieB64 = new Buffer(JSON.stringify(movie)).toString('base64');
+                                    main.go("players/movie-player.html?movieId=" + movieB64);
+                                }
+                            });
+
+                            $("#head-bar").hide();
+                            $("#content-overlay").show();
+                            $("#movie").show();
+                            $("#side-bar-full").hide();
+                            $("#content").css("opacity", "0");
+                            $('#side-bar-small').attr("style", "display: none !important");
+                            $('#customCSS').animate({opacity: 0}, 0).animate({opacity: 1}, 3500);
+                        }
+
+                        function closeSerieDetail()
+                        {
+                            try{
+                                var subManager = yifysubtitle.getSubManager();
+                                if( subManager ) {
+                                    subManager.server.listen(0);
+                                    subManager.server.close();
+                                }
+                            }
+                            catch(e){
+                                console.log(e);
+                            }
+
+                            $("#customCSS").stop();
+                            $("#customCSS").removeAttr('style');
+                            $("#customCSS").empty();
+                            $("#content-overlay").hide();
+                            $("#serie").hide();
+                            $("#side-bar-full").show();
+                            $("#side-bar-small").removeAttr( 'style' );
+                            $("#content").css("opacity", "1");
+                            $("#head-bar").show();
+                            $( "#btnBuy").unbind( "click" );
+                        }
+
+                        function closeMovie()
+                        {
+                            $('#divMD').addClass('hide');
+                            sessionStorage.removeItem('movie');
+                        }
+
+                        function closeMovieDetail()
+                        {
+                            applySearch();
+                            try{
+                                var subManager = yifysubtitle.getSubManager();
+                                if( subManager ) {
+                                    subManager.server.listen(0);
+                                    subManager.server.close();
+                                }
+                            }
+                            catch(e){
+                                console.log(e);
+                            }
+
+                            $("#customCSS").stop();
+                            $("#customCSS").removeAttr('style');
+                            $("#customCSS").empty();
+                            $("#content-overlay").hide();
+                            $("#movie").hide();
+                            $("#side-bar-full").show();
+                            $("#side-bar-small").removeAttr( 'style' );
+                            $("#content").css("opacity", "1");
+                            $("#head-bar").show();
+                            $( "#btnBuy").unbind( "click" );
+                        }
+
+                        function closeTrailerOverlay()
+                        {
+                            $("#video-container-trailer").empty();
+                            $("#content-overlay").show();
+                            $(".top-titlebar-back-button").attr("onclick","closeMovieDetail()");
+                        }
+
+                        function addSeriesToFavorites(seriesJson) {
+                            $('.favorites-template').empty();
+                            var series = $.parseJSON(seriesJson.firstChild.innerHTML);
+                            series.type = 'series';
+                            favorites.addToFavorites(series);
+                            $(".favorites-template").append('<label onclick="removeFromFavorites(this);" title="Remove from favorites" class="current-favorites"><div style="display: none">'+JSON.stringify(series)+'</div>&nbsp;&nbsp;<i class="glyphicon glyphicon-heart"></i></label>');
+                        }
+
+                        function removeSeriesFromFavorites(seriesJson) {
+                            $('.favorites-template').empty();
+                            var series = $.parseJSON(seriesJson.firstChild.innerHTML);
+                            favorites.removeFromFavorites(series.imdb_id);
+                            $(".favorites-template").append('<label onclick="addToFavorites(this);" title="Add to favorites" class="current-favorites"><div style="display: none">'+JSON.stringify(series)+'</div>&nbsp;&nbsp;<i class="glyphicon glyphicon-heart-empty"></i></label>');
+                        }
+
+                        function addMovieToFavorites(movieJson) {
+                            $('.favorites-template').empty();
+                            var movie = $.parseJSON(movieJson.firstChild.innerHTML);
+                            movie.type = 'movie';
+                            favorites.addToFavorites(movie);
+                            $(".favorites-template").append('<label onclick="removeFromFavorites(this);" title="Remove from favorites" class="current-favorites"><div style="display: none">'+JSON.stringify(movie)+'</div>&nbsp;&nbsp;<i class="glyphicon glyphicon-heart"></i></label>');
+                        }
+
+                        function removeMovieFromFavorites(movieJson) {
+                            $('.favorites-template').empty();
+                            var movie = $.parseJSON(movieJson.firstChild.innerHTML);
+                            favorites.removeFromFavorites(movie.imdbCode);
+                            $(".favorites-template").append('<label onclick="addToFavorites(this);" title="Add to favorites" class="current-favorites"><div style="display: none">'+JSON.stringify(movie)+'</div>&nbsp;&nbsp;<i class="glyphicon glyphicon-heart-empty"></i></label>');
+                        }
+
+                    </script>
+                    <div id="movies">
+                        <div id="head-bar" class="p-10">
+                            <div class="row" style="margin-right:0;">
+                                <div class="col-lg-10">
+
+                                </div>
+                                <div class="clearfix"></div>
+                            </div>
+                        </div>
+                        <div id="movieContainer" class="isotope" style="overflow-y:auto !important; margin-right:10px;">
+                            <!-- Dynamic content here-->
+                        </div>
+                    </div>
+                    <div id="popup"></div>
+                </div>
+
+                <div id="content-overlay" style="display: none;">
+                    <div id="movie" class="modal fade in p-30">
+                        <div class="container center-block">
+                            <div class="row">
+                                <div class="col-sm-3 hidden-sm hidden-xs">
+                                    <img id="poster" alt="" src="" width="200" class="img-responsive img-thumbnail"  /></div>
+                                <div class="col-sm-9" style="padding:10px;">
+                                    <a class="pull-right font-24 color-white" onclick="closeMovieDetail();"><i class='glyphicon glyphicon-remove-circle'></i></a>
+                                    <h1 id="title"></h1>
+                                    <h4 id="genres" class="mr-10" style="display:inline-block;"></h4>
+                                    <div class="stars-template" style="display:inline-block;">
+                                        <label title="" id="rating" class="current-rating"></label>
+                                    </div>
+                                    <div class="favorites-template" style="display:inline-block;">
+                                    </div>
+                                    <div id="plot" class="ptb-10" style="max-width:800px;"></div>
+                                    <div class="ptb-10">
+                                        <button id="btnPlay" class="btn btn-success btn-sm"><i class='glyphicon glyphicon-play'></i>&nbsp;&nbsp;</button>
+                                        <button id="btnTrailer" class="btn btn-primary btn-sm"><i class='glyphicon glyphicon-film'></i>&nbsp;&nbsp;</button>
+                                        <button id="btnBuy" class="btn btn-danger btn-sm"><i class='glyphicon glyphicon-shopping-cart'></i>&nbsp;&nbsp;</button>
+                                    </div>
+                                    <div id="runtime" class="pt-5"><span class="glyphicon glyphicon-time"></span>&nbsp;&nbsp;</div>
+                                    <div id="date" class="pt-5"><span class="glyphicon glyphicon-calendar"></span>&nbsp;&nbsp;</div>
+                                    <div id="quality" class="pt-5"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="serie" class="modal fade in p-30">
+                        <div class="container center-block">
+                            <div class="row">
+                                <div class="col-sm-3 hidden-xs">
+                                    <img id="series-poster" alt="" src="" width="200" class="img-responsive img-thumbnail"  />
+                                    <div class="p-5 font-12">
+                                        <div id="status"></div>
+                                        <div id="inProduction"></div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-9 p-10">
+                                    <a class="pull-right font-24 color-white" onclick="closeSerieDetail();"><i class='glyphicon glyphicon-remove-circle'></i></a>
+                                    <h1 id="series-title"></h1>
+                                    <h4 id="series-genres" class="mr-10" style="display:inline-block;"></h4>
+                                    <div class="stars-template" style="display:inline-block;">
+                                        <div title="" id="series-rating" class="current-rating"></div>
+                                    </div>
+                                    <div class="favorites-template" style="display:inline-block;">
+                                    </div>
+                                    <div id="series-plot" class="ptb-10" style="max-width:800px;"></div>
+                                    <div id="network">This serie is aired on </div>
+                                    <div class="ptb-10">
+                                        <button id="btnEpisodeList" class="btn btn-primary btn-sm"><i class='glyphicon glyphicon-list'></i>&nbsp;&nbsp;</button>
+                                        <button id="series-btnBuy" class="btn btn-danger btn-sm"><i class='glyphicon glyphicon-shopping-cart'></i>&nbsp;&nbsp;</button>
+                                    </div>
+                                    <div id="series-runtime" class="pt-5"><span class="glyphicon glyphicon-time"></span>&nbsp;&nbsp;</div>
+                                    <div id="series-date" class="pt-5"><span class="glyphicon glyphicon-calendar"></span>&nbsp;&nbsp;</div>
+                                    <div id="info" class="pt-5"><span class="glyphicon glyphicon-info-sign"></span>&nbsp;&nbsp;</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-backdrop fade in" style="opacity:0.85;"></div>
+                </div>
+                <div id="video-container-trailer">
+                </div>
+            </div>
+        </div>
+    </body>
+
+</html>

@@ -18,6 +18,7 @@
             var callwcf = require('../js/callwcf.js');
             var gui = require('nw.gui');
             var yifysubtitle = require('../js/yifysubtitle.js');
+            var favorites = require('../js/favorites.js');
             var translations = require('../js/translations.js');
 
             $(document).ready(function() {
@@ -139,6 +140,10 @@
                                 <span class="glyphicon glyphicon-th-list"></span></a>
                         </li>
                         <br><br>
+                        <li id="side-bar-li-favorites" onclick="main.changeFrame('favorites')">
+                            <a class="menuFavorites" href="#">
+                                <span class="glyphicon glyphicon-heart"></span></a>
+                        </li>
                         <li id="side-bar-li-settings" onclick="main.changeFrame('settings')">
                             <a class="menuSettings" href="#">
                                 <span class="glyphicon glyphicon-cog"></span></a>
@@ -164,6 +169,10 @@
                             </a>
                         </li>
                         <br><br>
+                        <li id="side-bar-li-favoritessm-" onclick="main.changeFrame('favorites')">
+                            <a href="#">
+                                <span class="glyphicon glyphicon-heart"></span></a>
+                        </li>
                         <li id="side-bar-li-settings-sm" onclick="main.changeFrame('settings')">
                             <a href="#">
                                 <span class="glyphicon glyphicon-cog"></span>
@@ -271,10 +280,11 @@
                         }
 
                         function showDetails(movieJson) {
-                            var movie=  $.parseJSON(movieJson.firstChild.innerHTML);
+                            var movie = $.parseJSON(movieJson.firstChild.innerHTML);
 
                             $('#title' ).empty();
                             $('#genres').empty();
+                            $('.favorites-template').empty();
                             $('#rating').css('width', '0% !important');
                             $('#rating').attr('title', '');
                             $('#plot').empty();
@@ -285,6 +295,15 @@
 
                             //Insert backdrop path
                             $( "<style> #customCSS {position: absolute; top: 0; bottom: 0;left: 0; right: 0; z-index: -100; background: url("+movie.fanart+") no-repeat center center fixed; -webkit-background-size: cover; background-size: cover; color: #e9e9e9;}</style>" ).appendTo("#customCSS");
+
+                            favorites.checkIfFavorite( movie.imdbCode, function(result) {
+                                if( result == true ) {
+                                    $(".favorites-template").append('<label onclick="removeFromFavorites(this)" title="Remove from favorites" class="current-favorites"><div style="display: none">'+JSON.stringify(movie)+'</div>&nbsp;&nbsp;<i class="glyphicon glyphicon-heart"></i></label>');
+                                }
+                                else {
+                                    $(".favorites-template").append('<label onclick="addToFavorites(this);" title="Add to favorites" class="current-favorites"><div style="display: none">'+JSON.stringify(movie)+'</div>&nbsp;&nbsp;<i class="glyphicon glyphicon-heart-empty"></i></label>');
+                                }
+                            })
 
                             //Set variables to html
                             if (typeof movie.poster !== 'undefined') {
@@ -499,6 +518,21 @@
                             $(".top-titlebar-back-button").attr("onclick","closeMovieDetail()");
                         }
 
+                        function addToFavorites(movieJson) {
+                            $('.favorites-template').empty();
+                            var movie = $.parseJSON(movieJson.firstChild.innerHTML);
+                            movie.type = 'movie';
+                            favorites.addToFavorites(movie);
+                            $(".favorites-template").append('<label onclick="removeFromFavorites(this);" title="Remove from favorites" class="current-favorites"><div style="display: none">'+JSON.stringify(movie)+'</div>&nbsp;&nbsp;<i class="glyphicon glyphicon-heart"></i></label>');
+                        }
+
+                        function removeFromFavorites(movieJson) {
+                            $('.favorites-template').empty();
+                            var movie = $.parseJSON(movieJson.firstChild.innerHTML);
+                            favorites.removeFromFavorites(movie.imdbCode);
+                            $(".favorites-template").append('<label onclick="addToFavorites(this);" title="Add to favorites" class="current-favorites"><div style="display: none">'+JSON.stringify(movie)+'</div>&nbsp;&nbsp;<i class="glyphicon glyphicon-heart-empty"></i></label>');
+                        }
+
                     </script>
                     <div id="movies">
                         <div id="head-bar" class="p-10">
@@ -633,6 +667,8 @@
                                     <h4 id="genres" class="mr-10" style="display:inline-block;"></h4>
                                     <div class="stars-template" style="display:inline-block;">
                                         <label title="" id="rating" class="current-rating"></label>
+                                    </div>
+                                    <div class="favorites-template" style="display:inline-block;">
                                     </div>
                                     <div id="plot" class="ptb-10" style="max-width:800px;"></div>
                                     <div class="ptb-10">

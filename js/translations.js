@@ -46,6 +46,9 @@ var Translations = function () {
         var menuTorrents = i18n.__('Torrents');
         $('.menuTorrents').append('&nbsp;&nbsp;'+menuTorrents);
 
+        var menuFavorites = i18n.__('Favorites');
+        $('.menuFavorites').append('&nbsp;&nbsp;'+menuFavorites);
+
         var menuSettings = i18n.__('Settings');
         $('.menuSettings').append('&nbsp;&nbsp;'+menuSettings);
 
@@ -66,6 +69,7 @@ var Translations = function () {
 
         var btnBuy = i18n.__('Buy');
         $('#btnBuy').append(btnBuy);
+        $('#series-btnBuy').append(btnBuy);
 
         var buttonTrailer = i18n.__('Trailer');
         $('#btnTrailer').append(buttonTrailer);

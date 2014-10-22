@@ -425,6 +425,10 @@ div.spinner-overlay {
     width: 72.45%;
 }
 
+.current-favorites {
+    height: 14px;
+}
+
 #video-container-trailer {
     position: absolute;
     top: 0;
