@@ -263,6 +263,45 @@ var searchSerieDetail = function (id, callback) {
     });
 };
 
+var searchAnimes = function (page, type, sort, genre, keywords, limit, callback) {
+    $ = window.$;
+
+    var url = 'http://ptp.haruhichan.com/list.php?'+'page='+page+'&type='+type+'&sort='+sort+'&order=asc&search='+keywords+'&genres='+genre+'&limit='+limit;
+    console.log(url);
+    $.getJSON(url, function (data) {
+    }).success(function (data) {
+        if(!data || (data.error && data.error !== 'No data returned')) {
+            callback("error");
+        }
+        else {
+            callback(data);
+        }
+    }).error(function () {
+        utilities.showPrompt("An uncaughtException was found", "<span class='text-danger'>Haruhichan is unavailable. Please try it again later</span>.", "ok", function(answer) {
+        });
+        callback("error");
+    });
+};
+
+var searchAnimeDetail = function (id, callback) {
+    $ = window.$;
+
+    var url = 'http://ptp.haruhichan.com/anime.php?'+'id='+id;
+    $.getJSON(url, function (data) {
+    }).success(function (data) {
+        if(!data || (data.error && data.error !== 'No data returned')) {
+            callback("error");
+        }
+        else {
+            callback(data);
+        }
+    }).error(function () {
+        utilities.showPrompt("An uncaughtException was found", "<span class='text-danger'>Haruhichan is unavailable. Please try it again later</span>.", "ok", function(answer) {
+        });
+        callback("error");
+    });
+};
+
 //External functions
 var searchTorrents = function (keywords, category, sortBy, page, callback) {
     $ = window.$;
@@ -280,4 +319,6 @@ var searchTorrents = function (keywords, category, sortBy, page, callback) {
 module.exports.searchMovies = searchMovies;
 module.exports.searchSeries = searchSeries;
 module.exports.searchSerieDetail = searchSerieDetail;
+module.exports.searchAnimes = searchAnimes;
+module.exports.searchAnimeDetail = searchAnimeDetail;
 module.exports.searchTorrents = searchTorrents;

@@ -1,6 +1,5 @@
 var Datastore = require('nedb')
 var db = require('./db.js');
-var dataPath = global.window.nwDispatcher.requireNwGui().App.dataPath;
 
 var favorites = db.loadDB("favorites.db");
 
@@ -18,7 +17,9 @@ var addToFavorites = function (element) {
 var removeFromFavorites = function (id) {
     favorites.remove({ imdbCode: id }, {}, function (err, numRemoved) {
     });
-    favorites.remove({ _id: id }, {}, function (err, numRemoved) {
+    favorites.remove({ imdb_id: id }, {}, function (err, numRemoved) {
+    });
+    favorites.remove({ id: id }, {}, function (err, numRemoved) {
     });
 }
 var checkIfFavorite = function (id, callback) {
@@ -35,7 +36,15 @@ var checkIfFavorite = function (id, callback) {
                     callback(favorite);
                 }
                 else {
-                    callback(favorite);
+                    favorites.findOne({ id: id }, function (err, aDoc) {
+                        if( aDoc !== null ) {
+                            favorite = true;
+                            callback(favorite);
+                        }
+                        else {
+                            callback(favorite);
+                        }
+                    });
                 }
             });
         }

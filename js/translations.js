@@ -43,6 +43,9 @@ var Translations = function () {
         var menuSeries = i18n.__('Series');
         $('.menuSeries').append('&nbsp;&nbsp;'+menuSeries);
 
+        var menuAnimes = i18n.__('Animes');
+        $('.menuAnimes').append('&nbsp;&nbsp;'+menuAnimes);
+
         var menuTorrents = i18n.__('Torrents');
         $('.menuTorrents').append('&nbsp;&nbsp;'+menuTorrents);
 
@@ -58,11 +61,17 @@ var Translations = function () {
         var seriesSearchPlaceholder = i18n.__('Serie title or magnet link...');
         $('#txtSerieSearch').attr('placeholder', seriesSearchPlaceholder);
 
+        var animeSearchPlaceholder = i18n.__('Anime title or magnet link...');
+        $('#txtAnimeSearch').attr('placeholder', animeSearchPlaceholder);
+
         var seriesTorrentPlaceholder = i18n.__('Torrent name...');
         $('#txtTorrentSearch').attr('placeholder', seriesTorrentPlaceholder);
 
         var genreAny = i18n.__(': Any');
         $('#filterByGenre').append(genreAny);
+
+        var filterAll = i18n.__(': All');
+        $('#filterByType').append(filterAll);
 
         var buttonPlay = i18n.__('Play');
         $('#btnPlay').append(buttonPlay);
@@ -89,6 +98,9 @@ var Translations = function () {
         var genreAnimation = i18n.__('Animation');
         $('.genreAnimation').append(genreAnimation);
 
+        var genreCars = i18n.__('Cars');
+        $('.genreCars').append(genreCars);
+
         var genreChildren = i18n.__('Children');
         $('.genreChildren').append(genreChildren);
 
@@ -98,11 +110,20 @@ var Translations = function () {
         var genreCrime = i18n.__('Crime');
         $('.genreCrime').append(genreCrime);
 
+        var genreDementia = i18n.__('Dementia');
+        $('.genreDementia').append(genreDementia);
+
+        var genreDemons = i18n.__('Demons');
+        $('.genreDemons').append(genreDemons);
+
         var genreDocumentary = i18n.__('Documentary');
         $('.genreDocumentary').append(genreDocumentary);
 
         var genreDrama = i18n.__('Drama');
         $('.genreDrama').append(genreDrama);
+
+        var genreEcchi = i18n.__('Ecchi');
+        $('.genreEcchi').append(genreEcchi);
 
         var genreFamily = i18n.__('Family');
         $('.genreFamily').append(genreFamily);
@@ -113,17 +134,44 @@ var Translations = function () {
         var genreFilmNoir = i18n.__('Film-Noir');
         $('.genreFilm-Noir').append(genreFilmNoir);
 
+        var genreGame = i18n.__('Game');
+        $('.genreGame').append(genreGame);
+
         var genreGameShow = i18n.__('Game Show');
         $('.genreGameShow').append(genreGameShow);
 
         var genreHomeandGarden = i18n.__('Home and Garden');
         $('.genreHomeandGarden').append(genreHomeandGarden);
 
+        var genreHarem = i18n.__('Harem');
+        $('.genreHarem').append(genreHarem);
+
         var genreHistory = i18n.__('History');
         $('.genreHistory').append(genreHistory);
 
+        var genreHistorical = i18n.__('Historical');
+        $('.genreHistorical').append(genreHistorical);
+
         var genreHorror = i18n.__('Horror');
         $('.genreHorror').append(genreHorror);
+
+        var genreJosei = i18n.__('Josei');
+        $('.genreJosei').append(genreJosei);
+
+        var genreKids = i18n.__('Kids');
+        $('.genreKids').append(genreKids);
+
+        var genreMagic = i18n.__('Magic');
+        $('.genreMagic').append(genreMagic);
+
+        var genreMartialArts = i18n.__('Martial Arts');
+        $('.genreMartialArts').append(genreMartialArts);
+
+        var genreMecha = i18n.__('Mecha');
+        $('.genreMecha').append(genreMecha);
+
+        var genreMilitary = i18n.__('Military');
+        $('.genreMilitary').append(genreMilitary);
 
         var genreMiniSeries = i18n.__('Mini Series');
         $('.genreMiniSeries').append(genreMiniSeries);
@@ -140,23 +188,65 @@ var Translations = function () {
         var genreNews = i18n.__('News');
         $('.genreNews').append(genreNews);
 
+        var genreParody = i18n.__('Parody');
+        $('.genreParody').append(genreParody);
+
+        var genrePolice = i18n.__('Police');
+        $('.genrePolice').append(genrePolice);
+
+        var genrePsychological = i18n.__('Psychological');
+        $('.genrePsychological').append(genrePsychological);
+
         var genreReality = i18n.__('Reality');
         $('.genreReality').append(genreReality);
 
         var genreRomance = i18n.__('Romance');
         $('.genreRomance').append(genreRomance);
 
+        var genreSamurai = i18n.__('Samurai');
+        $('.genreSamurai').append(genreSamurai);
+
+        var genreSchool = i18n.__('School');
+        $('.genreSchool').append(genreSchool);
+
         var genreSciFi = i18n.__('Sci-Fi');
         $('.genreSci-Fi').append(genreSciFi);
 
+        var genreSeinen = i18n.__('Seinen');
+        $('.genreSeinen').append(genreSeinen);
+
+        var genreShoujo = i18n.__('Shoujo');
+        $('.genreShoujo').append(genreShoujo);
+
+        var genreShoujoAi = i18n.__('Shoujo Ai');
+        $('.genreShoujoAi').append(genreShoujoAi);
+
+        var genreShounen = i18n.__('Shounen');
+        $('.genreShounen').append(genreShounen);
+
+        var genreShounenAi = i18n.__('Shounen Ai');
+        $('.genreShounenAi').append(genreShounenAi);
+
         var genreSoap = i18n.__('Soap');
-        $('.genreSoap').append(genreSoap);
+        $('.genreSoap').append(genreSoap)
+
+        var genreSliceOfLife = i18n.__('Slice of Life');
+        $('.genreSliceOfLife').append(genreSliceOfLife);
 
         var genreSpecialInterest = i18n.__('Special Interest');
         $('.genreSpecialInterest').append(genreSpecialInterest);
 
+        var genreSpace = i18n.__('Space');
+        $('.genreSpace').append(genreSpace);
+
         var genreSport = i18n.__('Sport');
         $('.genreSport').append(genreSport);
+
+        var genreSuperPower = i18n.__('Super Power');
+        $('.genreSuperPower').append(genreSuperPower);
+
+        var genreSupernatural = i18n.__('Supernatural');
+        $('.genreSupernatural').append(genreSupernatural)
 
         var genreSuspense = i18n.__('Suspense');
         $('.genreSuspense').append(genreSuspense);
@@ -166,6 +256,9 @@ var Translations = function () {
 
         var genreThriller = i18n.__('Thriller');
         $('.genreThriller').append(genreThriller);
+
+        var genreVampire = i18n.__('Vampire');
+        $('.genreVampire').append(genreVampire);
 
         var genreWar = i18n.__('War');
         $('.genreWar').append(genreWar);
@@ -211,6 +304,27 @@ var Translations = function () {
 
         var filterTorrentName = i18n.__('Torrent name');
         $('.filterTorrentName').append(filterTorrentName);
+
+        var filterPopularity = i18n.__('Popularity');
+        $('.filterPopularity').append(filterPopularity);
+
+        var filterRank = i18n.__('Rank');
+        $('.filterRank').append(filterRank);
+
+        var typeAll = i18n.__('All');
+        $('.typeAll').append(typeAll);
+
+        var typeMovie = i18n.__('Movie');
+        $('.typeMovie').append(typeMovie);
+
+        var typeShows = i18n.__('TV');
+        $('.typeShows').append(typeShows);
+
+        var typeOVA = i18n.__('OVA');
+        $('.typeOVA').append(typeOVA);
+
+        var typeONA = i18n.__('ONA');
+        $('.typeONA').append(typeONA);
 
         var sectionAnime = i18n.__('Anime');
         $('.sectionAnime').append(sectionAnime);

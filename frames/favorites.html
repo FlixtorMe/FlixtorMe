@@ -91,6 +91,10 @@
                             <a class="menuSeries" href="#">
                                 <span class="glyphicon glyphicon-expand"></span></a>
                         </li>
+                        <li id="side-bar-li-animes" onclick="main.changeFrame('animes')">
+                            <a class="menuAnimes" href="#">
+                                <span class="glyphicon glyphicon-globe"></span></a>
+                        </li>
                         <li id="side-bar-li-torrents" onclick="main.changeFrame('torrents')">
                             <a class="menuTorrents" href="#">
                                 <span class="glyphicon glyphicon-th-list"></span></a>
@@ -117,6 +121,11 @@
                         <li id="side-bar-li-series-sm" onclick="main.changeFrame('series')">
                             <a href="#">
                                 <span class="glyphicon glyphicon-expand"></span>
+                            </a>
+                        </li>
+                        <li id="side-bar-li-animes-sm" onclick="main.changeFrame('animes')">
+                            <a href="#">
+                                <span class="glyphicon glyphicon-globe"></span></a>
                             </a>
                         </li>
                         <li id="side-bar-li-torrents-sm" onclick="main.changeFrame('torrents')">
@@ -233,6 +242,26 @@
                                                     "</a>" +
                                                     "<div class='p-5' style='max-width:160px;'>" +
                                                     "<div style='font-size:14px;'>" + serie.title + "</div>" +
+                                                    "</div>" +
+                                                    "<div style='clear:both'></div>" +
+                                                    "</div>";
+                                        }
+                                        else if( results[index].type == 'anime' ) {
+                                            var anime = results[index];
+
+                                            if (typeof anime.malimg !== 'undefined') {
+                                                var animePoster = anime.malimg;
+                                            }
+                                            else {
+                                                var animePoster = '../images/no-poster.png';
+                                            }
+                                            content += "<div class='element transition m-10 isotope-item'>" +
+                                                    "<a class='shadow' onClick='showAnimeDetails(this);'>" +
+                                                    "<div style='display: none'>"+anime.id+"</div> " +
+                                                    "<img alt='image' src='" + animePoster + "' style='width:160px; height:230px;'/>" +
+                                                    "</a>" +
+                                                    "<div class='p-5' style='max-width:160px;'>" +
+                                                    "<div style='font-size:14px;'>" + anime.name + "</div>" +
                                                     "</div>" +
                                                     "<div style='clear:both'></div>" +
                                                     "</div>";
@@ -384,6 +413,101 @@
 
                         }
 
+                        function showAnimeDetails(animeID) {
+                            $("#wrapper").append("<div id='main-spinner' class='spinner-overlay'></div>");
+                            $('#anime-title' ).empty();
+                            $('.favorites-template').empty();
+                            $('#anime-genres').empty();
+                            $('#anime-plot').empty();
+                            $('#anime-network').empty();
+                            $('#anime-runtime').empty();
+                            $('#anime-runtime').append('<span class="glyphicon glyphicon-time"></span>&nbsp;&nbsp');
+                            $('#anime-date').empty();
+                            $('#anime-date').append('<span class="glyphicon glyphicon-calendar"></span>&nbsp;&nbsp;');
+
+                            var anime = animeID.firstChild.innerHTML;
+
+                            callwcf.searchAnimeDetail( anime, function(results) {
+                                if( results !== 'error' ) {
+                                    anime = results;
+
+                                    favorites.checkIfFavorite( anime.id, function(result) {
+                                        if( result == true ) {
+                                            $(".favorites-template").append('<label onclick="removeAnimeFromFavorites(this)" title="Remove from favorites" class="current-favorites"><div style="display: none">'+JSON.stringify(anime)+'</div><i class="glyphicon glyphicon-heart"></i></label>');
+                                        }
+                                        else {
+                                            $(".favorites-template").append('<label onclick="addAnimeToFavorites(this);" title="Add to favorites" class="current-favorites"><div style="display: none">'+JSON.stringify(anime)+'</div><i class="glyphicon glyphicon-heart-empty"></i></label>');
+                                        }
+                                    })
+
+                                    //Set variables to html
+                                    $("#anime-poster").attr('src', anime.malimg);
+
+                                    $("#anime-title").html(anime.name);
+
+                                    var translatedGen;
+                                    var translatedGenres = [];
+                                    var tmpGenres = anime.genres.split(', ');
+                                    $(tmpGenres).each(function(index) {
+                                        var gen = tmpGenres[index];
+                                        translatedGen = translations.translate(gen);
+                                        translatedGenres.push(translatedGen);
+                                    })
+                                    var genres = translatedGenres.join(", ");
+                                    $("#anime-genres").append(genres);
+
+                                    if(anime.synopsis) {
+                                        $("#anime-plot").html(anime.synopsis);
+                                    }else {
+                                        $("#anime-plot").addClass("hide");
+                                    }
+
+                                    var translatedepisodes = translations.translate('episode');
+                                    if(anime.duration) {
+                                        $("#anime-runtime").append(anime.duration + "m / "+translatedepisodes);
+                                    } else {
+                                        $("#anime-runtime").addClass("hide");
+                                    }
+
+                                    if(anime.aired) {
+                                        $("#anime-date").append(anime.aired);
+                                    } else {
+                                        $("#anime-date").addClass("hide");
+                                    }
+
+                                    if(anime.producers) {
+                                        $("#anime-network").append(anime.producers);
+                                    } else {
+                                        $("#anime-network").addClass("hide");
+                                    }
+
+                                    $("#anime-btnBuy").click(function () {
+                                        var shoppingUrl = 'https://www.google.com/search?q='+anime.name+' anime&tbm=shop';
+                                        gui.Shell.openExternal(shoppingUrl);
+
+                                    });
+
+                                    $("#anime-btnEpisodeList").click(function () {
+                                        main.go("players/serie-player.html?animeId=" + anime.id);
+                                    });
+
+                                    $("#content-overlay").show();
+                                    $("#anime").show();
+                                    $("#side-bar-full").hide();
+                                    $("#content").css("opacity", "0");
+                                    $('#side-bar-small').attr("style", "display: none !important");
+                                    $("#head-bar").hide();
+                                    $('#customCSS').animate({opacity: 0}, 0).animate({opacity: 1}, 3500);
+                                }
+                                else {
+                                    console.log("Service not available");
+                                }
+
+                                $('.spinner-overlay').remove();
+                            });
+
+                        }
+
                         function showMovieDetails(movieJson) {
                             var movie = $.parseJSON(movieJson.firstChild.innerHTML);
 
@@ -499,6 +623,7 @@
 
                         function closeSerieDetail()
                         {
+                            applySearch();
                             try{
                                 var subManager = yifysubtitle.getSubManager();
                                 if( subManager ) {
@@ -515,6 +640,7 @@
                             $("#customCSS").empty();
                             $("#content-overlay").hide();
                             $("#serie").hide();
+                            $("#anime").hide();
                             $("#side-bar-full").show();
                             $("#side-bar-small").removeAttr( 'style' );
                             $("#content").css("opacity", "1");
@@ -566,14 +692,29 @@
                             var series = $.parseJSON(seriesJson.firstChild.innerHTML);
                             series.type = 'series';
                             favorites.addToFavorites(series);
-                            $(".favorites-template").append('<label onclick="removeFromFavorites(this);" title="Remove from favorites" class="current-favorites"><div style="display: none">'+JSON.stringify(series)+'</div>&nbsp;&nbsp;<i class="glyphicon glyphicon-heart"></i></label>');
+                            $(".favorites-template").append('<label onclick="removeSeriesFromFavorites(this);" title="Remove from favorites" class="current-favorites"><div style="display: none">'+JSON.stringify(series)+'</div>&nbsp;&nbsp;<i class="glyphicon glyphicon-heart"></i></label>');
                         }
 
                         function removeSeriesFromFavorites(seriesJson) {
                             $('.favorites-template').empty();
                             var series = $.parseJSON(seriesJson.firstChild.innerHTML);
                             favorites.removeFromFavorites(series.imdb_id);
-                            $(".favorites-template").append('<label onclick="addToFavorites(this);" title="Add to favorites" class="current-favorites"><div style="display: none">'+JSON.stringify(series)+'</div>&nbsp;&nbsp;<i class="glyphicon glyphicon-heart-empty"></i></label>');
+                            $(".favorites-template").append('<label onclick="addSeriesToFavorites(this);" title="Add to favorites" class="current-favorites"><div style="display: none">'+JSON.stringify(series)+'</div>&nbsp;&nbsp;<i class="glyphicon glyphicon-heart-empty"></i></label>');
+                        }
+
+                        function addAnimeToFavorites(animeJson) {
+                            $('.favorites-template').empty();
+                            var anime = $.parseJSON(animeJson.firstChild.innerHTML);
+                            anime.type = 'anime';
+                            favorites.addToFavorites(anime);
+                            $(".favorites-template").append('<label onclick="removeAnimeFromFavorites(this);" title="Remove from favorites" class="current-favorites"><div style="display: none">'+JSON.stringify(anime)+'</div><i class="glyphicon glyphicon-heart"></i></label>');
+                        }
+
+                        function removeAnimeFromFavorites(animeJson) {
+                            $('.favorites-template').empty();
+                            var anime = $.parseJSON(animeJson.firstChild.innerHTML);
+                            favorites.removeFromFavorites(anime.id);
+                            $(".favorites-template").append('<label onclick="addAnimeToFavorites(this);" title="Add to favorites" class="current-favorites"><div style="display: none">'+JSON.stringify(anime)+'</div><i class="glyphicon glyphicon-heart-empty"></i></label>');
                         }
 
                         function addMovieToFavorites(movieJson) {
@@ -581,14 +722,14 @@
                             var movie = $.parseJSON(movieJson.firstChild.innerHTML);
                             movie.type = 'movie';
                             favorites.addToFavorites(movie);
-                            $(".favorites-template").append('<label onclick="removeFromFavorites(this);" title="Remove from favorites" class="current-favorites"><div style="display: none">'+JSON.stringify(movie)+'</div>&nbsp;&nbsp;<i class="glyphicon glyphicon-heart"></i></label>');
+                            $(".favorites-template").append('<label onclick="removeMovieFromFavorites(this);" title="Remove from favorites" class="current-favorites"><div style="display: none">'+JSON.stringify(movie)+'</div>&nbsp;&nbsp;<i class="glyphicon glyphicon-heart"></i></label>');
                         }
 
                         function removeMovieFromFavorites(movieJson) {
                             $('.favorites-template').empty();
                             var movie = $.parseJSON(movieJson.firstChild.innerHTML);
                             favorites.removeFromFavorites(movie.imdbCode);
-                            $(".favorites-template").append('<label onclick="addToFavorites(this);" title="Add to favorites" class="current-favorites"><div style="display: none">'+JSON.stringify(movie)+'</div>&nbsp;&nbsp;<i class="glyphicon glyphicon-heart-empty"></i></label>');
+                            $(".favorites-template").append('<label onclick="addMovieToFavorites(this);" title="Add to favorites" class="current-favorites"><div style="display: none">'+JSON.stringify(movie)+'</div>&nbsp;&nbsp;<i class="glyphicon glyphicon-heart-empty"></i></label>');
                         }
 
                     </script>
@@ -664,6 +805,31 @@
                                     <div id="series-runtime" class="pt-5"><span class="glyphicon glyphicon-time"></span>&nbsp;&nbsp;</div>
                                     <div id="series-date" class="pt-5"><span class="glyphicon glyphicon-calendar"></span>&nbsp;&nbsp;</div>
                                     <div id="info" class="pt-5"><span class="glyphicon glyphicon-info-sign"></span>&nbsp;&nbsp;</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-backdrop fade in" style="opacity:0.85;"></div>
+                    <div id="anime" class="modal fade in p-30">
+                        <div class="container center-block">
+                            <div class="row">
+                                <div class="col-sm-3 hidden-xs">
+                                    <img id="anime-poster" alt="" src="" width="200" class="img-responsive img-thumbnail"  />
+                                </div>
+                                <div class="col-sm-9 p-10">
+                                    <a class="pull-right font-24 color-white" onclick="closeSerieDetail();"><i class='glyphicon glyphicon-remove-circle'></i></a>
+                                    <h1 id="anime-title"></h1>
+                                    <h4 id="anime-genres" class="mr-10" style="display:inline-block;"></h4>
+                                    <div class="favorites-template" style="display:inline-block;">
+                                    </div>
+                                    <div id="anime-plot" class="ptb-10" style="max-width:800px;"></div>
+                                    <div id="anime-network">This serie is aired on </div>
+                                    <div class="ptb-10">
+                                        <button id="anime-btnEpisodeList" class="btn btn-primary btn-sm"><i class='glyphicon glyphicon-list'></i>&nbsp;&nbsp;</button>
+                                        <button id="anime-btnBuy" class="btn btn-danger btn-sm"><i class='glyphicon glyphicon-shopping-cart'></i>&nbsp;&nbsp;</button>
+                                    </div>
+                                    <div id="anime-runtime" class="pt-5"><span class="glyphicon glyphicon-time"></span>&nbsp;&nbsp;</div>
+                                    <div id="anime-date" class="pt-5"><span class="glyphicon glyphicon-calendar"></span>&nbsp;&nbsp;</div>
                                 </div>
                             </div>
                         </div>
