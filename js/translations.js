@@ -278,9 +278,6 @@ var Translations = function () {
         var filterDate = i18n.__('Date');
         $('.filterDate').append(filterDate);
 
-        var filterName = i18n.__('Name');
-        $('.filterName').append(filterName);
-
         var filterYear = i18n.__('Year');
         $('.filterYear').append(filterYear);
 
@@ -313,6 +310,9 @@ var Translations = function () {
 
         var filterRank = i18n.__('Rank');
         $('.filterRank').append(filterRank);
+
+        var filterName = i18n.__('Name');
+        $('.filterName').append(filterName);
 
         var typeAll = i18n.__('All');
         $('.typeAll').append(typeAll);

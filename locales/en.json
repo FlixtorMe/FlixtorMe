@@ -163,5 +163,6 @@
 	"OVA": "OVA",
 	"ONA": "ONA",
 	"Not Airing": "Not Airing",
-	"Currently Airing": "Currently Airing"
+	"Currently Airing": "Currently Airing",
+	"name": "name"
 }

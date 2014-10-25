@@ -229,8 +229,13 @@
                                 animeFilter.status = '';
                             }
 
+                            // Default sort order
+                            if (!animeFilter.order) {
+                                animeFilter.order = 'asc';
+                            }
+
                             //Search for animes
-                            callwcf.searchAnimes( animeFilter.page, animeFilter.type, animeFilter.sort, animeFilter.genre, animeFilter.searchValue, animeFilter.status, animeFilter.max, function(results) {
+                            callwcf.searchAnimes( animeFilter.page, animeFilter.type, animeFilter.sort, animeFilter.genre, animeFilter.searchValue, animeFilter.status, animeFilter.order, animeFilter.max, function(results) {
 
                                 var content = "";
                                 if( results !== 'error' ) {
@@ -426,6 +431,13 @@
                             //Change category name
                             animeFilter.sort = name;
                             animeFilter.page = 0;
+
+                            if( animeFilter.sort == 'name' ) {
+                                animeFilter.order = 'asc';
+                            }
+                            else {
+                                animeFilter.order = 'desc';
+                            }
 
                             var translatedCategory = translations.translate(name);
                             $("#filterByCategory").text(" : " + translatedCategory);
@@ -702,6 +714,9 @@
                                                 </li>
                                                 <li>
                                                     <a class="filterRank" onclick="changeFilterCategory('rank')"></a>
+                                                </li>
+                                                <li>
+                                                    <a class="filterName" onclick="changeFilterCategory('name')"></a>
                                                 </li>
                                             </ul>
                                         </span>
