@@ -224,8 +224,13 @@
                                 animeFilter.sort = 'popularity';
                             }
 
+                            // Default status
+                            if (!animeFilter.status) {
+                                animeFilter.status = '';
+                            }
+
                             //Search for animes
-                            callwcf.searchAnimes( animeFilter.page, animeFilter.type, animeFilter.sort, animeFilter.genre, animeFilter.searchValue, animeFilter.max, function(results) {
+                            callwcf.searchAnimes( animeFilter.page, animeFilter.type, animeFilter.sort, animeFilter.genre, animeFilter.searchValue, animeFilter.status, animeFilter.max, function(results) {
 
                                 var content = "";
                                 if( results !== 'error' ) {
@@ -465,6 +470,44 @@
                             animeApplySearch();
                         }
 
+                        function changeStatusType(status) {
+                            //Change category name
+                            animeFilter.status = status;
+                            animeFilter.page = 0;
+
+                            console.log(status);
+
+                            if( status == '' ) {
+                                var translatedStatus = translations.translate('All');
+                            }
+                            else if( status == 0 ) {
+                                var translatedStatus = translations.translate('Not Airing');
+                            }
+                            else if( status == 1 ) {
+                                var translatedStatus = translations.translate('Currently Airing');
+                            }
+                            else if( status == 2 ) {
+                                var translatedStatus = translations.translate('Ended');
+                            }
+
+                            $("#filterByStatus").text(" : " + translatedStatus);
+                            $("#serieContainer").empty();
+                            $('#serieContainer').isotope("destroy");
+                            $('#serieContainer').isotope({
+                                itemSelector: '.element',
+                                animationEngine: 'jquery',
+                                layoutMode: 'fitRows',
+                                animationOptions: {
+                                    duration: 600,
+                                    easing: 'linear',
+                                    queue: false
+                                }
+                            });
+
+                            //Apply the setting to search
+                            animeApplySearch();
+                        }
+
                         function closeSerieDetail()
                         {
                             try{
@@ -669,7 +712,7 @@
                                                 <span id="filterByType"></span>
                                                 <span class="caret"></span>
                                             </button>
-                                            <ul class="dropdown-menu pull-right" role="menu" id="ddmType">
+                                            <ul class="dropdown-menu" role="menu" id="ddmType">
                                                 <li>
                                                     <a class="typeAll" onclick="changeFilterType('All')"></a>
                                                 </li>
@@ -687,8 +730,27 @@
                                                 </li>
                                             </ul>
                                         </span>
+                                        <!--<span class="ml-10">
+                                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">Status
+                                                <span id="filterByStatus"></span>
+                                                <span class="caret"></span>
+                                            </button>
+                                            <ul class="dropdown-menu pull-right" role="menu" id="ddmStatus">
+                                                <li>
+                                                    <a class="statusAll" onclick="changeStatusType('')"></a>
+                                                </li>
+                                                <li>
+                                                    <a class="statusNotAiring" onclick="changeStatusType('0')"></a>
+                                                </li>
+                                                <li>
+                                                    <a class="statusCurrentlyAiring" onclick="changeStatusType('1')"></a>
+                                                </li>
+                                                <li>
+                                                    <a class="statusEnded" onclick="changeStatusType('2')"></a>
+                                                </li>
+                                            </ul>
+                                        </span>-->
                                     </span>
-
                                 </div>
                                 <!-- /input-group -->
                             </div>

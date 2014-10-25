@@ -73,6 +73,9 @@ var Translations = function () {
         var filterAll = i18n.__(': All');
         $('#filterByType').append(filterAll);
 
+        var filterByStatus = i18n.__(': All');
+        $('#filterByStatus').append(filterByStatus);
+
         var buttonPlay = i18n.__('Play');
         $('#btnPlay').append(buttonPlay);
 
@@ -325,6 +328,18 @@ var Translations = function () {
 
         var typeONA = i18n.__('ONA');
         $('.typeONA').append(typeONA);
+
+        var statusAll = i18n.__('All');
+        $('.statusAll').append(statusAll);
+
+        var statusNotAiring = i18n.__('Not Airing');
+        $('.statusNotAiring').append(statusNotAiring);
+
+        var statusCurrentlyAiring = i18n.__('Currently Airing');
+        $('.statusCurrentlyAiring').append(statusCurrentlyAiring);
+
+        var statusEnded = i18n.__('Ended');
+        $('.statusEnded').append(statusEnded);
 
         var sectionAnime = i18n.__('Anime');
         $('.sectionAnime').append(sectionAnime);
