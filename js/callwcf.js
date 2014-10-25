@@ -266,7 +266,7 @@ var searchSerieDetail = function (id, callback) {
 var searchAnimes = function (page, type, sort, genre, keywords, limit, callback) {
     $ = window.$;
 
-    var url = 'http://ptp.haruhichan.com/list.php?'+'page='+page+'&type='+type+'&sort='+sort+'&order=asc&search='+keywords+'&genres='+genre+'&limit='+limit;
+    var url = 'http://ptp.haruhichan.com/list.php?'+'page='+page+'&type='+type+'&sort='+sort+'&order=desc&search='+keywords+'&genres='+genre+'&limit='+limit;
     console.log(url);
     $.getJSON(url, function (data) {
     }).success(function (data) {
