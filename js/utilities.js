@@ -1,6 +1,7 @@
 //External modules
 var http = require('http');
 var numeral = require('numeral');
+var ip = require('ip');
 
 var translations = require('../js/translations.js');
 translations.initialize();
@@ -84,6 +85,10 @@ var Utilities = function () {
                 return keys[1];
             }
         }
+    };
+
+    this.getIP = function () {
+        return ip.address();
     };
 
 };

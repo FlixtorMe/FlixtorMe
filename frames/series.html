@@ -10,6 +10,9 @@
         <!-- Scripts -->
         <script type='text/javascript' src="../js/extensions/jquery.min.js"></script>
         <script type='text/javascript' src="../js/extensions/bootstrap.min.js"></script>
+
+        <script src="http://code.jquery.com/ui/1.11.2/jquery-ui.js"></script>
+
         <script src="../js/extensions/jquery.isotope.min.js"></script>
         <script src="../js/extensions/nwcontextmenu.js"></script>
 
@@ -21,6 +24,9 @@
             var yifysubtitle = require('../js/yifysubtitle.js');
             var favorites = require('../js/favorites.js');
             var translations = require('../js/translations.js');
+            var dateFormat = require('dateformat');
+            var xbmc = require('nodebmc');
+            var devices = [];
 
             $(document).ready(function() {
 
@@ -30,6 +36,8 @@
                 //Scroll bar
                 $(window).resize(function() {
                     $("#serieContainer").css('max-height', ($(window).height() - 95) + "px");
+                    var height = $("#content").height()-25;
+                    $(".container").height(height);
                 }).trigger("resize");
 
                 //Search key press (enter)
@@ -76,6 +84,12 @@
                         }
                     }
                 });
+
+                // Browse for xbmc clients
+                var browser = new xbmc.Browser();
+                browser.on('deviceOn', function(device){
+                    devices.push(device);
+                });
             });
         </script>
 
@@ -101,6 +115,80 @@
                 width: 160px;
                 height: 100%;
                 box-shadow: inset 0px 0px 50px 1px rgba(0, 0, 0, 0.8);
+            }
+
+            .container {
+                overflow-y: auto;
+            }
+
+            #content-overlay ::-webkit-scrollbar-track {
+                background-color: #060b0f;
+            }
+
+            #content-overlay ::-webkit-scrollbar-thumb {
+                background-color: #0a121a;
+            }
+
+            #season-info {
+                overflow: auto;
+                height: 100%;
+            }
+
+            .accordion-header {
+                background-color: #0a121a;
+                padding: 7px;
+                border-top-right-radius: 5px;
+                border-top-left-radius: 5px;
+                cursor: pointer;
+                outline: none;
+                margin-bottom: 0;
+            }
+
+            .accordion-header:first-child {
+                margin-top: 0px;
+            }
+
+            .episode-wrapper {
+                overflow: hidden;
+                overflow-y: auto;
+            }
+
+            .episode {
+                background-color: #060b0f;
+                padding: 7px;
+            }
+
+            .episode:hover {
+                background-color: #0a121a;
+                cursor: pointer;
+            }
+
+            .selected {
+                background-color: #0a121a;
+            }
+
+            #serie .row {
+                height: 100%;
+            }
+
+            #season-list {
+                height: 100%;
+                overflow-y: auto;
+            }
+
+            #title {
+                margin-top: 0px;
+            }
+
+            #episode-title {
+                margin-top: 0px;
+            }
+
+            #episode-airdate {
+                color: #61666d;
+            }
+            #episode-info {
+                color: #61666d;
             }
         </style>
     </head>
@@ -290,10 +378,14 @@
                             $('#title' ).empty();
                             $('.favorites-template').empty();
                             $('#genres').empty();
+                            $('#genres').append('<span class="glyphicon glyphicon-tag"></span>&nbsp;&nbsp');
                             $('#rating').css('width', '0% !important');
                             $('#rating').attr('title', '');
                             $('#plot').empty();
+                            $('#status').empty();
+                            $('#status').append('<span class="glyphicon glyphicon-bookmark"></span>&nbsp;&nbsp');
                             $('#network').empty();
+                            $('#network').append('<span class="glyphicon glyphicon-home"></span>&nbsp;&nbsp');
                             $('#runtime').empty();
                             $('#runtime').append('<span class="glyphicon glyphicon-time"></span>&nbsp;&nbsp');
                             $('#date').empty();
@@ -302,10 +394,21 @@
                             $('#info').append('<span class="glyphicon glyphicon-info-sign"></span>&nbsp;&nbsp;');
 
                             var serie = serieID.firstChild.innerHTML;
+                            var torrents;
+                            var currentTorrent;
+                            var episodeTitle;
+                            var fanart;
+
+                            $(devices).each(function(index) {
+                                var device = devices[index];
+                                $("#serie .dropdown-toggle").removeClass( "disabled" );
+                                $("#serie .dropdown-menu").append('<li class="xmbcPlay" data-name="'+device.name+'"><a><i class="glyphicon glyphicon-play"></i>&nbsp;&nbsp;'+device.name+'</a></li>');
+                            });
 
                             callwcf.searchSerieDetail( serie, function(results) {
                                 if( results !== 'error' ) {
                                     serie = results;
+
 
                                     favorites.checkIfFavorite( serie.imdb_id, function(result) {
                                         if( result == true ) {
@@ -316,8 +419,9 @@
                                         }
                                     })
 
+                                    fanart = serie.images.fanart;
                                     //Insert backdrop path
-                                    $( "<style> #customCSS {position: absolute; top: 0; bottom: 0;left: 0; right: 0; z-index: -100; background: url("+serie.images.fanart+") no-repeat center center fixed; -webkit-background-size: cover; background-size: cover; color: #e9e9e9;}</style>" ).appendTo("#customCSS");
+                                    //$( "<style> #customCSS {position: absolute; top: 0; bottom: 0;left: 0; right: 0; z-index: -100; background: url("+serie.images.fanart+") no-repeat center center fixed; -webkit-background-size: cover; background-size: cover; color: #e9e9e9;}</style>" ).appendTo("#customCSS");
 
                                     //Set variables to html
                                     var newChars = '-300';
@@ -368,7 +472,7 @@
                                     $("#info").append(+ serie.num_seasons + " "+translatedSeasons);
 
                                     var translatedStatus = translations.translate(serie.status);
-                                    $("#status").html(translatedStatus);
+                                    $("#status").append(translatedStatus);
 
                                     if(serie.network) {
                                         $("#network").append(serie.network);
@@ -376,19 +480,100 @@
                                         $("#network").addClass("hide");
                                     }
 
-                                    console.log(serie.rating.percentage)
                                     $("#rating").attr("style", "width:" + serie.rating.percentage + "% !important");
                                     $("#rating").attr("title", (0.1*serie.rating.percentage).toFixed(1)+"/10");
+
+                                    var torrents = {};
+                                    $(serie.episodes).each(function(index) {
+                                        var value = serie.episodes[index];
+                                        if (!torrents[value.season]) torrents[value.season] = {};
+                                        torrents[value.season][value.episode] = value;
+                                    });
+
+                                    for (var key in torrents) {
+                                        var seasons = torrents[key];
+                                        var seasonNum = key;
+                                        var translatedSeason = translations.translate('Season');
+                                        var translatedEpisode = translations.translate('Episode');
+
+                                        $("#accordion").append('<h3 id="season-'+seasonNum+'" class="accordion-header">'+translatedSeason+' '+seasonNum+'</h3>');
+
+                                        $("#season-"+seasonNum+"").after('<div class="episode-wrapper"></div>');
+
+                                        for (var index in seasons) {
+                                            var episode = seasons[index];
+                                            var airDate = dateFormat(new Date(episode.first_aired * 1000), "dd mmm yy");
+
+                                            $("#season-"+seasonNum+"").next().append("<div class='episode' data-overview='" + escape(episode.overview) + "' data-date='" + episode.first_aired + "' data-episode='" + episode.episode + "' data-season='" + episode.season + "' data-title='" + episode.title + "' data-torrents='" + JSON.stringify(episode.torrents) + "'><div style='color: #61666d; float: left; margin-right: 10px;'>"+episode.episode+"</div>&nbsp;&nbsp;&nbsp;<div style='float: left'>"+episode.title+"</div><div style='color: #61666d; float: right'>&nbsp;&nbsp;&nbsp;"+airDate+"</div></div>");
+                                        }
+                                    }
+
+                                    $( "#accordion" ).accordion({
+                                        heightStyle: "content",
+                                        collapsible: true
+                                    });
+
+                                    $(".episode").click(function () {
+                                        $("#episode-title").empty();
+                                        $("#episode-airdate").empty();
+                                        $("#episode-info").empty();
+                                        $("#episode-overview").empty();
+
+                                        $(".selected").removeClass("selected");
+                                        $(".media").removeClass("on");
+                                        $(this).addClass("selected");
+
+                                        episodeTitle = $(this).data("title");
+                                        var overview = unescape($(this).data("overview"));
+                                        var airDate = $(this).data("date");
+                                        airDate = dateFormat(new Date(airDate * 1000), "dddd, mmmm dS, yyyy, h:MM TT");
+
+                                        var episode = $(this).data("episode");
+                                        var season = $(this).data("season");
+                                        torrents = $(this).data("torrents");
+
+                                        // TEMP
+                                        console.log(torrents);
+                                        currentTorrent = torrents['480p'].url;
+
+                                        $("#episode-title").append(episodeTitle);
+                                        $("#episode-info").append(translatedSeason+" "+season+" "+translatedEpisode+" "+episode);
+                                        $("#episode-airdate").append("Airdate: "+airDate);
+                                        $("#episode-overview").append(overview);
+
+                                    });
 
                                     $("#btnBuy").click(function () {
                                         var shoppingUrl = 'https://www.google.com/search?q='+serie.title+' series/season&tbm=shop';
                                         gui.Shell.openExternal(shoppingUrl);
-
                                     });
 
-                                    $("#btnEpisodeList").click(function () {
-                                        main.go("players/serie-player.html?serieId=" + serie._id);
+                                    $("#btnPlay").click(function () {
+                                        var tmpCurrentTorrent = currentTorrent.split('magnet:?xt=urn:btih:');
+                                        tmpCurrentTorrent = tmpCurrentTorrent[1];
+                                        tmpCurrentTorrent = new Buffer(JSON.stringify(tmpCurrentTorrent)).toString('base64');
+                                        var tmpTorrents = new Buffer(JSON.stringify(torrents)).toString('base64');
+                                        var tmpTitle = new Buffer(JSON.stringify(episodeTitle)).toString('base64');
+                                        var tmpFanart = new Buffer(JSON.stringify(fanart)).toString('base64')
+                                        main.go("players/series-player.html?magnet=" + tmpCurrentTorrent+"&torrents="+tmpTorrents+"&title="+tmpTitle+"&image="+tmpFanart);
                                     });
+
+                                    $("body").on("click", ".xmbcPlay", function () {
+                                        var deviceId = $(this).data("name");
+                                        var tmpCurrentTorrent = currentTorrent.split('magnet:?xt=urn:btih:');
+                                        tmpCurrentTorrent = tmpCurrentTorrent[1];
+                                        tmpCurrentTorrent = new Buffer(JSON.stringify(tmpCurrentTorrent)).toString('base64');
+                                        var tmpTorrents = new Buffer(JSON.stringify(torrents)).toString('base64');
+                                        var tmpTitle = new Buffer(JSON.stringify(episodeTitle)).toString('base64');
+                                        var tmpFanart = new Buffer(JSON.stringify(fanart)).toString('base64')
+                                        main.go("players/series-player.html?magnet=" + tmpCurrentTorrent+"&torrents="+tmpTorrents+"&title="+tmpTitle+"&image="+tmpFanart+"&xbmc="+deviceId);
+                                    });
+
+                                    var height = $("#content").height()-80;
+                                    $(".container").height(height);
+
+                                    // Open first episode by default
+                                    $("#accordion").find(".episode:first").trigger("click");
 
                                     $("#content-overlay").show();
                                     $("#serie").show();
@@ -478,20 +663,29 @@
                                     subManager.server.close();
                                 }
                             }
-                            catch(e){
+                            catch(e) {
+                                console.log(e);
+                            }
+
+                            try{
+                                $("#accordion").accordion("destroy");
+                            }
+                            catch(e) {
                                 console.log(e);
                             }
 
                             $("#customCSS").stop();
                             $("#customCSS").removeAttr('style');
                             $("#customCSS").empty();
+                            $("#serie .dropdown-menu").empty();
                             $("#content-overlay").hide();
                             $("#serie").hide();
                             $("#side-bar-full").show();
                             $("#side-bar-small").removeAttr( 'style' );
                             $("#content").css("opacity", "1");
                             $("#head-bar").show();
-                            $( "#btnBuy").unbind( "click" );
+                            $("#btnBuy").unbind( "click" );
+                            $("#accordion").empty();
                         }
 
                         function addToFavorites(seriesJson) {
@@ -649,31 +843,43 @@
                     <div id="serie" class="modal fade in p-30">
                         <div class="container center-block">
                             <div class="row">
-                                <div class="col-sm-3 hidden-xs">
-                                    <img id="poster" alt="" src="" width="200" class="img-responsive img-thumbnail"  />
-                                    <div class="p-5 font-12">
-                                        <div id="status"></div>
-                                        <div id="inProduction"></div>
+                                <div id="season-info" class="col-sm-4">
+                                    <div class="content-heading"><h3 id="title"></h3></div>
+                                    <img style="float:left;width:200px; margin-right:20px;" id="poster" src="" />
+                                    <div id="date" class="pt-10"><span class="glyphicon glyphicon-calendar"></span>&nbsp;&nbsp;</div>
+                                    <div id="runtime" class="pt-10"><span class="glyphicon glyphicon-time"></span>&nbsp;&nbsp;</div>
+                                    <div id="genres" class="pt-10"><span class="glyphicon glyphicon-tag"></span>&nbsp;&nbsp;</div>
+                                    <div id="info" class="pt-10"><span class="glyphicon glyphicon-info-sign"></span>&nbsp;&nbsp;</div>
+                                    <div id="status" class="pt-10"><span class="glyphicon glyphicon-bookmark"></span>&nbsp;&nbsp;</div>
+                                    <div id="network" class="pt-10"><span class="glyphicon glyphicon-home"></span>&nbsp;&nbsp;</div>
+                                    <div class="pt-10">
+                                        <span class="glyphicon glyphicon-star-empty"></span>&nbsp;&nbsp;
+                                        <div class="stars-template" style="display:inline-block;">
+                                            <div title="" id="rating" class="current-rating"></div>
+                                        </div>
                                     </div>
+                                    <div style="clear: both"></div>
+                                    <div id="plot" class="pt-30"></div>
                                 </div>
-                                <div class="col-sm-9 p-10">
-                                    <a class="pull-right font-24 color-white" onclick="closeSerieDetail();"><i class='glyphicon glyphicon-remove-circle'></i></a>
-                                    <h1 id="title"></h1>
-                                    <h4 id="genres" class="mr-10" style="display:inline-block;"></h4>
-                                    <div class="stars-template" style="display:inline-block;">
-                                        <div title="" id="rating" class="current-rating"></div>
-                                    </div>
-                                    <div class="favorites-template" style="display:inline-block;">
-                                    </div>
-                                    <div id="plot" class="ptb-10" style="max-width:800px;"></div>
-                                    <div id="network">This serie is aired on </div>
-                                    <div class="ptb-10">
-                                        <button id="btnEpisodeList" class="btn btn-primary btn-sm"><i class='glyphicon glyphicon-list'></i>&nbsp;&nbsp;</button>
+                                <div id="season-list" class="col-sm-4">
+                                    <div id="accordion"></div>
+                                </div>
+                                <div id="season-episode" class="col-sm-4">
+                                    <div class="content-heading"><h3 id="episode-title"></h3></div>
+                                    <div id="episode-info"></div>
+                                    <div id="episode-airdate"></div>
+                                    <div id="episode-overview" class="pt-30"></div>
+                                    <div class="ptb-30">
+                                        <div class="btn-group">
+                                            <button type="button" id="btnPlay" class="btn btn-success btn-sm"><i class='glyphicon glyphicon-play'></i>&nbsp;&nbsp;</button>
+                                            <button type="button" class="btn btn-success dropdown-toggle btn-sm disabled" data-toggle="dropdown">
+                                                <span class="caret"></span>
+                                            </button>
+                                            <ul class="dropdown-menu" role="menu">
+                                            </ul>
+                                        </div>
                                         <button id="btnBuy" class="btn btn-danger btn-sm"><i class='glyphicon glyphicon-shopping-cart'></i>&nbsp;&nbsp;</button>
                                     </div>
-                                    <div id="runtime" class="pt-5"><span class="glyphicon glyphicon-time"></span>&nbsp;&nbsp;</div>
-                                    <div id="date" class="pt-5"><span class="glyphicon glyphicon-calendar"></span>&nbsp;&nbsp;</div>
-                                    <div id="info" class="pt-5"><span class="glyphicon glyphicon-info-sign"></span>&nbsp;&nbsp;</div>
                                 </div>
                             </div>
                         </div>
