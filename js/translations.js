@@ -83,11 +83,17 @@ var Translations = function () {
         $('#btnBuy').append(btnBuy);
         $('#series-btnBuy').append(btnBuy);
 
+        var animeBtnBuy = i18n.__('Buy');
+        $('#anime-btnBuy').append(animeBtnBuy);
+
         var buttonTrailer = i18n.__('Trailer');
         $('#btnTrailer').append(buttonTrailer);
 
         var btnEpisodeList = i18n.__('Episode list');
         $('#btnEpisodeList').append(btnEpisodeList);
+
+        var animeBtnEpisodeList = i18n.__('Episode list');
+        $('#anime-btnEpisodeList').append(animeBtnEpisodeList);
 
         var genreAll = i18n.__('All');
         $('.genreAll').append(genreAll);

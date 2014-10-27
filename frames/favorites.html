@@ -488,7 +488,7 @@
                                     });
 
                                     $("#anime-btnEpisodeList").click(function () {
-                                        main.go("players/serie-player.html?animeId=" + anime.id);
+                                        main.go("players/anime-player.html?animeId=" + anime.id);
                                     });
 
                                     $("#content-overlay").show();
@@ -645,7 +645,9 @@
                             $("#side-bar-small").removeAttr( 'style' );
                             $("#content").css("opacity", "1");
                             $("#head-bar").show();
-                            $( "#btnBuy").unbind( "click" );
+                            $("#btnBuy").unbind( "click" );
+                            $("#anime-btnBuy").unbind( "click" );
+                            $("#series-btnBuy").unbind( "click" );
                         }
 
                         function closeMovie()
@@ -677,7 +679,10 @@
                             $("#side-bar-small").removeAttr( 'style' );
                             $("#content").css("opacity", "1");
                             $("#head-bar").show();
-                            $( "#btnBuy").unbind( "click" );
+                            $("#btnBuy").unbind( "click" );
+                            $("#series-btnBuy").unbind( "click" );
+                            $("#anime-btnBuy").unbind( "click" );
+
                         }
 
                         function closeTrailerOverlay()
