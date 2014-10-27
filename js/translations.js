@@ -84,7 +84,7 @@ var Translations = function () {
         $('#series-btnBuy').append(btnBuy);
 
         var animeBtnBuy = i18n.__('Buy');
-        $('#btnBuy').append(animeBtnBuy);
+        $('#anime-btnBuy').append(animeBtnBuy);
         $('#anime-btnBuy').append(animeBtnBuy);
 
         var buttonTrailer = i18n.__('Trailer');
