@@ -645,7 +645,9 @@
                             $("#side-bar-small").removeAttr( 'style' );
                             $("#content").css("opacity", "1");
                             $("#head-bar").show();
-                            $( "#btnBuy").unbind( "click" );
+                            $("#btnBuy").unbind( "click" );
+                            $("#anime-btnBuy").unbind( "click" );
+                            $("#series-btnBuy").unbind( "click" );
                         }
 
                         function closeMovie()
@@ -677,7 +679,10 @@
                             $("#side-bar-small").removeAttr( 'style' );
                             $("#content").css("opacity", "1");
                             $("#head-bar").show();
-                            $( "#btnBuy").unbind( "click" );
+                            $("#btnBuy").unbind( "click" );
+                            $("#series-btnBuy").unbind( "click" );
+                            $("#anime-btnBuy").unbind( "click" );
+
                         }
 
                         function closeTrailerOverlay()
