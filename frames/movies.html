@@ -24,6 +24,8 @@
             var yifysubtitle = require('../js/yifysubtitle.js');
             var favorites = require('../js/favorites.js');
             var translations = require('../js/translations.js');
+            var xbmc = require('nodebmc');
+            var devices = [];
 
             $(document).ready(function() {
 
@@ -81,6 +83,11 @@
                     }
                 });
 
+                // Browse for xbmc clients
+                var browser = new xbmc.Browser();
+                browser.on('deviceOn', function(device){
+                    devices.push(device);
+                });
             });
         </script>
 
@@ -306,6 +313,12 @@
                             $('#date').empty();
                             $('#date').append('<span class="glyphicon glyphicon-calendar"></span>&nbsp;&nbsp;');
 
+                            $(devices).each(function(index) {
+                                var device = devices[index];
+                                $("#movie .dropdown-toggle").removeClass( "disabled" );
+                                $("#movie .dropdown-menu").append('<li class="xmbcPlay" data-name="'+device.name+'"><a><i class="glyphicon glyphicon-play"></i>&nbsp;&nbsp;'+device.name+'</a></li>');
+                            });
+
                             //Insert backdrop path
                             $( "<style> #customCSS {position: absolute; top: 0; bottom: 0;left: 0; right: 0; z-index: -100; background: url("+movie.fanart+") no-repeat center center fixed; -webkit-background-size: cover; background-size: cover; color: #e9e9e9;}</style>" ).appendTo("#customCSS");
 
@@ -394,6 +407,24 @@
                                     var movieB64 = new Buffer(JSON.stringify(movie)).toString('base64');
                                     main.go("players/movie-player.html?movieId=" + movieB64);
                                 }
+                            });
+
+                            $("body").on("click", ".xmbcPlay", function () {
+                                var deviceId = $(this).data("name");
+                                if(movie.torrents !== "") {
+                                    var movieB64 = new Buffer(JSON.stringify(movie)).toString('base64');
+                                    main.go("players/movie-player.html?movieId="+movieB64+"&xbmc="+deviceId);
+                                }
+
+
+                                var deviceId = $(this).data("name");
+                                var tmpCurrentTorrent = currentTorrent.split('magnet:?xt=urn:btih:');
+                                tmpCurrentTorrent = tmpCurrentTorrent[1];
+                                tmpCurrentTorrent = new Buffer(JSON.stringify(tmpCurrentTorrent)).toString('base64');
+                                var tmpTorrents = new Buffer(JSON.stringify(torrents)).toString('base64');
+                                var tmpTitle = new Buffer(JSON.stringify(episodeTitle)).toString('base64');
+                                var tmpFanart = new Buffer(JSON.stringify(fanart)).toString('base64')
+                                main.go("players/series-player.html?magnet=" + tmpCurrentTorrent+"&torrents="+tmpTorrents+"&title="+tmpTitle+"&image="+tmpFanart+"&xbmc="+deviceId);
                             });
 
                             $("#head-bar").hide();
@@ -685,7 +716,14 @@
                                     </div>
                                     <div id="plot" class="ptb-10" style="max-width:800px;"></div>
                                     <div class="ptb-10">
-                                        <button id="btnPlay" class="btn btn-success btn-sm"><i class='glyphicon glyphicon-play'></i>&nbsp;&nbsp;</button>
+                                        <div class="btn-group">
+                                            <button type="button" id="btnPlay" class="btn btn-success btn-sm"><i class='glyphicon glyphicon-play'></i>&nbsp;&nbsp;</button>
+                                            <button type="button" class="btn btn-success dropdown-toggle btn-sm disabled" data-toggle="dropdown">
+                                                <span class="caret"></span>
+                                            </button>
+                                            <ul class="dropdown-menu" role="menu">
+                                            </ul>
+                                        </div>
                                         <button id="btnTrailer" class="btn btn-primary btn-sm"><i class='glyphicon glyphicon-film'></i>&nbsp;&nbsp;</button>
                                         <button id="btnBuy" class="btn btn-danger btn-sm"><i class='glyphicon glyphicon-shopping-cart'></i>&nbsp;&nbsp;</button>
                                     </div>

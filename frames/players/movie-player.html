@@ -19,10 +19,15 @@
             var utilities = require('../js/utilities.js');
             var address = require('network-address');
             var unorm = require('unorm');
+            var xbmc = require('nodebmc');
 
             var main = require('../js/main.js');
             var translations = require('../js/translations.js');
             var settings = require('../js/settings.js');
+
+            var devices = [];
+            var external = false;
+            var xbmcDevice;
 
             $(document).ready(function() {
                 translations.initialize();
@@ -30,6 +35,18 @@
 
                 $("#wrapper").append("<div class='spinner-overlay'></div>");
                 var queryString = utilities.getQueryString('movieId');
+
+                xbmcDevice = utilities.getQueryString('xbmc');
+                if( xbmcDevice != undefined && xbmcDevice != '' ) {
+                    external = true;
+                    xbmcDevice = xbmcDevice.replace('%20', ' ');
+
+                    // Browse for xbmc clients
+                    var browser = new xbmc.Browser();
+                    browser.on('deviceOn', function(device){
+                        devices.push(device);
+                    });
+                }
 
                 if(queryString.indexOf('magnet:?xt=urn:btih:') == 0) {
                     var infoHash = queryString.split('magnet:?xt=urn:btih:');
@@ -139,7 +156,12 @@
 
                         //Show the video player
                         $("#loader").addClass("hide");
-                        startDefaultPlayer();
+                        if( external == false ) {
+                            startDefaultPlayer();
+                        }
+                        else {
+                            startXBMCPlayer();
+                        }
                     } else {
                         console.log("Not ready yet!");
 
@@ -248,6 +270,22 @@
 
                 video.ready(function() {
                     this.play(); //Play the video when the movie is ready
+                });
+            }
+
+            function startXBMCPlayer() {
+                $("#btnDefaultPlayer").removeClass("hide");
+                $("#btnVLC").removeClass("hide");
+
+                var ip = utilities.getIP();
+                var port = main.getEnginePort();
+                $(devices).each(function(index) {
+                    var device = devices[index];
+                    if( device.name == xbmcDevice ) {
+                        device.play('http://'+ip+':'+port+'', function(){
+                            console.log('Playing in xbmc!');
+                        });
+                    }
                 });
             }
 
