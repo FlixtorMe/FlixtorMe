@@ -1,5 +1,5 @@
 {
-  "main": "app://host/frames/movies.html",
+  "main": "app://host/frames/series.html",
   "name": "Flixtor",
   "description": "Movie and serie streamer",
   "version": "2.2.1",
@@ -10,7 +10,7 @@
   "window": {
     "title": "Flixtor",
     "icon": "images/flixtor-ico.png",
-    "toolbar": false,
+    "toolbar": true,
     "frame": false,
     "width": 1280,
     "height": 790,
@@ -37,7 +37,9 @@
     "nedb": "^0.10.5",
     "json-rpc2": "^0.8.1",
     "ip": "~0.3.1",
-    "nodebmc": "~0.0.5"
+    "nodebmc": "~0.0.5",
+    "chromecast-js": "~0.1.4",
+    "torrent-health": "~0.0.6"
   },
   "devDependencies": {
   },

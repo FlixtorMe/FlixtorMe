@@ -6,6 +6,7 @@
         <!-- CSS -->
         <link href="../styles/bootstrap.min.css" rel="stylesheet">
         <link href="../styles/bootly.css" rel="stylesheet">
+        <link href="../styles/general.css" rel="stylesheet">
 
         <!-- Scripts -->
         <script type='text/javascript' src="../js/extensions/jquery.min.js"></script>
@@ -57,20 +58,20 @@
 
             .nav-tabs>li.active>a, .nav-tabs>li.active>a:hover, .nav-tabs>li.active>a:focus {
                 color: #E4E4E4;
-                background-color: rgba(0, 0, 0, 0.3);
+                background-color: rgba(80, 116, 148, 0.3);
                 border: 1px solid transparent;
                 cursor: default;
             }
 
             .nav-tabs>li > a:hover, .nav-tabs > li > a:focus {
                 color: #E4E4E4;
-                background-color: rgba(0, 0, 0, 0.3);
+                background-color: rgba(80 ,116, 148, 0.3);
                 border: 1px solid transparent;
                 cursor: pointer;
             }
 
             .nav-tabs {
-                border-bottom: 1px solid #8992A2;
+                border-bottom: 1px solid #507494;
             }
 
             .pagination {
@@ -88,8 +89,8 @@
 
             .pagination>.active>a, .pagination>.active>span, .pagination>.active>a:hover, .pagination>.active>span:hover, .pagination>.active>a:focus, .pagination>.active>span:focus {
                 z-index: 2;
-                color: #fff;
-                background-color: rgba(0, 0, 0, 0.61);
+                color: #D6D6D6;
+                background-color: rgba(80, 116, 148, 0.61);
                 border-color: transparent;
                 cursor: default;
             }
@@ -101,9 +102,14 @@
                 line-height: 1.428571429;
                 text-decoration: none;
                 color: #D6D6D6;
-                background-color: rgba(0, 0, 0, 0.35);
+                background-color: rgba(80, 116, 148, 0.35);
                 border: transparent;
                 margin-left: -1px;
+            }
+
+            .pagination>li>a:hover, .pagination>li>span:hover {
+                background-color: rgba(80, 116, 148, 0.61);
+                color: #D6D6D6;
             }
         </style>
         <div id="wrapper">
@@ -349,7 +355,7 @@
                                                 "<td>" + torrent.date + "</td>" +
                                                 "<td>" +
                                                 "<div style='padding-top:4px'>" +
-                                                "   <button type='button' class='btn btn-xs btn-default pull-left mb-5 mr-5' onclick='viewTorrent(\"" + torrent.hash + "\");'>" +
+                                                "   <button type='button' class='btn btn-xs btn-flixtor pull-left mb-5 mr-5' onclick='viewTorrent(\"" + torrent.hash + "\");'>" +
                                                 "      <i class='glyphicon glyphicon-play'></i>&nbsp;"+translatedPlay+"</button>" +
                                             /*                                                     " <button type='button' class='btn btn-xs btn-primary pull-left'>" +
                                              "    <i class='glyphicon glyphicon-list-alt'></i>&nbsp;&nbsp;Details</button>" +*/
@@ -369,17 +375,17 @@
                         <div class="row" style="margin-right:0;">
                             <div class="col-lg-9">
                                 <div class="input-group">
-                                    <input id="txtTorrentSearch" type="text" class="form-control black-input" placeholder="">
+                                    <input id="txtTorrentSearch" type="text" class="form-control flixtor-input" placeholder="">
                                     <span class="input-group-btn">
-                                        <button class="btn btn-default" type="button" id="btnSearchTorrent" onclick="changeSearchText();">
+                                        <button class="btn btn-flixtor" type="button" id="btnSearchTorrent" onclick="changeSearchText();">
                                             <span class="glyphicon glyphicon-search"></span>
                                         </button>
                                         <span class="ml-10">
-                                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">Filter :
+                                            <button type="button" class="btn btn-flixtor dropdown-toggle" data-toggle="dropdown">Filter :
                                                 <span id="filterByStatus"></span>
                                                 <span class="caret"></span>
                                             </button>
-                                            <ul class="dropdown-menu pull-right" role="menu">
+                                            <ul class="dropdown-menu dropdown-menu-flixtor pull-right" role="menu">
                                                 <li>
                                                     <a class="filterSeeds" onclick="changeFilter('seeders');"></a>
                                                 </li>

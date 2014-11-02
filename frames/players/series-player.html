@@ -24,10 +24,12 @@ var main = require('../js/main.js');
 var translations = require('../js/translations.js');
 var settings = require('../js/settings.js');
 var xbmc = require('nodebmc');
+var chromecastjs = require('chromecast-js');
 
 var devices = [];
-var external = false;
+var external = '';
 var xbmcDevice;
+var chromecastDevice;
 
 $(document).ready(function() {
     translations.initialize();
@@ -57,12 +59,25 @@ $(document).ready(function() {
 
     xbmcDevice = utilities.getQueryString('xbmc');
     if( xbmcDevice != undefined && xbmcDevice != '' ) {
-        external = true;
+        external = 'xbmc';
         xbmcDevice = xbmcDevice.replace('%20', ' ');
 
         // Browse for xbmc clients
         var browser = new xbmc.Browser();
         browser.on('deviceOn', function(device){
+            devices.push(device);
+        });
+    }
+
+    chromecastDevice = utilities.getQueryString('chromecast');
+    if( chromecastDevice != undefined && chromecastDevice != '' ) {
+        console.log("jdifjdifjidjfidjidjf");
+        external = 'chromecast';
+        chromecastDevice = chromecastDevice.replace('%20', ' ');
+
+        // Browse for chromecast clients
+        var chromecastBrowser = new chromecastjs.Browser();
+        chromecastBrowser.on('deviceOn', function(device){
             devices.push(device);
         });
     }
@@ -162,11 +177,14 @@ function playTorrent(infoHash, imdbID) {
 
             //Show the video player
             $("#loader").addClass("hide");
-            if( external == false ) {
+            if( external == '' ) {
                 startDefaultPlayer();
             }
-            else {
+            else if( external == 'xbmc' ) {
                 startXBMCPlayer();
+            }
+            else if( external == 'chromecast' ) {
+                startChromecastPlayer();
             }
         } else {
             console.log("Not ready yet!");
@@ -290,6 +308,25 @@ function startXBMCPlayer() {
         if( device.name == xbmcDevice ) {
             device.play('http://'+ip+':'+port+'', function(){
                 console.log('Playing in xbmc!');
+            });
+        }
+    });
+}
+
+function startChromecastPlayer() {
+    $("#btnDefaultPlayer").removeClass("hide");
+    $("#btnVLC").removeClass("hide");
+
+    var ip = utilities.getIP();
+    var port = main.getEnginePort();
+    $(devices).each(function(index) {
+        var device = devices[index];
+        if( device.config.name == xbmcDevice ) {
+            device.connect();
+            device.on('connected', function(){
+                device.play('http://'+ip+':'+port+'', 0, function(){
+                    console.log('Playing in your chromecast!');
+                });
             });
         }
     });

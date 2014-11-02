@@ -1,0 +1,133 @@
+/* Define the fonts */
+@font-face {
+    font-family: BrandonTextBlack;
+    src: url(../fonts/HVD%20Fonts%20-%20BrandonText-Black.otf);
+}
+
+@font-face {
+    font-family: BrandonTextBlackItalic;
+    src: url(../fonts/HVD%20Fonts%20-%20BrandonText-BlackItalic.otf);
+}
+
+@font-face {
+    font-family: BrandonTextBold;
+    src: url(../fonts/HVD%20Fonts%20-%20BrandonText-Bold.otf);
+}
+
+@font-face {
+    font-family: BrandonTextBoldItalic;
+    src: url(../fonts/HVD%20Fonts%20-%20BrandonText-BoldItalic.otf);
+}
+
+@font-face {
+    font-family: BrandonTextLight;
+    src: url(../fonts/HVD%20Fonts%20-%20BrandonText-Light.otf);
+}
+
+@font-face {
+    font-family: BrandonTextLightItalic;
+    src: url(../fonts/HVD%20Fonts%20-%20BrandonText-LightItalic.otf);
+}
+
+@font-face {
+    font-family: BrandonTextMedium;
+    src: url(../fonts/HVD%20Fonts%20-%20BrandonText-Medium.otf);
+}
+
+@font-face {
+    font-family: BrandonTextMediumItalic;
+    src: url(../fonts/HVD%20Fonts%20-%20BrandonText-MediumItalic.otf);
+}
+
+@font-face {
+    font-family: BrandonTextRegular;
+    src: url(../fonts/HVD%20Fonts%20-%20BrandonText-Regular.otf);
+}
+
+@font-face {
+    font-family: BrandonTextRegularItalic;
+    src: url(../fonts/HVD%20Fonts%20-%20BrandonText-RegularItalic.otf);
+}
+
+@font-face {
+    font-family: BrandonTextThin;
+    src: url(../fonts/HVD%20Fonts%20-%20BrandonText-Thin.otf);
+}
+
+@font-face {
+    font-family: BrandonTextThinItalic;
+    src: url(../fonts/HVD%20Fonts%20-%20BrandonText-ThinItalic.otf);
+}
+
+/* Flixtor default form elements */
+.btn-flixtor {
+    color: #ffffff;
+    background: none;
+    border-color: #507494;
+}
+.btn-flixtor:hover {
+    color: #ffffff;
+    background: none;
+    border-color: #66afe9;
+}
+
+.btn-flixtor:focus {
+    outline: none;
+}
+
+.btn-flixtor:focus {
+    color: #ffffff;
+    text-decoration: none;
+}
+
+.dropdown-menu-flixtor {
+    background-color: #272f3a;
+    border: 1px solid #507494;
+    margin-top: -1px;
+    color: #ffffff;
+}
+
+.dropdown-menu-flixtor>li>a {
+    color: #ffffff;
+}
+
+.dropdown-menu-flixtor>li>a:hover {
+    color: #ffffff;
+    background-color: #374353;
+}
+
+
+.flixtor-input {
+    border: 1px solid #507494;
+    background: transparent;
+}
+
+input[type="text"] {
+    border: 1px solid #507494 !important;
+    background: transparent !important;
+}
+
+select {
+    border: 1px solid #507494 !important;
+    background: transparent !important;
+}
+
+/* Element shadow */
+.shadow {
+    display: block;
+    position: relative;
+}
+.shadow img {
+    display: block;
+}
+.shadow:hover::before {
+    box-shadow: none;
+}
+.shadow::before {
+    display: block;
+    content: '';
+    position: absolute;
+    width: 160px;
+    height: 100%;
+    box-shadow: inset 0px 0px 50px 1px rgba(0, 0, 0, 0.8);
+}

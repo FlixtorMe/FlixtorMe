@@ -5,6 +5,9 @@
         <!-- CSS -->
         <link href="../styles/bootstrap.min.css" rel="stylesheet">
         <link href="../styles/bootly.css" rel="stylesheet">
+        <link href="../styles/general.css" rel="stylesheet">
+
+        <link href="../styles/movies.css" rel="stylesheet">
 
         <!-- Scripts -->
         <script type='text/javascript' src="../js/extensions/jquery.min.js"></script>
@@ -90,31 +93,6 @@
                 });
             });
         </script>
-
-        <!-- Custom page style -->
-        <style>
-            body {
-                background-color: #141414;
-            }
-            .shadow {
-                display: block;
-                position: relative;
-            }
-            .shadow img {
-                display: block;
-            }
-            .shadow:hover::before {
-                box-shadow: none;
-            }
-            .shadow::before {
-                display: block;
-                content: '';
-                position: absolute;
-                width: 160px;
-                height: 100%;
-                box-shadow: inset 0px 0px 50px 1px rgba(0, 0, 0, 0.8);
-            }
-        </style>
     </head>
 
     <body>
@@ -583,17 +561,17 @@
                             <div class="row" style="margin-right:0;">
                                 <div class="col-lg-10">
                                     <div class="input-group">
-                                        <input id="txtMovieSearch" type="text" class="form-control black-input" placeholder="">
+                                        <input id="txtMovieSearch" type="text" class="form-control flixtor-input" placeholder="">
                                         <span class="input-group-btn">
-                                            <button class="btn btn-default" id="btnSearchMovie" type="button" onclick="changeSearchText();">
+                                            <button class="btn btn-flixtor" id="btnSearchMovie" type="button" onclick="changeSearchText();">
                                                 <span class="glyphicon glyphicon-search"></span>
                                             </button>
                                             <span class="ml-10">
-                                                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">Genre
+                                                <button type="button" class="btn btn-flixtor dropdown-toggle" data-toggle="dropdown">Genre
                                                     <span id="filterByGenre"></span>
                                                     <span class="caret"></span>
                                                 </button>
-                                                <ul class="dropdown-menu" style="max-height:400px;overflow-y:auto;" role="menu" id="ddmGenres">
+                                                <ul class="dropdown-menu dropdown-menu-flixtor" style="max-height:400px;overflow-y:auto;" role="menu" id="ddmGenres">
                                                     <li>
                                                         <a class="genreAll" onclick="changeFilterGenre('All');"></a>
                                                     </li>
@@ -663,11 +641,11 @@
                                                 </ul>
                                             </span>
                                             <span class="ml-10">
-                                                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">Filter
+                                                <button type="button" class="btn btn-flixtor dropdown-toggle" data-toggle="dropdown">Filter
                                                     <span id="filterByCategory"></span>
                                                     <span class="caret"></span>
                                                 </button>
-                                                <ul class="dropdown-menu pull-right" role="menu" id="ddmFilter">
+                                                <ul class="dropdown-menu dropdown-menu-flixtor pull-right" role="menu" id="ddmFilter">
                                                     <li>
                                                         <a class="filterMostDownloaded" onclick="changeFilterCategory('Most downloaded')"></a>
                                                     </li>
