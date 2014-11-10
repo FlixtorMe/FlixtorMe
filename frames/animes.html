@@ -6,10 +6,16 @@
         <!-- CSS -->
         <link href="../styles/bootstrap.min.css" rel="stylesheet">
         <link href="../styles/bootly.css" rel="stylesheet">
+        <link href="../styles/general.css" rel="stylesheet">
+
+        <link href="../styles/series.css" rel="stylesheet">
 
         <!-- Scripts -->
         <script type='text/javascript' src="../js/extensions/jquery.min.js"></script>
         <script type='text/javascript' src="../js/extensions/bootstrap.min.js"></script>
+        <script type='text/javascript' src="../js/extensions/jquery-ui.js"></script>
+        <script type='text/javascript' src="../js/extensions/circle-progress.js"></script>
+
         <script src="../js/extensions/jquery.isotope.min.js"></script>
         <script src="../js/extensions/nwcontextmenu.js"></script>
 
@@ -18,9 +24,16 @@
             var main = require('../js/main.js');
             var callwcf = require('../js/callwcf.js');
             var gui = require('nw.gui');
-            var yifysubtitle = require('../js/yifysubtitle.js');
+            var subtitles = require('../js/subtitle.js');
             var favorites = require('../js/favorites.js');
             var translations = require('../js/translations.js');
+            var dateFormat = require('dateformat');
+            var readTorrent = require('read-torrent');
+            var health = require('torrent-health');
+            var xbmc = require('nodebmc');
+            var chromecastjs = require('chromecast-js');
+            var xbmcDevices = [];
+            var chromecastDevices = [];
 
             $(document).ready(function() {
 
@@ -30,6 +43,8 @@
                 //Scroll bar
                 $(window).resize(function() {
                     $("#serieContainer").css('max-height', ($(window).height() - 95) + "px");
+                    var height = $("#content").height()-25;
+                    $(".container").height(height);
                 }).trigger("resize");
 
                 //Search key press (enter)
@@ -76,36 +91,22 @@
                         }
                     }
                 });
+
+                // Browse for xbmc clients
+                var xbmcBrowser = new xbmc.Browser();
+                xbmcBrowser.on('deviceOn', function(device){
+                    xbmcDevices.push(device);
+                });
+
+                // Browse for chromecast clients
+                var chromecastBrowser = new chromecastjs.Browser();
+                chromecastBrowser.on('deviceOn', function(device){
+                    chromecastDevices.push(device);
+                })
             });
         </script>
-
-        <!-- Custom page style -->
-        <style>
-            body {
-                background-color: #141414;
-            }
-            .shadow {
-                display: block;
-                position: relative;
-            }
-            .shadow img {
-                display: block;
-            }
-            .shadow:hover::before {
-                box-shadow: none;
-            }
-            .shadow::before {
-                display: block;
-                content: '';
-                position: absolute;
-                width: 160px;
-                height: 100%;
-                box-shadow: inset 0px 0px 50px 1px rgba(0, 0, 0, 0.8);
-            }
-        </style>
     </head>
     <body>
-    <div id="customCSS"></div>
     <div id="wrapper">
             <div id="top-bar">
                 <div type="button" class="top-titlebar-back-button" title="" onclick="closeSerieDetail();">
@@ -316,14 +317,36 @@
                             $('#title' ).empty();
                             $('.favorites-template').empty();
                             $('#genres').empty();
+                            $('#genres').append('<span class="glyphicon glyphicon-tag"></span>&nbsp;&nbsp');
+                            $('#rating').css('width', '0% !important');
+                            $('#rating').attr('title', '');
                             $('#plot').empty();
                             $('#network').empty();
+                            $('#network').append('<span class="glyphicon glyphicon-home"></span>&nbsp;&nbsp');
                             $('#runtime').empty();
                             $('#runtime').append('<span class="glyphicon glyphicon-time"></span>&nbsp;&nbsp');
                             $('#date').empty();
                             $('#date').append('<span class="glyphicon glyphicon-calendar"></span>&nbsp;&nbsp;');
+                            $('#info').empty();
+                            $('#info').append('<span class="glyphicon glyphicon-info-sign"></span>&nbsp;&nbsp;');
 
                             var anime = animeID.firstChild.innerHTML;
+                            var torrents;
+                            var currentTorrent;
+                            var currentSubtitle;
+                            var episodeTitle;
+
+                            $(chromecastDevices).each(function(index) {
+                                var device = chromecastDevices[index];
+                                $("#serie .dropdown-toggle").removeClass( "disabled" );
+                                $("#serie .devices").append('<li class="chromecastPlay" data-name="'+device.config.name+'"><a><i class="glyphicon glyphicon-play"></i>&nbsp;&nbsp;'+device.config.name+'</a></li>');
+                            });
+
+                            $(xbmcDevices).each(function(index) {
+                                var device = xbmcDevices[index];
+                                $("#serie .dropdown-toggle").removeClass( "disabled" );
+                                $("#serie .devices").append('<li class="xmbcPlay" data-name="'+device.name+'"><a><i class="glyphicon glyphicon-play"></i>&nbsp;&nbsp;'+device.name+'</a></li>');
+                            });
 
                             callwcf.searchAnimeDetail( anime, function(results) {
                                 if( results !== 'error' ) {
@@ -336,7 +359,7 @@
                                         else {
                                             $(".favorites-template").append('<label onclick="addToFavorites(this);" title="Add to favorites" class="current-favorites"><div style="display: none">'+JSON.stringify(anime)+'</div><i class="glyphicon glyphicon-heart-empty"></i></label>');
                                         }
-                                    })
+                                    });
 
                                     //Set variables to html
                                     $("#poster").attr('src', anime.malimg);
@@ -350,7 +373,7 @@
                                         var gen = tmpGenres[index];
                                         translatedGen = translations.translate(gen);
                                         translatedGenres.push(translatedGen);
-                                    })
+                                    });
                                     var genres = translatedGenres.join(", ");
                                     $("#genres").append(genres);
 
@@ -372,21 +395,242 @@
                                         $("#date").addClass("hide");
                                     }
 
+                                    $("#info").append(anime.season);
+
                                     if(anime.producers) {
                                         $("#network").append(anime.producers);
                                     } else {
                                         $("#network").addClass("hide");
                                     }
 
+                                    $("#rating").attr("style", "width:" + anime.score*10 + "% !important");
+                                    $("#rating").attr("title", anime.score+"/10");
+
+                                    var formatMovie = function (id, episodes) {
+                                        var torrents = {};
+                                        $(episodes).each(function(index) {
+                                            var item = episodes[index];
+                                            var quality = item.quality.match(/[0-9]+p/)[0];
+                                            torrents['torrents'] = {};
+                                            torrents['torrents'][quality] = {
+                                                url: item.magnet
+                                            };
+                                            torrents['first_aired'] = item.time;
+                                        });
+
+                                        return torrents;
+                                    };
+
+                                    var formatTV = function (id, episodes) {
+                                        var torrents = {};
+                                        $(episodes).each(function(index) {
+                                            var item = episodes[index];
+                                            var quality = item.quality.match(/[0-9]+p/)[0];
+                                            var match = item.name.match(/[\s_]([0-9]+(-[0-9]+)?|CM|OVA)[\s_]/);
+                                            if (!match) {
+                                                return;
+                                            }
+                                            var episode = match[1];
+                                            if (!torrents[episode]) {
+                                                torrents[episode] = {};
+                                                torrents[episode]['torrents'] = {};
+                                            }
+                                            torrents[episode]['title'] = episode;
+                                            torrents[episode]['first_aired'] = item.time;
+                                            torrents[episode]['torrents'][quality] = {
+                                                url: item.magnet
+                                            };
+                                        });
+                                        return torrents;
+                                    };
+
+                                    if( anime.type == "Movie" ) {
+                                        anime.episodes = formatMovie(anime.id, anime.episodes);
+                                    }
+                                    else {
+                                        anime.episodes = formatTV(anime.id, anime.episodes);
+                                    }
+
+                                    var translatedSeason = translations.translate('Season');
+                                    var translatedEpisode = translations.translate('Episode');
+
+                                    $("#accordion").append('<h3 id="season-1" class="accordion-header">'+translatedSeason+' 1</h3>');
+
+                                    $("#season-1").after('<div class="episode-wrapper"></div>');
+
+                                    if( anime.type == "Movie" ) {
+                                        var airDate = dateFormat(new Date(anime.episodes.first_aired * 1000), "dd mmm yy");
+
+                                        $("#season-1").next().append("<div class='episode' data-date='" + anime.episodes.first_aired + "' data-episode='1' data-season='1' data-title='" + escape(anime.name) + "' data-torrents='" + JSON.stringify(anime.episodes.torrents) + "'><div style='color: #61666d; float: left; margin-right: 10px;'>1</div><div style='float: left'>"+anime.name+"</div><div style='color: #61666d; float: right'>&nbsp;&nbsp;&nbsp;"+airDate+"</div><div style='clear: both;'</div></div>");
+
+                                    }
+                                    else {
+                                        for(var index in anime.episodes) {
+                                            var episode = anime.episodes[index];
+                                            var airDate = dateFormat(new Date(episode.first_aired * 1000), "dd mmm yy");
+
+                                            $("#season-1").next().append("<div class='episode' data-date='" + episode.first_aired + "' data-episode='" + index + "' data-season='1' data-title='" + escape(episode.title) + "' data-torrents='" + JSON.stringify(episode.torrents) + "'><div style='color: #61666d; float: left; margin-right: 10px;'>"+episode.title+"</div><div style='float: left'>"+translatedEpisode+" "+episode.title+"</div><div style='color: #61666d; float: right'>&nbsp;&nbsp;&nbsp;"+airDate+"</div><div style='clear: both;'</div></div>");
+                                        }
+                                    }
+
+                                    $( "#accordion" ).accordion({
+                                        heightStyle: "content",
+                                        collapsible: true
+                                    });
+
+                                    $(".episode").click(function () {
+                                        $("#episode-title").empty();
+                                        $("#quality").empty();
+                                        $("#episode-airdate").empty();
+                                        $("#episode-info").empty();
+                                        $("#episode-overview").empty();
+
+                                        $(".selected").removeClass("selected");
+                                        $(".media").removeClass("on");
+                                        $(this).addClass("selected");
+
+                                        episodeTitle = unescape($(this).data("title"));
+                                        var airDate = $(this).data("date");
+                                        airDate = dateFormat(new Date(airDate * 1000), "dddd, mmmm dS, yyyy, h:MM TT");
+
+                                        var episode = $(this).data("episode");
+                                        var season = $(this).data("season");
+                                        torrents = $(this).data("torrents");
+
+
+                                        for (var key in torrents) {
+                                            var torrent = torrents[key];
+                                            if( key !== '0' ) {
+                                                $("#quality").append('<button data-torrent="'+torrent.url+'" class="btn btn-quality" style="width: 100%;">'+key+'<label title=""><div style="width: 20px; position: absolute; top: 2px; right: 5px;" class="circle"></div></label></button>');
+                                            }
+                                        }
+
+                                        $('.circle').circleProgress({
+                                            value: 0,
+                                            thickness: 2,
+                                            size: 14,
+                                            emptyFill: "#272f3a"
+                                        });
+
+                                        // Select first quality
+                                        $("#quality").find(".btn-quality:first").trigger("click");
+
+                                        $("#episode-title").append(translatedEpisode+" "+episodeTitle);
+                                        $("#episode-info").append(translatedSeason+" "+season+" "+translatedEpisode+" "+episode);
+                                        $("#episode-airdate").append("Airdate: "+airDate);
+
+                                    });
+
                                     $("#btnBuy").click(function () {
                                         var shoppingUrl = 'https://www.google.com/search?q='+anime.name+' anime&tbm=shop';
                                         gui.Shell.openExternal(shoppingUrl);
-
                                     });
 
-                                    $("#btnEpisodeList").click(function () {
+                                    /*$("#btnEpisodeList").click(function () {
                                         main.go("players/anime-player.html?animeId=" + anime.id);
+                                    });*/
+
+                                    $("#btnPlay").click(function () {
+                                        var tmpCurrentTorrent = currentTorrent.split('magnet:?xt=urn:btih:');
+                                        tmpCurrentTorrent = tmpCurrentTorrent[1];
+                                        tmpCurrentTorrent = new Buffer(JSON.stringify(tmpCurrentTorrent)).toString('base64');
+                                        var tmpTorrents = new Buffer(JSON.stringify(torrents)).toString('base64');
+                                        var tmpTitle = new Buffer(JSON.stringify(episodeTitle)).toString('base64');
+                                        main.go("players/series-player.html?magnet=" + tmpCurrentTorrent+"&torrents="+tmpTorrents+"&title="+tmpTitle+"&subtitle="+currentSubtitle);
                                     });
+
+                                    $("body").on("click", ".xmbcPlay", function () {
+                                        var deviceId = $(this).data("name");
+                                        var tmpCurrentTorrent = currentTorrent.split('magnet:?xt=urn:btih:');
+                                        tmpCurrentTorrent = tmpCurrentTorrent[1];
+                                        tmpCurrentTorrent = new Buffer(JSON.stringify(tmpCurrentTorrent)).toString('base64');
+                                        var tmpTorrents = new Buffer(JSON.stringify(torrents)).toString('base64');
+                                        var tmpTitle = new Buffer(JSON.stringify(episodeTitle)).toString('base64');
+                                        main.go("players/series-player.html?magnet=" + tmpCurrentTorrent+"&torrents="+tmpTorrents+"&title="+tmpTitle+"&xbmc="+deviceId);
+                                    });
+
+                                    $("body").on("click", ".chromecastPlay", function () {
+                                        var deviceId = $(this).data("name");
+                                        var tmpCurrentTorrent = currentTorrent.split('magnet:?xt=urn:btih:');
+                                        tmpCurrentTorrent = tmpCurrentTorrent[1];
+                                        tmpCurrentTorrent = new Buffer(JSON.stringify(tmpCurrentTorrent)).toString('base64');
+                                        var tmpTorrents = new Buffer(JSON.stringify(torrents)).toString('base64');
+                                        var tmpTitle = new Buffer(JSON.stringify(episodeTitle)).toString('base64');
+                                        main.go("players/series-player.html?magnet=" + tmpCurrentTorrent+"&torrents="+tmpTorrents+"&title="+tmpTitle+"&chromecast="+deviceId);
+                                    });
+
+                                    $("body").on("click", ".btn-quality", function () {
+                                        $(".btn-quality").removeClass("current");
+                                        $(this).addClass('current');
+                                        var current = $(this);
+                                        var torrent = $(this).data("torrent");
+
+                                        $(current).find('.circle').hide();
+                                        $(current).find('label').append('<img style="width: 14px; height: 14px; position: absolute; right: 8px; top: 3px;" id="img-spinner" src="../images/ajax-loader.gif" alt="Loading"/>');
+
+                                        health(torrent).then(function(health) {
+                                            var ratio = health.peers > 0 ? (health.seeds / health.peers) : health.seeds;
+
+                                            // Normalize the data. Convert each to a percentage
+                                            var normalizedRatio = Math.min(ratio / 5 * 100, 100);
+                                            // Seeds: Anything above 30 seeds is good
+                                            var normalizedSeeds = Math.min(health.seeds / 30 * 100, 100);
+
+                                            // Weight the above metrics differently
+                                            // Ratio is weighted 60% whilst seeders is 40%
+                                            var ratioWeight = normalizedRatio * 0.6;
+                                            var seedsWeight = normalizedSeeds * 0.4;
+                                            var totalWeight = (ratioWeight + seedsWeight) / 100;
+
+                                            $(current).find('.circle').show();
+
+                                            $(current).find('label').attr('title', 'Seeds '+health.seeds+' / Peers '+health.peers);
+                                            $(current).find('.circle').circleProgress({
+                                                value: totalWeight,
+                                                animation: false,
+                                                fill: {
+                                                    color: "#66afe9"
+                                                }
+                                            });
+
+                                            $(current).find('#img-spinner').remove();
+
+                                        })
+                                        .catch(function (err) {
+                                            console.error(err);
+                                            $(current.find('label').attr('title', 'Seeds unknown / Peers unknown'));
+                                        });
+
+                                        readTorrent(torrent, function(err, torrentInfo) {
+                                            subtitles.search(torrentInfo.name, function (subs) {
+                                                $('.subtitles').empty();
+                                                $('.subtitles').append('<li><a class="subtitle" data-subname="No subtitle" data-subiso="" >No subtitle</a></li>');
+                                                if( subs !== false ) {
+                                                    console.log(subs);
+                                                    for (var key in subs) {
+                                                        var sub = subs[key];
+                                                            $(".subtitles").append('<li><a class="subtitle" data-subname="'+sub.languageName+'" data-subiso="'+sub.languageName+'" >'+sub.languageName+'</a></li>');
+                                                    }
+                                                }
+                                            });
+                                        });
+                                        currentTorrent = torrent;
+                                    });
+
+                                    $("body").on("click", ".subtitle", function () {
+                                        var subIso = $(this).data("subiso");
+                                        var subName = $(this).data("subname");
+                                        $('#btnSubtitle').empty();
+                                        $('#btnSubtitle').append('<i class="glyphicon glyphicon-play"></i>&nbsp;&nbsp;'+subName+'');
+
+                                        currentSubtitle = subIso;
+                                        console.log(currentSubtitle);
+                                    });
+
+                                    $(".container").height('100%');
+
+                                    // Open first episode by default
+                                    $("#accordion").find(".episode:first").trigger("click");
 
                                     $("#content-overlay").show();
                                     $("#serie").show();
@@ -394,7 +638,6 @@
                                     $("#content").css("opacity", "0");
                                     $('#side-bar-small').attr("style", "display: none !important");
                                     $("#head-bar").hide();
-                                    $('#customCSS').animate({opacity: 0}, 0).animate({opacity: 1}, 3500);
                                 }
                                 else {
                                     console.log("Service not available");
@@ -523,26 +766,32 @@
                         function closeSerieDetail()
                         {
                             try{
-                                var subManager = yifysubtitle.getSubManager();
+                                var subManager = subtitles.getSubManager();
                                 if( subManager ) {
                                     subManager.server.listen(0);
                                     subManager.server.close();
                                 }
                             }
-                            catch(e){
+                            catch(e) {
                                 console.log(e);
                             }
 
-                            $("#customCSS").stop();
-                            $("#customCSS").removeAttr('style');
-                            $("#customCSS").empty();
+                            try{
+                                $("#accordion").accordion("destroy");
+                            }
+                            catch(e) {
+                                console.log(e);
+                            }
+
+                            $("#serie .devices").empty();
                             $("#content-overlay").hide();
                             $("#serie").hide();
                             $("#side-bar-full").show();
                             $("#side-bar-small").removeAttr( 'style' );
                             $("#content").css("opacity", "1");
                             $("#head-bar").show();
-                            $( "#btnBuy").unbind( "click" );
+                            $("#btnBuy").unbind( "click" );
+                            $("#accordion").empty();
                         }
 
                         function addToFavorites(animeJson) {
@@ -566,18 +815,17 @@
                         <div class="row" style="margin-right:0;">
                             <div class="col-lg-10">
                                 <div class="input-group">
-                                    <input id="txtAnimeSearch" type="text" class="form-control black-input" placeholder="">
+                                    <input id="txtAnimeSearch" type="text" class="form-control flixtor-input" placeholder="">
                                     <span class="input-group-btn">
-                                        <button class="btn btn-default" type="button" id="btnSearchSerie" onclick="changeSearchText();">
+                                        <button class="btn btn-flixtor" style="border-bottom-left-radius: 0px; border-top-left-radius: 0px; border-left: 0px;" type="button" id="btnSearchSerie" onclick="changeSearchText();">
                                             <span class="glyphicon glyphicon-search"></span>
                                         </button>
-
                                         <span class="ml-10">
-                                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">Genre
+                                            <button type="button" class="btn btn-flixtor dropdown-toggle" data-toggle="dropdown">Genre
                                                 <span id="filterByGenre"></span>
                                                 <span class="caret"></span>
                                             </button>
-                                            <ul class="dropdown-menu" style="Max-height:400px;overflow-y:auto;" role="menu" id="ddmGenres">
+                                            <ul class="dropdown-menu dropdown-menu-flixtor" style="Max-height:400px;overflow-y:auto;" role="menu" id="ddmGenres">
                                                 <li>
                                                     <a class="genreAll" onclick="changeFilterGenre('All');"></a>
                                                 </li>
@@ -704,11 +952,11 @@
                                             </ul>
                                         </span>
                                         <span class="ml-10">
-                                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">Filter
+                                            <button type="button" class="btn btn-flixtor dropdown-toggle" data-toggle="dropdown">Filter
                                                 <span id="filterByCategory"></span>
                                                 <span class="caret"></span>
                                             </button>
-                                            <ul class="dropdown-menu pull-right" role="menu" id="ddmFilter">
+                                            <ul class="dropdown-menu dropdown-menu-flixtor pull-right" role="menu" id="ddmFilter">
                                                 <li>
                                                     <a class="filterPopularity" onclick="changeFilterCategory('popularity')"></a>
                                                 </li>
@@ -723,11 +971,11 @@
                                     </span>
                                     <span class="input-group-btn">
                                         <span class="ml-10">
-                                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">Type
+                                            <button type="button" class="btn btn-flixtor dropdown-toggle" data-toggle="dropdown">Type
                                                 <span id="filterByType"></span>
                                                 <span class="caret"></span>
                                             </button>
-                                            <ul class="dropdown-menu" role="menu" id="ddmType">
+                                            <ul class="dropdown-menu dropdown-menu-flixtor" role="menu" id="ddmType">
                                                 <li>
                                                     <a class="typeAll" onclick="changeFilterType('All')"></a>
                                                 </li>
@@ -746,11 +994,11 @@
                                             </ul>
                                         </span>
                                         <!--<span class="ml-10">
-                                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">Status
+                                            <button type="button" class="btn btn-flixtor dropdown-toggle" data-toggle="dropdown">Status
                                                 <span id="filterByStatus"></span>
                                                 <span class="caret"></span>
                                             </button>
-                                            <ul class="dropdown-menu pull-right" role="menu" id="ddmStatus">
+                                            <ul class="dropdown-menu dropdown-menu-flixtor pull-right" role="menu" id="ddmStatus">
                                                 <li>
                                                     <a class="statusAll" onclick="changeStatusType('')"></a>
                                                 </li>
@@ -784,28 +1032,59 @@
                     <div id="serie" class="modal fade in p-30">
                         <div class="container center-block">
                             <div class="row">
-                                <div class="col-sm-3 hidden-xs">
-                                    <img id="poster" alt="" src="" width="200" class="img-responsive img-thumbnail"  />
+                                <div id="season-info" class="col-sm-4">
+                                    <div class="content-heading"><h3 id="title"></h3></div>
+                                    <img style="float:left;width:200px; margin:0px 20px 20px 0px; box-shadow: 0px 0px 15px #374353;" id="poster" src="" />
+                                    <div id="date" class="pt-10"><span class="glyphicon glyphicon-calendar"></span>&nbsp;&nbsp;</div>
+                                    <div id="runtime" class="pt-10"><span class="glyphicon glyphicon-time"></span>&nbsp;&nbsp;</div>
+                                    <div id="genres" class="pt-10"><span class="glyphicon glyphicon-tag"></span>&nbsp;&nbsp;</div>
+                                    <div id="info" class="pt-10"><span class="glyphicon glyphicon-info-sign"></span>&nbsp;&nbsp;</div>
+                                    <div id="network" class="pt-10"><span class="glyphicon glyphicon-home"></span>&nbsp;&nbsp;</div>
+                                    <div class="pt-10">
+                                        <span class="glyphicon glyphicon-star-empty"></span>&nbsp;&nbsp;
+                                        <div class="stars-template" style="display:inline-block;">
+                                            <div title="" id="rating" class="current-rating"></div>
+                                        </div>
+                                    </div>
+                                    <div style="clear: both"></div>
+                                    <div id="plot" class="pt-10"></div>
                                 </div>
-                                <div class="col-sm-9 p-10">
-                                    <a class="pull-right font-24 color-white" onclick="closeSerieDetail();"><i class='glyphicon glyphicon-remove-circle'></i></a>
-                                    <h1 id="title"></h1>
-                                    <h4 id="genres" class="mr-10" style="display:inline-block;"></h4>
-                                    <div class="favorites-template" style="display:inline-block;">
+                                <div id="season-list" class="col-sm-4">
+                                    <div id="accordion"></div>
+                                </div>
+                                <div id="season-episode" class="col-sm-4">
+                                    <div class="content-heading"><h3 id="episode-title"></h3></div>
+                                    <div id="episode-info"></div>
+                                    <div id="episode-airdate"></div>
+                                    <div class="ptb-30">
+                                    <div class="btn-group" style="width: 100%;">
+                                        <button type="button" id="btnSubtitle" class="btn btn-flixtor btn-sm" style="width: 90%;"><i class='glyphicon glyphicon-play'></i>&nbsp;&nbsp;No subtitle</button>
+                                        <button type="button" class="btn btn-flixtor dropdown-toggle btn-sm" data-toggle="dropdown" style="width: 10%;">
+                                            <span class="caret"></span>
+                                        </button>
+                                        <ul class="dropdown-menu dropdown-menu-flixtor subtitles" role="menu" style="width: 100%;">
+                                        </ul>
                                     </div>
-                                    <div id="plot" class="ptb-10" style="max-width:800px;"></div>
-                                    <div id="network">This serie is aired on </div>
+                                    </div>
                                     <div class="ptb-10">
-                                        <button id="btnEpisodeList" class="btn btn-primary btn-sm"><i class='glyphicon glyphicon-list'></i>&nbsp;&nbsp;</button>
-                                        <button id="btnBuy" class="btn btn-danger btn-sm"><i class='glyphicon glyphicon-shopping-cart'></i>&nbsp;&nbsp;</button>
+                                        <div id="quality" class="btn-group">
+                                        </div>
                                     </div>
-                                    <div id="runtime" class="pt-5"><span class="glyphicon glyphicon-time"></span>&nbsp;&nbsp;</div>
-                                    <div id="date" class="pt-5"><span class="glyphicon glyphicon-calendar"></span>&nbsp;&nbsp;</div>
+                                    <div class="ptb-10">
+                                        <div class="btn-group" style="width: 49%;">
+                                            <button type="button" id="btnPlay" class="btn btn-flixtor btn-sm" style="width: 80%;"><i class='glyphicon glyphicon-play'></i>&nbsp;&nbsp;</button>
+                                            <button type="button" class="btn btn-flixtor dropdown-toggle btn-sm disabled" data-toggle="dropdown" style="width: 20%;">
+                                                <span class="caret"></span>
+                                            </button>
+                                            <ul class="dropdown-menu-flixtor dropdown-menu devices" role="menu" style="width: 100%;">
+                                            </ul>
+                                        </div>
+                                        <button id="btnBuy" class="btn btn-flixtor btn-sm" style="width: 49%;"><i class='glyphicon glyphicon-shopping-cart'></i>&nbsp;&nbsp;</button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="modal-backdrop fade in" style="opacity:0.85;"></div>
                 </div>
             </div>
         </body>

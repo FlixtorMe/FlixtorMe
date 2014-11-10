@@ -329,6 +329,8 @@
                                 if( results !== 'error' ) {
                                     serie = results;
 
+                                    console.log(serie);
+
                                     favorites.checkIfFavorite( serie.imdb_id, function(result) {
                                         if( result == true ) {
                                             $(".favorites-template").append('<label onclick="removeFromFavorites(this)" title="Remove from favorites" class="current-favorites"><div style="display: none">'+JSON.stringify(serie)+'</div>&nbsp;&nbsp;<i class="glyphicon glyphicon-heart"></i></label>');
@@ -336,7 +338,7 @@
                                         else {
                                             $(".favorites-template").append('<label onclick="addToFavorites(this);" title="Add to favorites" class="current-favorites"><div style="display: none">'+JSON.stringify(serie)+'</div>&nbsp;&nbsp;<i class="glyphicon glyphicon-heart-empty"></i></label>');
                                         }
-                                    })
+                                    });
 
                                     fanart = serie.images.fanart;
 
@@ -554,7 +556,7 @@
 
                                         })
                                         .catch(function (err) {
-                                            console.error(err)
+                                            console.error(err);
                                             $(current.find('label').attr('title', 'Seeds unknown / Peers unknown'));
                                         });
 

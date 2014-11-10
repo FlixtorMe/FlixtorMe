@@ -56,9 +56,11 @@ $(document).ready(function() {
     console.log(title);
 
     var image = utilities.getQueryString('image');
-    image = new Buffer(image, 'base64').toString('utf-8');
-    image = jQuery.parseJSON(image);
-    console.log(image);
+    if( image != undefined && image != '' ) {
+        image = new Buffer(image, 'base64').toString('utf-8');
+        image = jQuery.parseJSON(image);
+        console.log(image);
+    }
 
     preferedSubtitle = utilities.getQueryString('subtitle');
     console.log(preferedSubtitle);
@@ -77,7 +79,6 @@ $(document).ready(function() {
 
     chromecastDevice = utilities.getQueryString('chromecast');
     if( chromecastDevice != undefined && chromecastDevice != '' ) {
-        console.log("jdifjdifjidjfidjidjf");
         external = 'chromecast';
         chromecastDevice = chromecastDevice.replace('%20', ' ');
 
