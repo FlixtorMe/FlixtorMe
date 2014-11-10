@@ -1,4 +1,5 @@
 var utilities = require('../js/utilities.js');
+var settings = require('../js/settings.js');
 var ts = require('../js/kickasstorrents/torrentScraper.js');
 
 //External functions
@@ -65,46 +66,122 @@ var searchMovies = function (sort, keywords, genre, limit, page, order, callback
                 movies.push(movie);
             });
 
-            var API_ENDPOINT = "http://api.trakt.tv/";
-            var MOVIE_PATH = 'movie';
-            var API_KEY = "24f87043f125cd2f9e8b48c114c0d6b3";
-            var url = API_ENDPOINT+MOVIE_PATH+"/summaries.json/"+API_KEY+"/"+imdbIds.join(',')+"/full";
-
-            console.log(url);
-            $.getJSON(url, function (data) {
-            }).success(function (data) {
-                if( data.status === "failure" ) {
-                    callback("error");
-                }
-                else {
-                    $.each(data, function (key, item) {
-                        $.each(movies, function (index, movie) {
-                            if( item.imdb_id === movie['imdbCode'] ) {
-                                movie.trailer = item.trailer;
-                                movie.runtime = item.runtime;
-                                movie.overview = item.overview;
-                                movie.tagline = item.tagline;
-                                movie.runtime = item.runtime;
-                                movie.poster = item.images.poster;
-                                movie.fanart = item.images.fanart;
-                                var genres = item.genres;
-                                for (var i = 0; i < genres.length; ++i) {
-                                    genres[i] = genres[i].replace(" ", "-");
-                                }
-                                genres = genres.join(", ");
-                                movie.genres = genres;
-                            }
+            /* OMDB API
+            $.each(movies, function (index, movie) {
+                var url = "http://www.omdbapi.com/?i="+movie.imdbCode+"&plot=full&r=json";
+                $.getJSON(url, function (data) {
+                }).success(function (data) {
+                        movie.runtime = data.Runtime;
+                        movie.overview = data.Plot;
+                        if (typeof data.poster !== 'undefined' || data.poster_path !== '' ) {
+                            movie.poster = data.Poster;
+                        }
+                        else {
+                            movie.poster = '../images/no-poster.png';
+                        }
+                        movie.fanart = data.Poster;
+                        if( movies.length+-1 == index ) {
+                            console.log(movies);
+                            callback(movies);
+                        }
+                    }).error(function () {
+                        utilities.showPrompt("An uncaughtException was found", "<span class='text-danger'>The OMDB service is unavailable. Please try it again later</span>.", "ok", function(answer) {
                         });
+                        callback("error");
                     });
+            });*/
 
-                    console.log(movies);
-                    callback(movies);
-                }
-            }).error(function () {
-                utilities.showPrompt("An uncaughtException was found", "<span class='text-danger'>Trakt service is unavailable. Please try it again later</span>.", "ok", function(answer) {
+            var provider = settings.readConfig('metaProvider');
+            if( provider == 'themoviedb' ) {
+                /* THE Movie DB API */
+                $.each(movies, function (index, movie) {
+                    var url = "http://api.themoviedb.org/3/movie/"+movie.imdbCode+"?api_key=a7e7f09a1273d6b663a4ea3c86859375&append_to_response=trailers";
+                        $.getJSON(url, function (data) {
+                    }).success(function (data) {
+                            movie.runtime = data.runtime;
+                            movie.overview = data.overview;
+                            var genres = data.genres;
+                            for (var i = 0; i < genres.length; ++i) {
+                                genres[i] = genres[i].name;
+                            }
+                            genres = genres.join(", ");
+                            movie.genres = genres;
+                            if (typeof data.poster !== 'undefined' || data.poster_path !== '' ) {
+                                movie.poster = "https://image.tmdb.org/t/p/w185"+data.poster_path;
+                            }
+                            else {
+                                movie.poster = '../images/no-poster.png';
+                            }
+                            movie.fanart = "https://image.tmdb.org/t/p/original"+data.backdrop_path;
+                            if( movies.length+-1 == index ) {
+                                console.log(movies);
+                                callback(movies);
+                            }
+                            if( data.trailers.youtube.length > 0 ) {
+                                movie.trailer = "https://www.youtube.com/watch?v="+data.trailers.youtube[0].source;
+                            }
+
+                        }).error(function () {
+                            utilities.showPrompt("An uncaughtException was found", "<span class='text-danger'>The moviedb service is unavailable. Please try it again later</span>.", "ok", function(answer) {
+                            });
+                            callback("error");
+                        });
                 });
-                callback("error");
-            });
+            }
+            else {
+            /* TRAKT API */
+                var API_ENDPOINT = "http://api.trakt.tv/";
+                var MOVIE_PATH = 'movie';
+                var API_KEY = "24f87043f125cd2f9e8b48c114c0d6b3";
+                var url = API_ENDPOINT+MOVIE_PATH+"/summaries.json/"+API_KEY+"/"+imdbIds.join(',')+"/full";
+
+                console.log(url);
+                $.getJSON(url, function (data) {
+                }).success(function (data) {
+                    if( data.status === "failure" ) {
+                        callback("error");
+                    }
+                    else {
+                        $.each(data, function (key, item) {
+                            $.each(movies, function (index, movie) {
+                                if( item.imdb_id === movie['imdbCode'] ) {
+                                    movie.trailer = item.trailer;
+                                    movie.runtime = item.runtime;
+                                    movie.overview = item.overview;
+                                    movie.tagline = item.tagline;
+                                    movie.runtime = item.runtime;
+                                    if (typeof item.images.poster !== 'undefined' || item.images.poster !== '' ) {
+                                        var newChars = '-300';
+                                        var position = item.images.poster.lastIndexOf(".");
+                                        var tmpOne = item.images.poster.substr(0, position);
+                                        var tmpTwo = item.images.poster.substr(position, item.images.poster.length);
+                                        var moviePoster = tmpOne + newChars + tmpTwo;
+                                        movie.poster = moviePoster;
+                                    }
+                                    else {
+                                        movie.poster = '../images/no-poster.png';
+                                    }
+
+                                    movie.fanart = item.images.fanart;
+                                    var genres = item.genres;
+                                    for (var i = 0; i < genres.length; ++i) {
+                                        genres[i] = genres[i].replace(" ", "-");
+                                    }
+                                    genres = genres.join(", ");
+                                    movie.genres = genres;
+                                }
+                            });
+                        });
+
+                        console.log(movies);
+                        callback(movies);
+                    }
+                }).error(function () {
+                    utilities.showPrompt("An uncaughtException was found", "<span class='text-danger'>Trakt service is unavailable. Please try it again later</span>.", "ok", function(answer) {
+                    });
+                    callback("error");
+                });
+            }
         }
         else {
             callback("error");

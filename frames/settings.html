@@ -146,6 +146,26 @@
                         });
                     });
 
+                    //Get prefered metaProvider
+                    var metaProvider = settings.readConfig('metaProvider');
+                    var metaProviderDropdown = document.getElementById("metaProvider");
+                    var i;
+                    for (i = 0; i < metaProviderDropdown.options.length; i++) {
+                        if( metaProviderDropdown.options[i].value === metaProvider) {
+                            metaProviderDropdown.options[i].selected = true;
+                        }
+                    }
+                    $('#metaProviderSaved').append(saved+' &nbsp;<span class="glyphicon glyphicon-ok"></span>');
+                    //Set prefered metaProvider
+                    $('#metaProvider').change(function() {
+                        var newmetaProvider = $(this).val();
+                        settings.writeConfig('metaProvider', newmetaProvider);
+                        //$('#metaProviderSaved').show();
+                        $('#metaProviderSaved').fadeIn('fast', function(){
+                            $('#metaProviderSaved').fadeOut(1500);
+                        });
+                    });
+
                     //Get subtitle
                     /*var subtitle = settings.readConfig('subtitle');
                     var subtititles = localization.subtitles;
@@ -304,6 +324,8 @@
 
                         var defaultLanguage = $('#language option[value="en"]');
                         defaultLanguage.attr('selected', 'selected');
+                        var defaultMetaProvider = $('#metaProvider option[value="trakt"]');
+                        defaultMetaProvider.attr('selected', 'selected');
                         var defaultsubtitle = $('#subtitles option[value=""]');
                         defaultsubtitle.attr('selected', 'selected');
                         $('#streamingPort').attr("placeholder", random);
@@ -349,6 +371,16 @@
                                 </select>
                             </div>
                             <label id="languageSaved" style="display: none" class="control-label"></label>
+                        </div>
+                        <div class="form-group">
+                            <div style="padding-top: 7px" class="col-sm-2 settingsMetaProvider"></div>
+                            <div class="col-sm-4">
+                                <select id="metaProvider" class="form-control">
+                                    <option value="trakt">Trakt.tv</option>
+                                    <option value="themoviedb">The moviedb</option>
+                                </select>
+                            </div>
+                            <label id="metaProviderSaved" style="display: none" class="control-label"></label>
                         </div>
                         <!--<div class="form-group">
                        <div style="padding-top: 7px" class="col-sm-2 settingsSubtitle"></div>

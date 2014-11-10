@@ -5,7 +5,7 @@
 }
 
 #season-info {
-    font-family: BrandonTextRegular;
+    /*font-family: BrandonTextRegular;*/
     overflow: auto;
     height: 100%;
 }
@@ -30,7 +30,7 @@
 }
 
 .episode-wrapper {
-    font-family: BrandonTextLight;
+    /*font-family: BrandonTextLight;*/
     overflow: hidden;
     overflow-y: auto;
 }

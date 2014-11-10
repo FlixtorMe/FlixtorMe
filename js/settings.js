@@ -6,7 +6,7 @@ var Settings = function() {
 
     this.readConfig = function(section) {
         if ( !fs.existsSync(data_path+'/config.json') ) {
-            var defaults = {"language":"en","cacheDir":"./data","subtitle":"","connectionLimit":"100","dht":"500","streamingPort":"","clearCache":true};
+            var defaults = {"language":"en","cacheDir":"./data","subtitle":"","connectionLimit":"100","dht":"500","streamingPort":"","clearCache":true, "metaProvider": "trakt"};
             var stringifyDefaults = JSON.stringify(defaults);
             try {
                 fs.writeFile(data_path+'/config.json', stringifyDefaults, function (err) {
@@ -72,7 +72,7 @@ var Settings = function() {
     };
 
     this.restoreConfig = function() {
-        var defaults = {"language":"en","cacheDir":"./data","subtitle":"","connectionLimit":"100","dht":"500","streamingPort":"","clearCache":true};
+        var defaults = {"language":"en","cacheDir":"./data","subtitle":"","connectionLimit":"100","dht":"500","streamingPort":"","clearCache":true, "metaProvider": "trakt"};
         var stringifyDefaults = JSON.stringify(defaults);
         try {
             fs.writeFile(data_path+'/config.json', stringifyDefaults, function (err) {

@@ -216,16 +216,6 @@
                                             return true;
                                         }
 
-                                        if (typeof movie.poster !== 'undefined') {
-                                            var newChars = '-300';
-                                            var position = movie.poster.lastIndexOf(".");
-                                            var tmpOne = movie.poster.substr(0, position);
-                                            var tmpTwo = movie.poster.substr(position, movie.poster.length);
-                                            var moviePoster = tmpOne + newChars + tmpTwo;
-                                        }
-                                        else {
-                                            var moviePoster = '../images/no-poster.png';
-                                        }
                                         if (typeof movie.genres !== 'undefined') {
                                             var splitGem = movie.genres.split(',');
                                             var translatedGen;
@@ -250,7 +240,7 @@
                                         content += "<div id='" + movie.imdbCode + "' class='element transition m-10 isotope-item'>" +
                                                 "<a class='shadow' onClick='showDetails(this);'>" +
                                                 "<div style='display: none'>"+JSON.stringify(movie)+"</div> " +
-                                                "<img alt='image' src='" + moviePoster + "' style='width:160px; height:230px;'>" +
+                                                "<img alt='image' src='" + movie.poster + "' style='width:160px; height:230px;'>" +
                                                 "</a>" +
                                                 "<div class='p-5' style='max-width:160px;'>" +
                                                 "<div style='font-size:14px;'>" + movie.title + "</div>" +
@@ -307,21 +297,9 @@
                                 else {
                                     $(".favorites-template").append('<label onclick="addToFavorites(this);" title="Add to favorites" class="current-favorites"><div style="display: none">'+JSON.stringify(movie)+'</div>&nbsp;&nbsp;<i class="glyphicon glyphicon-heart-empty"></i></label>');
                                 }
-                            })
+                            });
 
-                            //Set variables to html
-                            if (typeof movie.poster !== 'undefined') {
-                                var newChars = '-300';
-                                var position = movie.poster.lastIndexOf(".");
-                                var tmpOne = movie.poster.substr(0, position);
-                                var tmpTwo = movie.poster.substr(position, movie.poster.length);
-                                var moviePoster = tmpOne + newChars + tmpTwo;
-                                $("#poster").attr('src', moviePoster);
-
-                            }
-                            else {
-                                $("#poster").attr('src', '../images/no-poster.png');
-                            }
+                            $("#poster").attr('src', movie.poster);
 
                             if (typeof movie.genres !== 'undefined') {
                                 var splitGem = movie.genres.split(',');

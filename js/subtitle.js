@@ -79,7 +79,7 @@ var SubManager = function(port)
 
                         console.log(manager.list);
                         openSubs.api.logout(token);
-                        cb(true);
+                        cb(manager.list);
                     }
                 );
             }
@@ -226,5 +226,47 @@ var Subtitle = function(lang, iso639, subLink)
     return sub;
 };
 
+var search = function(value, cb) {
+    var list = []; //Clear the subtitle list
+    openSubs.api.login().done(
+        function(token){
+            openSubs.api.search(token, 'all', value).done(
+                function(results){
+                    for(var i=0; i < results.length; i++)
+                    {
+                        var result = results[i];
+                        if(result.SubFormat === 'srt')
+                        {
+                            var found = false;
+                            for(var a = 0; a < list.length; a++) {
+                                if (list[a].iso639 == result.ISO639) {
+                                    found = true;
+                                    break;
+                                }
+                            }
+
+                            if(!found) {
+                                var subtitle = new Subtitle(result.LanguageName, result.ISO639, result.SubDownloadLink);
+                                list.push(subtitle);
+                            }
+                        }
+                    }
+
+                    console.log(list);
+                    openSubs.api.logout(token);
+                    cb(list);
+                }
+            );
+        }
+    );
+
+    //If an error occurs show it in the console
+    openSubs.api.on('error', function(e){
+        console.log(e);
+        cb(false);
+    });
+}
+
 module.exports = SubManager;
+module.exports.search = search;
 module.exports.getSubManager = getSubManager;

@@ -413,6 +413,9 @@ var Translations = function () {
         var settingsLanguage = i18n.__('Language:');
         $('.settingsLanguage').append(settingsLanguage);
 
+        var settingsMetaProvider = i18n.__('Movie metadata:');
+        $('.settingsMetaProvider').append(settingsMetaProvider);
+
         var settingsStreamingPort = i18n.__('Streaming port:');
         $('.settingsStreamingPort').append(settingsStreamingPort);
 

@@ -164,5 +164,8 @@
 	"ONA": "ONA",
 	"Not Airing": "Not Airing",
 	"Currently Airing": "Currently Airing",
-	"name": "name"
+	"name": "name",
+	"Movies metadata provider:": "Movies metadata provider:",
+	"Movies metadata:": "Movies metadata:",
+	"Movie metadata:": "Movie metadata:"
 }

@@ -21,6 +21,7 @@ var address = require('network-address');
 var unorm = require('unorm');
 
 var main = require('../js/main.js');
+var subtitles = require('../js/subtitle.js');
 var translations = require('../js/translations.js');
 var settings = require('../js/settings.js');
 var xbmc = require('nodebmc');
@@ -30,6 +31,8 @@ var devices = [];
 var external = '';
 var xbmcDevice;
 var chromecastDevice;
+
+var preferedSubtitle;
 
 $(document).ready(function() {
     translations.initialize();
@@ -56,6 +59,9 @@ $(document).ready(function() {
     image = new Buffer(image, 'base64').toString('utf-8');
     image = jQuery.parseJSON(image);
     console.log(image);
+
+    preferedSubtitle = utilities.getQueryString('subtitle');
+    console.log(preferedSubtitle);
 
     xbmcDevice = utilities.getQueryString('xbmc');
     if( xbmcDevice != undefined && xbmcDevice != '' ) {
@@ -280,6 +286,11 @@ function startDefaultPlayer()
     //Set selected style to the buttons
     $(".vjs-fontcolor-button .vjs-menu-item[data-val='" + subManager.config.color +"']").addClass("vjs-selected"); //color
     $(".vjs-fontsize-button .vjs-menu-item[data-val='" + subManager.config.size +"']").addClass("vjs-selected"); //size
+
+    if( preferedSubtitle !== '' ) {
+        $(".vjs-subtitles-button .vjs-menu-item:contains(" + preferedSubtitle +")").addClass("vjs-selected"); //subtitle
+        $("body").find(".vjs-subtitles-button .vjs-menu-item:contains(" + preferedSubtitle +")").trigger("click");
+    }
 
     video.on('error', function(event){
         //Remove default player
