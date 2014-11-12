@@ -425,3 +425,13 @@ div.spinner-overlay {
     top: 0;
     left: 0px;
 }
+
+.modal-content {
+    color: white !important;
+    background: url('../images/background.png') repeat center center fixed;
+}
+
+.modal-header {
+    background-color: #272f3a;
+    border-bottom: 1px solid #374353;
+}

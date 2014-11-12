@@ -1,12 +1,12 @@
 //External modules
 var fs = require('fs');
 var data_path = global.window.nwDispatcher.requireNwGui().App.dataPath;
+var defaults = {"version":"2.2.1","language":"en","cacheDir":"./data","subtitle":"","connectionLimit":"100","dht":"500","streamingPort":"","clearCache":true, "metaProvider": "trakt"};
 
 var Settings = function() {
 
     this.readConfig = function(section) {
         if ( !fs.existsSync(data_path+'/config.json') ) {
-            var defaults = {"language":"en","cacheDir":"./data","subtitle":"","connectionLimit":"100","dht":"500","streamingPort":"","clearCache":true, "metaProvider": "trakt"};
             var stringifyDefaults = JSON.stringify(defaults);
             try {
                 fs.writeFile(data_path+'/config.json', stringifyDefaults, function (err) {
@@ -72,7 +72,6 @@ var Settings = function() {
     };
 
     this.restoreConfig = function() {
-        var defaults = {"language":"en","cacheDir":"./data","subtitle":"","connectionLimit":"100","dht":"500","streamingPort":"","clearCache":true, "metaProvider": "trakt"};
         var stringifyDefaults = JSON.stringify(defaults);
         try {
             fs.writeFile(data_path+'/config.json', stringifyDefaults, function (err) {
@@ -85,7 +84,6 @@ var Settings = function() {
             console.log(err);
         }
     };
-
 };
 
 module.exports = new Settings();

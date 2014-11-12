@@ -335,6 +335,41 @@ function getYoutubeID(ytID) {
     return tmpArray[1];
 }
 
+function checkForUpdates() {
+    if( !(window.sessionStorage.history) ) {
+        var $ = window.$;
+        var currentVersion = settings.readConfig('version');
+        $.getJSON("http://update.flixtor.me", function (data) {
+        }).success(function (data) {
+                if( data.version !== currentVersion ) {
+                    utilities.showPrompt(translations.translate("New Flixtor version"), "<span>"+translations.translate("A new Flixtor release is available. You can directly download it")+" <a id='download-url' href='javascript:void(0)'>"+translations.translate("here")+"</a></span>.", "ok", function(answer) {
+                    });
+                }
+            }).error(function () {
+        });
+        $("body").on("click", "#download-url", function () {
+            var platform = getPlatform();
+            if( platform == 'win32' || platform == 'win64' ) {
+                gui.Shell.openExternal("http://flixtor.me/download/Flixtor.exe");
+            }
+            else if( platform == 'darwin' ) {
+                gui.Shell.openExternal("http://flixtor.me/download/Flixtor_mac.tar.gz");
+            }
+            else if( platform == 'linux' ) {
+                if( os.arch() == 'x64' ) {
+                    gui.Shell.openExternal("http://flixtor.me/download/Flixtor_linux64.tar.gz");
+                }
+                else {
+                    gui.Shell.openExternal("http://flixtor.me/download/Flixtor_linux32.tar.gz");
+                }
+            }
+            else {
+                gui.Shell.openExternal("http://flixtor.me");
+            }
+        })
+    }
+}
+
 //Disable file drop over
 window.addEventListener("dragover", function (e) {
     e = e || event;
@@ -388,6 +423,7 @@ module.exports.getEnginePort = getEnginePort;
 module.exports.goBack = goBack;
 module.exports.go = go;
 module.exports.getYoutubeID = getYoutubeID;
+module.exports.checkForUpdates = checkForUpdates;
 
 process.on('uncaughtException', function (err) {
     //Logging with google analytics
@@ -397,7 +433,7 @@ process.on('uncaughtException', function (err) {
         }
     });
 
-    utilities.showPrompt("An uncaughtException was found", "Error: <span class='text-danger'>" + err.message.toString() + "</span><br/>The program will end.", "ok", function(answer) {
+    utilities.showPrompt("An uncaughtException was found", "Error: <span>" + err.message.toString() + "</span><br/>The program will end.", "ok", function(answer) {
         process.exit(1);
     });
 });

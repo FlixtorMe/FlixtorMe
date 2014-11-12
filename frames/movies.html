@@ -35,6 +35,8 @@
                 translations.initialize();
                 translations.translateDefaults();
 
+                main.checkForUpdates();
+
                 //Scroll bar
                 $(window).resize(function() {
                     $("#movieContainer").css('max-height', ($(window).height() - 95) + "px");

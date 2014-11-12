@@ -1,6 +1,7 @@
 var utilities = require('../js/utilities.js');
 var settings = require('../js/settings.js');
 var ts = require('../js/kickasstorrents/torrentScraper.js');
+var translations = require('../js/translations.js');
 
 //External functions
 var searchMovies = function (sort, keywords, genre, limit, page, order, callback) {
@@ -85,7 +86,7 @@ var searchMovies = function (sort, keywords, genre, limit, page, order, callback
                             callback(movies);
                         }
                     }).error(function () {
-                        utilities.showPrompt("An uncaughtException was found", "<span class='text-danger'>The OMDB service is unavailable. Please try it again later</span>.", "ok", function(answer) {
+                        utilities.showPrompt("An uncaughtException was found", "<span>The OMDB service is unavailable. Please try it again later</span>.", "ok", function(answer) {
                         });
                         callback("error");
                     });
@@ -122,7 +123,7 @@ var searchMovies = function (sort, keywords, genre, limit, page, order, callback
                             }
 
                         }).error(function () {
-                            utilities.showPrompt("An uncaughtException was found", "<span class='text-danger'>The moviedb service is unavailable. Please try it again later</span>.", "ok", function(answer) {
+                            utilities.showPrompt("An uncaughtException was found", "<span>"+translations.translate("The moviedb service is unavailable. Please try it again later")+"</span>.", "ok", function(answer) {
                             });
                             callback("error");
                         });
@@ -177,7 +178,7 @@ var searchMovies = function (sort, keywords, genre, limit, page, order, callback
                         callback(movies);
                     }
                 }).error(function () {
-                    utilities.showPrompt("An uncaughtException was found", "<span class='text-danger'>Trakt service is unavailable. Please try it again later</span>.", "ok", function(answer) {
+                    utilities.showPrompt("An uncaughtException was found", "<span>"+translations.translate("Trakt service is unavailable. Please try it again later")+"</span>.", "ok", function(answer) {
                     });
                     callback("error");
                 });
@@ -277,7 +278,7 @@ var searchMovies = function (sort, keywords, genre, limit, page, order, callback
                         callback(movies);
                     }
                 }).error(function () {
-                    utilities.showPrompt("An uncaughtException was found", "<span class='text-danger'>Trakt service is unavailable. Please try it again later</span>.", "ok", function(answer) {
+                    utilities.showPrompt("An uncaughtException was found", "<span>"+translations.translate("Trakt service is unavailable. Please try it again later")+"</span>.", "ok", function(answer) {
                     });
                     callback("error");
                 });
@@ -286,7 +287,7 @@ var searchMovies = function (sort, keywords, genre, limit, page, order, callback
                 callback("error");
             }
         }).error(function () {
-            utilities.showPrompt("An uncaughtException was found", "<span class='text-danger'>Yts is unavailable. Please try it again later</span>.", "ok", function(answer) {
+            utilities.showPrompt("An uncaughtException was found", "<span>"+translations.translate("Yts is unavailable. Please try it again later")+"</span>.", "ok", function(answer) {
             });
             callback("error");
         });
@@ -314,7 +315,7 @@ var searchSeries = function (sort, keywords, genre, limit, page, callback) {
             callback("error");
         }
     }).error(function () {
-        utilities.showPrompt("An uncaughtException was found", "<span class='text-danger'>Eztv is unavailable. Please try it again later</span>.", "ok", function(answer) {
+        utilities.showPrompt("An uncaughtException was found", "<span>"+translations.translate("Eztv is unavailable. Please try it again later")+"</span>.", "ok", function(answer) {
         });
         callback("error");
     });
@@ -334,7 +335,7 @@ var searchSerieDetail = function (id, callback) {
             callback("error");
         }
     }).error(function () {
-        utilities.showPrompt("An uncaughtException was found", "<span class='text-danger'>Eztv is unavailable. Please try it again later</span>.", "ok", function(answer) {
+        utilities.showPrompt("An uncaughtException was found", "<span>"+translations.translate("Eztv is unavailable. Please try it again later")+"</span>.", "ok", function(answer) {
         });
         callback("error");
     });
@@ -354,7 +355,7 @@ var searchAnimes = function (page, type, sort, genre, keywords, status, order, l
             callback(data);
         }
     }).error(function () {
-        utilities.showPrompt("An uncaughtException was found", "<span class='text-danger'>Haruhichan is unavailable. Please try it again later</span>.", "ok", function(answer) {
+        utilities.showPrompt("An uncaughtException was found", "<span>"+translations.translate("Haruhichan is unavailable. Please try it again later")+"</span>.", "ok", function(answer) {
         });
         callback("error");
     });
@@ -373,7 +374,7 @@ var searchAnimeDetail = function (id, callback) {
             callback(data);
         }
     }).error(function () {
-        utilities.showPrompt("An uncaughtException was found", "<span class='text-danger'>Haruhichan is unavailable. Please try it again later</span>.", "ok", function(answer) {
+        utilities.showPrompt("An uncaughtException was found", "<span>"+translations.translate("Haruhichan is unavailable. Please try it again later")+"</span>.", "ok", function(answer) {
         });
         callback("error");
     });

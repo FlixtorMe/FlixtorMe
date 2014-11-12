@@ -32,11 +32,11 @@ var Utilities = function () {
         switch(type)
         {
             case "question":
-                buttons = "<div class='pull-right'><button id='btnPromptNo' class='btn btn-sm btn-default'>"+buttonNo+"</button> | " +
-                    "<button id='btnPromptYes' class='btn btn-sm btn-danger'>"+buttonQuit+"</button></div>";
+                buttons = "<div class='pull-right'><button id='btnPromptNo' class='btn btn-sm btn-flixtor'>"+buttonNo+"</button> | " +
+                    "<button id='btnPromptYes' class='btn btn-sm btn-flixtor'>"+buttonQuit+"</button></div>";
                 break;
             case "ok":
-                buttons = "<div class='pull-right'><button id='btnPromptNo' class='btn btn-sm btn-default'>"+buttonOK+"</button></div>";
+                buttons = "<div class='pull-right'><button id='btnPromptNo' class='btn btn-sm btn-flixtor'>"+buttonOK+"</button></div>";
                 break;
             default:
                 buttons = "";
