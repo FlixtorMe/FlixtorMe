@@ -1,6 +1,6 @@
 var https = require('https'),
   $ = require('cheerio'),
-  host = 'kickass.to';
+  host = 'kickass.so';
 
 exports.scrape = function(category, query, field, page, callback){
   if( field === null ) {
