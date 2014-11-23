@@ -88,6 +88,7 @@
                     }
                 });
 
+
                 // Browse for xbmc clients
                 var browser = new xbmc.Browser();
                 browser.on('deviceOn', function(device){
@@ -101,9 +102,22 @@
         <div id="customCSS"></div>
         <div id="wrapper">
             <div id="top-bar">
-                <div type="button" class="top-titlebar-back-button" title="" onclick="closeMovieDetail();">
-                    <span class="glyphicon glyphicon-share-alt"></span>
-                </div>
+                <a href="#" class="col-sm-2 col-xs-2 col-md-2 header-element">
+                    Flixtor
+                </a>
+                <a href="#" class="col-sm-2 col-xs-2 col-md-2 header-element menuMovies on" onclick="main.changeFrame('movies')">
+
+                </a>
+                <a href="#" class="col-sm-2 col-xs-2 col-md-2 header-element menuSeries" onclick="main.changeFrame('series')">
+
+                </a>
+                <a href="#" class="col-sm-2 col-xs-2 col-md-2 header-element menuAnimes" onclick="main.changeFrame('animes')">
+
+                </a>
+                <a href="#" class="col-sm-2 col-xs-2 col-md-2 header-element menuTorrents" onclick="main.changeFrame('torrents')">
+
+                </a>
+
                 <div type="button" class="top-titlebar-minimize-button" title="" onclick="main.minimize();">
                     <span class="glyphicon glyphicon-minus"></span>
                 </div>
@@ -113,73 +127,8 @@
                 <div class="top-titlebar-close-button" onclick="main.closeApp();" title="">
                     <span class="glyphicon glyphicon-remove"></span>
                 </div>
-                <div class="top-titlebar-text">Flixtor</div>
             </div>
             <div id="content-wrapper">
-                <div id="side-bar-full" class="hidden-xs side-bar">
-                    <ul>
-                        <li id="side-bar-li-movies" class="on" onclick="main.changeFrame('movies')">
-                            <a class="menuMovies" href="#">
-                                <span class="glyphicon glyphicon-film"></span></a>
-                        </li>
-                        <li id="side-bar-li-series" onclick="main.changeFrame('series')">
-                            <a class="menuSeries" href="#">
-                                <span class="glyphicon glyphicon-expand"></span></a>
-                        </li>
-                        <li id="side-bar-li-animes" onclick="main.changeFrame('animes')">
-                            <a class="menuAnimes" href="#">
-                                <span class="glyphicon glyphicon-globe"></span></a>
-                        </li>
-                        <li id="side-bar-li-torrents" onclick="main.changeFrame('torrents')">
-                            <a class="menuTorrents" href="#">
-                                <span class="glyphicon glyphicon-th-list"></span></a>
-                        </li>
-                        <br><br>
-                        <li id="side-bar-li-favorites" onclick="main.changeFrame('favorites')">
-                            <a class="menuFavorites" href="#">
-                                <span class="glyphicon glyphicon-heart"></span></a>
-                        </li>
-                        <li id="side-bar-li-settings" onclick="main.changeFrame('settings')">
-                            <a class="menuSettings" href="#">
-                                <span class="glyphicon glyphicon-cog"></span></a>
-                        </li>
-                    </ul>
-
-                </div>
-                <div id="side-bar-small" class="visible-xs side-bar">
-                    <ul>
-                        <li id="side-bar-li-movies-sm" class="on" onclick="main.changeFrame('movies')">
-                            <a href="#">
-                                <span class="glyphicon glyphicon-film"></span>
-                            </a>
-                        </li>
-                        <li id="side-bar-li-series-sm" onclick="main.changeFrame('series')">
-                            <a href="#">
-                                <span class="glyphicon glyphicon-expand"></span>
-                            </a>
-                        </li>
-                        <li id="side-bar-li-animes-sm" onclick="main.changeFrame('animes')">
-                            <a href="#">
-                                <span class="glyphicon glyphicon-globe"></span></a>
-                            </a>
-                        </li>
-                        <li id="side-bar-li-torrents-sm" onclick="main.changeFrame('torrents')">
-                            <a href="#">
-                                <span class="glyphicon glyphicon-th-list"></span>
-                            </a>
-                        </li>
-                        <br><br>
-                        <li id="side-bar-li-favoritessm-" onclick="main.changeFrame('favorites')">
-                            <a href="#">
-                                <span class="glyphicon glyphicon-heart"></span></a>
-                        </li>
-                        <li id="side-bar-li-settings-sm" onclick="main.changeFrame('settings')">
-                            <a href="#">
-                                <span class="glyphicon glyphicon-cog"></span>
-                            </a>
-                        </li>
-                    </ul>
-                </div>
                 <div id="content">
                     <script type="text/javascript">
                         var results = null;
@@ -239,7 +188,7 @@
                                             var genres = '';
                                         }
 
-                                        content += "<div id='" + movie.imdbCode + "' class='element transition m-10 isotope-item'>" +
+                                        content += "<div id='" + movie.imdbCode + "' class='element transition isotope-item'>" +
                                                 "<a class='shadow' onClick='showDetails(this);'>" +
                                                 "<div style='display: none'>"+JSON.stringify(movie)+"</div> " +
                                                 "<img alt='image' src='" + movie.poster + "' style='width:160px; height:230px;'>" +
@@ -650,7 +599,7 @@
                                 <div class="clearfix"></div>
                             </div>
                         </div>
-                        <div id="movieContainer" class="isotope" style="overflow-y:auto !important; margin-right:10px;">
+                        <div id="movieContainer" class="isotope" style="overflow-y:auto !important; margin-top: 10px; margin-right:10px;">
                             <!-- Dynamic content here-->
                         </div>
                     </div>
@@ -662,7 +611,8 @@
                         <div class="container center-block">
                             <div class="row">
                                 <div class="col-sm-3 hidden-sm hidden-xs">
-                                    <img id="poster" alt="" src="" width="200" class="img-responsive img-thumbnail"  /></div>
+                                    <img id="poster" alt="" src="" width="200" class="img-responsive img-thumbnail"  />
+                                </div>
                                 <div class="col-sm-9" style="padding:10px;">
                                     <a class="pull-right font-24 color-white" onclick="closeMovieDetail();"><i class='glyphicon glyphicon-remove-circle'></i></a>
                                     <h1 id="title"></h1>

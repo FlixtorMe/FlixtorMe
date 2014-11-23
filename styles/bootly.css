@@ -15,18 +15,14 @@ a {
 
 /* Top bar */
 #top-bar {
-    background-color: #101519;
     height: 40px;
     z-index: 999999;
     color:#ffffff;
     position:fixed;
     top:0;
     width: 100%;
-    -webkit-user-select: none;
+    background: rgba(0,0,0, 0.2);
     -webkit-app-region: drag;
-    -moz-box-shadow: 0 0 10px 5px #101519;
-    -webkit-box-shadow: 0 0 10px 5px #101519;
-    box-shadow: 0 0 20px 5px #101519;
 }
 
 .top-titlebar-text {
@@ -144,12 +140,6 @@ a {
 {
     text-decoration: none;
     color: #e9e9e9;
-}
-
-/* Content */
-#content
-{
-    margin-left: 150px;
 }
 
 @media all and (max-width:768px) {
@@ -363,7 +353,7 @@ a:hover {
 .modal
 {
     overflow-y: hidden;
-    top:40px;
+    top:95px;
 }
 
 small.text-muted {
@@ -386,7 +376,7 @@ small.text-muted {
 }
 ::-webkit-scrollbar-thumb
 {
-    background-color: #333c4b;
+    background-color: #26303c;
 }
 
 div.spinner-overlay {
@@ -434,4 +424,8 @@ div.spinner-overlay {
 .modal-header {
     background-color: #272f3a;
     border-bottom: 1px solid #374353;
+}
+
+.element {
+    margin: 0px 10px 10px 10px;
 }

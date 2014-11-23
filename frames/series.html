@@ -109,9 +109,22 @@
     <body>
     <div id="wrapper">
             <div id="top-bar">
-                <div type="button" class="top-titlebar-back-button" title="" onclick="closeSerieDetail();">
-                    <span class="glyphicon glyphicon-share-alt"></span>
-                </div>
+                <a href="#" class="col-sm-2 col-xs-2 col-md-2 header-element">
+                    Flixtor
+                </a>
+                <a href="#" class="col-sm-2 col-xs-2 col-md-2 header-element menuMovies" onclick="main.changeFrame('movies')">
+
+                </a>
+                <a href="#" class="col-sm-2 col-xs-2 col-md-2 header-element menuSeries on" onclick="main.changeFrame('series')">
+
+                </a>
+                <a href="#" class="col-sm-2 col-xs-2 col-md-2 header-element menuAnimes" onclick="main.changeFrame('animes')">
+
+                </a>
+                <a href="#" class="col-sm-2 col-xs-2 col-md-2 header-element menuTorrents" onclick="main.changeFrame('torrents')">
+
+                </a>
+
                 <div type="button" class="top-titlebar-minimize-button" title="" onclick="main.minimize();">
                     <span class="glyphicon glyphicon-minus"></span>
                 </div>
@@ -121,72 +134,8 @@
                 <div class="top-titlebar-close-button" onclick="main.closeApp();" title="">
                     <span class="glyphicon glyphicon-remove"></span>
                 </div>
-                <div class="top-titlebar-text">Flixtor</div>
             </div>
             <div id="content-wrapper">
-                <div id="side-bar-full" class="hidden-xs side-bar">
-                    <ul>
-                        <li id="side-bar-li-movies" onclick="main.changeFrame('movies')">
-                            <a class="menuMovies" href="#">
-                                <span class="glyphicon glyphicon-film"></span></a>
-                        </li>
-                        <li id="side-bar-li-series" class="on" onclick="main.changeFrame('series')">
-                            <a class="menuSeries" href="#">
-                                <span class="glyphicon glyphicon-expand"></span></a>
-                        </li>
-                        <li id="side-bar-li-animes" onclick="main.changeFrame('animes')">
-                            <a class="menuAnimes" href="#">
-                                <span class="glyphicon glyphicon-globe"></span></a>
-                        </li>
-                        <li id="side-bar-li-torrents" onclick="main.changeFrame('torrents')">
-                            <a class="menuTorrents" href="#">
-                                <span class="glyphicon glyphicon-th-list"></span></a>
-                        </li>
-                        <br><br>
-                        <li id="side-bar-li-favorites" onclick="main.changeFrame('favorites')">
-                            <a class="menuFavorites" href="#">
-                                <span class="glyphicon glyphicon-heart"></span></a>
-                        </li>
-                        <li id="side-bar-li-settings" onclick="main.changeFrame('settings')">
-                            <a class="menuSettings" href="#">
-                                <span class="glyphicon glyphicon-cog"></span></a>
-                        </li>
-                    </ul>
-                </div>
-                <div id="side-bar-small" class="visible-xs side-bar">
-                    <ul>
-                        <li id="side-bar-li-movies-sm" onclick="main.changeFrame('movies')">
-                            <a href="#">
-                                <span class="glyphicon glyphicon-film"></span>
-                            </a>
-                        </li>
-                        <li id="side-bar-li-series-sm" class="on" onclick="main.changeFrame('series')">
-                            <a href="#">
-                                <span class="glyphicon glyphicon-expand"></span>
-                            </a>
-                        </li>
-                        <li id="side-bar-li-animes-sm" onclick="main.changeFrame('animes')">
-                            <a href="#">
-                                <span class="glyphicon glyphicon-globe"></span></a>
-                            </a>
-                        </li>
-                        <li id="side-bar-li-torrents-sm" onclick="main.changeFrame('torrents')">
-                            <a href="#">
-                                <span class="glyphicon glyphicon-th-list"></span>
-                            </a>
-                        </li>
-                        <br><br>
-                        <li id="side-bar-li-favorites-sm" onclick="main.changeFrame('favorites')">
-                            <a href="#">
-                                <span class="glyphicon glyphicon-heart"></span></a>
-                        </li>
-                        <li id="side-bar-li-settings-sm" onclick="main.changeFrame('settings')">
-                            <a href="#">
-                                <span class="glyphicon glyphicon-cog"></span>
-                            </a>
-                        </li>
-                    </ul>
-                </div>
                 <div id="content">
                     <script>
                         var serieFilter = {};
@@ -223,7 +172,7 @@
                                         else {
                                             var seriePoster = '../images/no-poster.png';
                                         }
-                                        content += "<div class='element transition m-10 isotope-item'>" +
+                                        content += "<div class='element transition isotope-item'>" +
                                             "<a class='shadow' onClick='showDetails(this);'>" +
                                             "<div style='display: none'>"+serie._id+"</div> " +
                                             "<img alt='image' src='" + seriePoster + "' style='width:160px; height:230px;'/>" +
@@ -460,7 +409,7 @@
                                         for (var key in torrents) {
                                             var torrent = torrents[key];
                                             if( key !== '0' ) {
-                                                $("#quality").append('<button data-torrent="'+torrent.url+'" class="btn btn-quality" style="width: 100%;">'+key+'<label title=""><div style="width: 20px; position: absolute; top: 2px; right: 5px;" class="circle"></div></label></button>');
+                                                $("#quality").append('<button data-torrent="'+torrent.url+'" class="btn btn-quality" style="width: 100%;"><div style="float: left;">'+key+'</div><div style="float: right;"><div style="width: 20px; position: absolute; top: 2px; right: 5px;" class="circle"></div></div><div style="clear: both;"></div></button>');
                                             }
                                         }
 
@@ -845,13 +794,42 @@
                         </div>
                     </div>
 
-                    <div id="serieContainer" class="isotope" style="overflow-y:auto !important;  margin-right:10px;">
+                    <div id="serieContainer" class="isotope" style="overflow-y:auto !important;  margin-top: 10px; margin-right:10px;">
                         <!-- Dynamic content here -->
                     </div>
                     <div id="popup"></div>
                 </div>
 
                 <div id="content-overlay" style="display: none;">
+                    <div id="head-bar-detail" class="p-10" style="position: fixed; top: 40px;">
+                        <div class="row" style="margin-right:0;">
+                            <div class="input-group">
+                                <span class="input-group-btn">
+                                    <span class="col-md-1 col-sm-1 col-xs-1">
+
+                                    </span>
+                                    <span style="float: right;">
+                                        <div id="quality" class="btn-group"></div>
+                                    </span>
+                                    <span class="mr-10" style="float: right;">
+                                        <div class="btn-group" style="width: 100%;">
+                                            <button type="button" id="btnSubtitle" class="btn btn-flixtor btn-sm" style="width: 80%;"><i class='glyphicon glyphicon-play'></i>&nbsp;&nbsp;No subtitle</button>
+                                            <button type="button" class="btn btn-flixtor dropdown-toggle btn-sm" data-toggle="dropdown" style="width: 20%;">
+                                                <span class="caret"></span>
+                                            </button>
+                                            <ul class="dropdown-menu dropdown-menu-flixtor subtitles" role="menu" style="width: 100%;">
+                                            </ul>
+                                        </div>
+                                    </span>
+                                </span>
+                            </div>
+                            <!-- /input-group -->
+                        </div>
+                        <!-- /.col-lg-6 -->
+                        <div class="clearfix"></div>
+                    </div>
+
+
                     <div id="serie" class="modal fade in p-30">
                         <div class="container center-block">
                             <div class="row">
@@ -881,20 +859,6 @@
                                     <div id="episode-info"></div>
                                     <div id="episode-airdate"></div>
                                     <div id="episode-overview" class="pt-30"></div>
-                                    <div class="ptb-30">
-                                    <div class="btn-group" style="width: 100%;">
-                                        <button type="button" id="btnSubtitle" class="btn btn-flixtor btn-sm" style="width: 90%;"><i class='glyphicon glyphicon-play'></i>&nbsp;&nbsp;No subtitle</button>
-                                        <button type="button" class="btn btn-flixtor dropdown-toggle btn-sm" data-toggle="dropdown" style="width: 10%;">
-                                            <span class="caret"></span>
-                                        </button>
-                                        <ul class="dropdown-menu dropdown-menu-flixtor subtitles" role="menu" style="width: 100%;">
-                                        </ul>
-                                    </div>
-                                    </div>
-                                    <div class="ptb-10">
-                                        <div id="quality" class="btn-group">
-                                        </div>
-                                    </div>
                                     <div class="ptb-10">
                                         <div class="btn-group" style="width: 49%;">
                                             <button type="button" id="btnPlay" class="btn btn-flixtor btn-sm" style="width: 80%;"><i class='glyphicon glyphicon-play'></i>&nbsp;&nbsp;</button>

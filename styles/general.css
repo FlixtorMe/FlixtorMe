@@ -131,3 +131,44 @@ select {
     height: 100%;
     box-shadow: inset 0px 0px 50px 1px rgba(0, 0, 0, 0.8);
 }
+
+.header-element {
+    height: 100%;
+    color: #8c9093;
+    text-transform: uppercase;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    -webkit-app-region: no-drag;
+}
+
+.header-element:hover {
+    text-decoration: none;
+    color: #ffffff;
+    background: #26303c;
+}
+
+.header-element:first-of-type {
+    color: #ffffff;
+    font-weight: bold;
+    -webkit-app-region: drag;
+}
+
+.header-element:first-of-type:hover {
+    background: none;
+    cursor: default;
+}
+
+.on {
+    color: #ffffff;
+    background: #26303c;
+}
+
+#head-bar {
+    background-color: #26303c;
+}
+
+#head-bar-detail {
+    z-index: 1100;
+    background-color: #26303c;
+}
