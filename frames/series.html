@@ -42,7 +42,7 @@
 
                 //Scroll bar
                 $(window).resize(function() {
-                    $("#serieContainer").css('max-height', ($(window).height() - 95) + "px");
+                    $("#serieContainer").css('max-height', ($(window).height() - 105) + "px");
                     var height = $("#content").height()-25;
                     $(".container").height(height);
                 }).trigger("resize");
@@ -136,7 +136,7 @@
                 </div>
             </div>
             <div id="content-wrapper">
-                <div id="content">
+                <div id="content" style="background: rgba(0,0,0, 0.2);">
                     <script>
                         var serieFilter = {};
 
@@ -835,7 +835,7 @@
                             <div class="row">
                                 <div id="season-info" class="col-sm-4">
                                     <div class="content-heading"><h3 id="title"></h3></div>
-                                    <img style="float:left;width:200px; margin:0px 20px 20px 0px; box-shadow: 0px 0px 15px #374353;" id="poster" src="" />
+                                    <img style="float:left;width:200px; margin:0px 20px 20px 0px;" id="poster" src="" />
                                     <div id="date" class="pt-10"><span class="glyphicon glyphicon-calendar"></span>&nbsp;&nbsp;</div>
                                     <div id="runtime" class="pt-10"><span class="glyphicon glyphicon-time"></span>&nbsp;&nbsp;</div>
                                     <div id="genres" class="pt-10"><span class="glyphicon glyphicon-tag"></span>&nbsp;&nbsp;</div>

@@ -42,7 +42,7 @@
 
                 //Scroll bar
                 $(window).resize(function() {
-                    $("#serieContainer").css('max-height', ($(window).height() - 95) + "px");
+                    $("#serieContainer").css('max-height', ($(window).height() - 105) + "px");
                     var height = $("#content").height()-25;
                     $(".container").height(height);
                 }).trigger("resize");
@@ -136,7 +136,7 @@
                 </div>
             </div>
             <div id="content-wrapper">
-                <div id="content">
+                <div id="content" style="background: rgba(0,0,0, 0.2);">
                     <script>
                         var animeFilter = {};
 

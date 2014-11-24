@@ -39,7 +39,7 @@
 
                 //Scroll bar
                 $(window).resize(function() {
-                    $("#movieContainer").css('max-height', ($(window).height() - 95) + "px");
+                    $("#movieContainer").css('max-height', ($(window).height() - 105) + "px");
                 }).trigger("resize");
 
                 //Search key press (enter)
@@ -129,7 +129,7 @@
                 </div>
             </div>
             <div id="content-wrapper">
-                <div id="content">
+                <div id="content" style="background: rgba(0,0,0, 0.2);">
                     <script type="text/javascript">
                         var results = null;
                         var movieFilter = {};

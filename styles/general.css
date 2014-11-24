@@ -145,7 +145,7 @@ select {
 .header-element:hover {
     text-decoration: none;
     color: #ffffff;
-    background: #26303c;
+    background: #212a33;
 }
 
 .header-element:first-of-type {
@@ -161,14 +161,14 @@ select {
 
 .on {
     color: #ffffff;
-    background: #26303c;
+    background: #212a33;
 }
 
 #head-bar {
-    background-color: #26303c;
+    background-color: #212a33;
 }
 
 #head-bar-detail {
     z-index: 1100;
-    background-color: #26303c;
+    background-color: #212a33;
 }

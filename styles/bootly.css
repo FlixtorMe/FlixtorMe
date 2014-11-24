@@ -353,7 +353,8 @@ a:hover {
 .modal
 {
     overflow-y: hidden;
-    top:95px;
+    top:90px;
+    background: rgba(0,0,0, 0.2);
 }
 
 small.text-muted {
