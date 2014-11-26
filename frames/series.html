@@ -409,7 +409,7 @@
                                         for (var key in torrents) {
                                             var torrent = torrents[key];
                                             if( key !== '0' ) {
-                                                $("#quality").append('<button data-torrent="'+torrent.url+'" class="btn btn-quality" style="width: 100%;"><div style="float: left;">'+key+'</div><div style="float: right;"><div style="width: 20px; position: absolute; top: 2px; right: 5px;" class="circle"></div></div><div style="clear: both;"></div></button>');
+                                                $("#quality").append('<button data-torrent="'+torrent.url+'" class="btn btn-quality" style="width: 100%;"><div style="float: left;">'+key+'</div><div style="float: right;"><div style="width: 14px;" class="circle"></div></div><div style="clear: both;"></div></button>');
                                             }
                                         }
 
@@ -473,8 +473,8 @@
                                         var current = $(this);
                                         var torrent = $(this).data("torrent");
 
-                                        $(current).find('.circle').hide();
-                                        $(current).find('label').append('<img style="width: 14px; height: 14px; position: absolute; right: 8px; top: 3px;" id="img-spinner" src="../images/ajax-loader.gif" alt="Loading"/>');
+                                        $(current).find('.circle').append('<img style="width: 14px; height: 14px; position: absolute; right: 5px; top: 3px;" id="img-spinner" src="../images/ajax-loader.gif" alt="Loading"/>');
+                                        //$(current).find('label').append('<img style="width: 14px; height: 14px; position: absolute; right: 8px; top: 3px;" id="img-spinner" src="../images/ajax-loader.gif" alt="Loading"/>');
 
                                         health(torrent).then(function(health) {
                                             var ratio = health.peers > 0 ? (health.seeds / health.peers) : health.seeds;

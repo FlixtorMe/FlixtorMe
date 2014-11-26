@@ -430,3 +430,9 @@ div.spinner-overlay {
 .element {
     margin: 0px 10px 10px 10px;
 }
+
+#quality canvas {
+    position: absolute;
+    top: 3px;
+    right: 5px;
+}
