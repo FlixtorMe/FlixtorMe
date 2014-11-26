@@ -409,7 +409,7 @@
                                         for (var key in torrents) {
                                             var torrent = torrents[key];
                                             if( key !== '0' ) {
-                                                $("#quality").append('<button data-torrent="'+torrent.url+'" class="btn btn-quality" style="width: 100%;"><div style="float: left;">'+key+'</div><div style="float: right;"><div style="width: 14px;" class="circle"></div></div><div style="clear: both;"></div></button>');
+                                                $("#quality").append('<button data-torrent="'+torrent.url+'" class="btn btn-quality" style="width: 100%;"><label title=""><div style="float: left;">'+key+'</div><div style="float: right;"><div style="width: 14px;" class="circle"></div></div><div style="clear: both;"></div></label></button>');
                                             }
                                         }
 
