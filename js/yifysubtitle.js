@@ -13,6 +13,66 @@ var localization = require('../js/localization.js');
 
 var manager;
 
+function orderSubs(subs) {
+    var movieSubs = {};
+    Object.keys(subs).forEach(function(key) {
+        var movie = {};
+        var lang = subs[key][0];
+        var langCode = languageMapping[key];
+        movie['ISO639'] = langCode;
+        movie['LanguageName'] = key;
+        movie['SubDownloadLink'] = 'http://www.yifysubtitles.com' + lang.url;
+
+        movieSubs[langCode] = movie;
+    });
+
+    return movieSubs;
+}
+
+var languageMapping = {
+    'albanian': 'sq',
+    'arabic': 'ar',
+    'bengali': 'bn',
+    'brazilian-portuguese': 'pt-br',
+    'bulgarian': 'bg',
+    'bosnian': 'bs',
+    'chinese': 'zh',
+    'croatian': 'hr',
+    'czech': 'cs',
+    'danish': 'da',
+    'dutch': 'nl',
+    'english': 'en',
+    'estonian': 'et',
+    'farsi-persian': 'fa',
+    'finnish': 'fi',
+    'french': 'fr',
+    'german': 'de',
+    'greek': 'el',
+    'hebrew': 'he',
+    'hungarian': 'hu',
+    'indonesian': 'id',
+    'italian': 'it',
+    'japanese': 'ja',
+    'korean': 'ko',
+    'lithuanian': 'lt',
+    'macedonian': 'mk',
+    'malay': 'ms',
+    'norwegian': 'no',
+    'polish': 'pl',
+    'portuguese': 'pt',
+    'romanian': 'ro',
+    'russian': 'ru',
+    'serbian': 'sr',
+    'slovenian': 'sl',
+    'spanish': 'es',
+    'swedish': 'sv',
+    'thai': 'th',
+    'turkish': 'tr',
+    'urdu': 'ur',
+    'ukrainian': 'uk',
+    'vietnamese': 'vi'
+};
+
 var SubManager = function(port)
 {
     //Initialization
@@ -122,66 +182,6 @@ var SubManager = function(port)
                 cb(true);
             }
         });
-    };
-
-    function orderSubs(subs) {
-        var movieSubs = {};
-        Object.keys(subs).forEach(function(key) {
-            var movie = {};
-            var lang = subs[key][0];
-            var langCode = languageMapping[key];
-            movie['ISO639'] = langCode;
-            movie['LanguageName'] = key;
-            movie['SubDownloadLink'] = 'http://www.yifysubtitles.com' + lang.url;
-
-            movieSubs[langCode] = movie;
-        });
-
-        return movieSubs;
-    }
-
-    var languageMapping = {
-        'albanian': 'sq',
-        'arabic': 'ar',
-        'bengali': 'bn',
-        'brazilian-portuguese': 'pt-br',
-        'bulgarian': 'bg',
-        'bosnian': 'bs',
-        'chinese': 'zh',
-        'croatian': 'hr',
-        'czech': 'cs',
-        'danish': 'da',
-        'dutch': 'nl',
-        'english': 'en',
-        'estonian': 'et',
-        'farsi-persian': 'fa',
-        'finnish': 'fi',
-        'french': 'fr',
-        'german': 'de',
-        'greek': 'el',
-        'hebrew': 'he',
-        'hungarian': 'hu',
-        'indonesian': 'id',
-        'italian': 'it',
-        'japanese': 'ja',
-        'korean': 'ko',
-        'lithuanian': 'lt',
-        'macedonian': 'mk',
-        'malay': 'ms',
-        'norwegian': 'no',
-        'polish': 'pl',
-        'portuguese': 'pt',
-        'romanian': 'ro',
-        'russian': 'ru',
-        'serbian': 'sr',
-        'slovenian': 'sl',
-        'spanish': 'es',
-        'swedish': 'sv',
-        'thai': 'th',
-        'turkish': 'tr',
-        'urdu': 'ur',
-        'ukrainian': 'uk',
-        'vietnamese': 'vi'
     };
 
     manager.hasSubtitles = function() {
@@ -315,5 +315,77 @@ var Subtitle = function(lang, iso639, subLink)
     return sub;
 };
 
+var search = function(value, cb) {
+    var list = [];
+
+    var url = 'http://api.yifysubtitles.com/subs/' + value;
+    var mirrorurl = 'http://api.ysubs.com/subs/' + value;
+
+    request({url:url, json: true}, function(error, response, data){
+        if(error || response.statusCode !== 200 || !data || !data.success) {
+            request({url:mirrorurl, json: true}, function(error, response, data){
+                if(error || response.statusCode !== 200 || !data || !data.success) {
+                    console.log("Error");
+                } else {
+                    var subs = orderSubs(data.subs[value]);
+                    Object.keys(subs).forEach(function(key) {
+                        var sub = subs[key];
+                        var subtitle = new Subtitle(sub.LanguageName, sub.ISO639, sub.SubDownloadLink);
+                        list.push(subtitle);
+                    });
+                }
+                cb(list);
+            });
+        } else {
+            var subs = orderSubs(data.subs[value]);
+            Object.keys(subs).forEach(function(key) {
+                var sub = subs[key];
+                var subtitle = new Subtitle(sub.LanguageName, sub.ISO639, sub.SubDownloadLink);
+                list.push(subtitle);
+            });
+            cb(list);
+        }
+    });
+   /* var list = []; //Clear the subtitle list
+    openSubs.api.login().done(
+        function(token){
+            openSubs.api.search(token, 'all', value).done(
+                function(results){
+                    for(var i=0; i < results.length; i++)
+                    {
+                        var result = results[i];
+                        if(result.SubFormat === 'srt')
+                        {
+                            var found = false;
+                            for(var a = 0; a < list.length; a++) {
+                                if (list[a].iso639 == result.ISO639) {
+                                    found = true;
+                                    break;
+                                }
+                            }
+
+                            if(!found) {
+                                var subtitle = new Subtitle(result.LanguageName, result.ISO639, result.SubDownloadLink);
+                                list.push(subtitle);
+                            }
+                        }
+                    }
+
+                    console.log(list);
+                    openSubs.api.logout(token);
+                    cb(list);
+                }
+            );
+        }
+    );
+
+    //If an error occurs show it in the console
+    openSubs.api.on('error', function(e){
+        console.log(e);
+        cb(false);
+    });*/
+};
+
 module.exports = SubManager;
+module.exports.search = search;
 module.exports.getSubManager = getSubManager;

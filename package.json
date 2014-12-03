@@ -39,6 +39,7 @@
     "ip": "~0.3.1",
     "nodebmc": "~0.0.5",
     "chromecast-js": "~0.1.4",
+    "read-torrent": "~1.1.0",
     "torrent-health": "~0.0.6"
   },
   "devDependencies": {

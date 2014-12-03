@@ -265,7 +265,7 @@ var search = function(value, cb) {
         console.log(e);
         cb(false);
     });
-}
+};
 
 module.exports = SubManager;
 module.exports.search = search;

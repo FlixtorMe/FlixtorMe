@@ -426,14 +426,12 @@ module.exports.getYoutubeID = getYoutubeID;
 module.exports.checkForUpdates = checkForUpdates;
 
 process.on('uncaughtException', function (err) {
-    //Logging with google analytics
-    //If internet connection is available we log the error
-    utilities.hasInternetConnection(function (hasInternet) {
+    /*utilities.hasInternetConnection(function (hasInternet) {
         if (hasInternet) {
         }
     });
 
     utilities.showPrompt("An uncaughtException was found", "Error: <span>" + err.message.toString() + "</span><br/>The program will end.", "ok", function(answer) {
         process.exit(1);
-    });
+    });*/
 });

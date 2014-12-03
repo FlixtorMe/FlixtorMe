@@ -172,3 +172,39 @@ select {
     z-index: 1100;
     background-color: #222d3a;
 }
+
+#quality {
+    background: transparent;
+    border: 1px solid #507494;
+    border-radius: 3px;
+    padding: 3px;
+    width: 100%;
+    display: inline-flex;
+}
+
+.btn-quality {
+    padding: 0px 12px;
+    color: #ffffff;
+    background: transparent;
+}
+
+.btn-quality:hover {
+    color: #ffffff;
+    background-color: #374353;
+}
+
+.btn-quality:focus {
+    color: #ffffff;
+    background-color: #374353;
+}
+
+.subtitles, .devices {
+    width: 100%;
+    max-height: 250px;
+    overflow: auto;
+}
+
+.current {
+    color: #ffffff;
+    background-color: #374353;
+}
