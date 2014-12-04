@@ -237,7 +237,6 @@
                             $('#runtime').empty();
                             $('#runtime').append('<span class="glyphicon glyphicon-time"></span>&nbsp;&nbsp');
                             $('#date').empty();
-                            $('#date').append('<span class="glyphicon glyphicon-calendar"></span>&nbsp;&nbsp;');
 
                             $(devices).each(function(index) {
                                 var device = devices[index];
@@ -730,24 +729,25 @@
                         <div class="clearfix"></div>
                     </div>
 
-                    <div id="movie" class="modal fade in p-30">
+                    <div id="movie" class="modal fade in">
                         <div id="gradient" style="position: absolute; top: 0; bottom: 0;left: 0; right: 0; z-index: -100; background: url(../images/gradient.png) no-repeat center center fixed; -webkit-background-size: cover; background-size: cover;"></div>
-                        <div class="container center-block">
-                            <div class="row">
-                                <div class="col-sm-3 hidden-sm hidden-xs">
-                                    <img id="poster" alt="" src="" width="200" class="img-responsive img-thumbnail"  />
-                                </div>
-                                <div class="col-sm-9" style="padding:10px;">
-                                    <a class="pull-right font-24 color-white" onclick="closeMovieDetail();"><i class='glyphicon glyphicon-remove-circle'></i></a>
-                                    <h1 id="title"></h1>
-                                    <h4 id="genres" class="mr-10" style="display:inline-block;"></h4>
-                                    <div class="stars-template" style="display:inline-block;">
-                                        <label title="" id="rating" class="current-rating"></label>
-                                    </div>
-                                    <div class="favorites-template" style="display:inline-block;">
+                        <div class="center-block">
+                            <h1 id="title"></h1>
+                            <div style="margin: 0% 5%;">
+                                <div class="col-sm-9">
+                                    <!--<a class="pull-right font-24 color-white" onclick="closeMovieDetail();"><i class='glyphicon glyphicon-remove-circle'></i></a>-->
+                                    <div id="info-bar">
+                                        <div id="date" class="mr-30"></div>
+                                        <div id="genres" class="mr-30"></div>
+
+                                        <div class="stars-template" style="display:inline-block;">
+                                            <label title="" id="rating" class="current-rating"></label>
+                                        </div>
+                                        <div class="favorites-template" style="display:inline-block;">
+                                        </div>
                                     </div>
                                     <div id="plot" class="ptb-10" style="max-width:800px;"></div>
-                                    <div class="ptb-10">
+                                    <!--<div class="ptb-10">
                                         <div class="btn-group">
                                             <button type="button" id="btnPlay" class="btn btn-success btn-sm"><i class='glyphicon glyphicon-play'></i>&nbsp;&nbsp;</button>
                                             <button type="button" class="btn btn-success dropdown-toggle btn-sm disabled" data-toggle="dropdown">
@@ -759,8 +759,11 @@
                                         <button id="btnTrailer" class="btn btn-primary btn-sm"><i class='glyphicon glyphicon-film'></i>&nbsp;&nbsp;</button>
                                         <button id="btnBuy" class="btn btn-danger btn-sm"><i class='glyphicon glyphicon-shopping-cart'></i>&nbsp;&nbsp;</button>
                                     </div>
-                                    <div id="runtime" class="pt-5"><span class="glyphicon glyphicon-time"></span>&nbsp;&nbsp;</div>
-                                    <div id="date" class="pt-5"><span class="glyphicon glyphicon-calendar"></span>&nbsp;&nbsp;</div>
+                                    <div id="runtime" class="pt-5"><span class="glyphicon glyphicon-time"></span>&nbsp;&nbsp;</div>-->
+                                </div>
+
+                                <div class="col-sm-3 hidden-xs">
+                                    <img id="poster" alt="" src="" width="200"  />
                                 </div>
                             </div>
                         </div>
