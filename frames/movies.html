@@ -372,18 +372,19 @@
                                     $(current.find('label').attr('title', 'Seeds unknown / Peers unknown'));
                                 });
 
-                                yifysubtitle.search(movie.imdbCode, function (subs) {
-                                    $('.subtitles').empty();
-                                    $('.subtitles').append('<li><a class="subtitle" data-subname="No subtitle" data-subiso="" >No subtitle</a></li>');
-                                    if( subs !== false ) {
-                                        console.log(subs);
-                                        for (var key in subs) {
-                                            var sub = subs[key];
-                                            $(".subtitles").append('<li><a class="subtitle" data-subname="'+sub.languageName+'" data-subiso="'+sub.languageName+'" >'+sub.languageName+'</a></li>');
-                                        }
-                                    }
-                                });
                                 currentTorrent = torrent;
+                            });
+
+                            yifysubtitle.search(movie.imdbCode, function (subs) {
+                                $('.subtitles').empty();
+                                $('.subtitles').append('<li><a class="subtitle" data-subname="No subtitle" data-subiso="" >No subtitle</a></li>');
+                                if( subs !== false ) {
+                                    console.log(subs);
+                                    for (var key in subs) {
+                                        var sub = subs[key];
+                                        $(".subtitles").append('<li><a class="subtitle" data-subname="'+sub.languageName+'" data-subiso="'+sub.languageName+'" >'+sub.languageName+'</a></li>');
+                                    }
+                                }
                             });
 
                             $("body").on("click", ".subtitle", function () {
@@ -433,7 +434,7 @@
                             $("#side-bar-full").hide();
                             $("#content").css("opacity", "0");
                             $('#side-bar-small').attr("style", "display: none !important");
-                            $('#customCSS').animate({opacity: 0}, 0).animate({opacity: 1}, 3500);
+                            $('#customCSS').animate({opacity: 0}, 0).animate({opacity: 0.7}, 3500);
                         }
 
                         function changeSearchText() {
@@ -740,11 +741,11 @@
                                         <div id="date" class="mr-30"></div>
                                         <div id="genres" class="mr-30"></div>
 
-                                        <div class="stars-template" style="display:inline-block;">
+                                        <!--<div class="stars-template" style="display:inline-block;">
                                             <label title="" id="rating" class="current-rating"></label>
                                         </div>
                                         <div class="favorites-template" style="display:inline-block;">
-                                        </div>
+                                        </div>-->
                                     </div>
                                     <div id="plot" class="ptb-10" style="max-width:800px;"></div>
                                     <!--<div class="ptb-10">
@@ -762,8 +763,8 @@
                                     <div id="runtime" class="pt-5"><span class="glyphicon glyphicon-time"></span>&nbsp;&nbsp;</div>-->
                                 </div>
 
-                                <div class="col-sm-3 hidden-xs">
-                                    <img id="poster" alt="" src="" width="200"  />
+                                <div class="thumb col-sm-3 hidden-xs">
+                                    <img id="poster" alt="" src="" />
                                 </div>
                             </div>
                         </div>

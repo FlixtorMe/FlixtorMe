@@ -10,6 +10,7 @@
 <!--        <link href="/styles/video-skin.css" rel="stylesheet">-->
 <link href="/styles/bootstrap.min.css" rel="stylesheet">
 <link href="/styles/bootly.css" rel="stylesheet">
+<link href="/styles/general.css" rel="stylesheet">
 <link href="/styles/videojs.errors.css" rel="stylesheet">
 <link href="/styles/video-skin.css" rel="stylesheet">
 
@@ -441,9 +442,22 @@ function setSubtitles()
         }
     </style>
     <div id="top-bar">
-        <div type="button" class="top-titlebar-back-button" title="" onclick="main.goBack();">
-            <span class="glyphicon glyphicon-share-alt"></span>
-        </div>
+        <a href="#" class="col-sm-2 col-xs-2 col-md-2 header-element">
+            Flixtor
+        </a>
+        <a href="#" class="col-sm-2 col-xs-2 col-md-2 header-element menuMovies" onclick="main.changeFrame('movies')">
+
+        </a>
+        <a href="#" class="col-sm-2 col-xs-2 col-md-2 header-element menuSeries on" onclick="main.changeFrame('series')">
+
+        </a>
+        <a href="#" class="col-sm-2 col-xs-2 col-md-2 header-element menuAnimes" onclick="main.changeFrame('animes')">
+
+        </a>
+        <a href="#" class="col-sm-2 col-xs-2 col-md-2 header-element menuTorrents" onclick="main.changeFrame('torrents')">
+
+        </a>
+
         <div type="button" class="top-titlebar-minimize-button" title="" onclick="main.minimize();">
             <span class="glyphicon glyphicon-minus"></span>
         </div>
@@ -453,7 +467,6 @@ function setSubtitles()
         <div class="top-titlebar-close-button" onclick="main.closeApp();" title="">
             <span class="glyphicon glyphicon-remove"></span>
         </div>
-        <div class="top-titlebar-text">Flixtor</div>
     </div>
     <script type="text/javascript" src="/js/extensions/video.js"></script>
     <div id="movie" class="modal fade in" style="top:0;">
@@ -467,14 +480,14 @@ function setSubtitles()
                 </div>
             </div>
             <h5 id="current-source" class="pull-left"></h5>
-            <button class="pull-right btn btn-xs btn-danger mt-10 btnCancel" onclick="main.goBack();"></button>
+            <button class="pull-right btn btn-xs btn-flixtor mt-10 btnCancel" onclick="main.goBack();"></button>
         </div>
         <div id="error" class="container center-block hide" style="margin-top:300px; max-width:500px;">
             <h4 class="playerErrorTitle"></h4>
             <div class="playerErrorMessage"></div>
             <div class="font-12 playerErrorNote"></div>
-            <button class="pull-left btn btn-xs btn-success mt-10 btnSwitchToVlc" onclick="startVLC();"></button>
-            <button class="pull-right btn btn-xs btn-danger mt-10 btnCancel" onclick="main.goBack();"></button>
+            <button class="pull-left btn btn-xs btn-flixtor mt-10 btnSwitchToVlc" onclick="startVLC();"></button>
+            <button class="pull-right btn btn-xs btn-flixtor mt-10 btnCancel" onclick="main.goBack();"></button>
         </div>
         <div id="right-nav" class="hidden-xs hidden-sm" style="position:absolute; top:40px; z-index:1; background: rgba(0,0,0,0.8); bottom:0; width:250px; right:0; border-left:thin solid black">
             <div style="margin:10px 10px 0 10px;">
@@ -496,11 +509,11 @@ function setSubtitles()
                         <li><i class='glyphicon glyphicon-tasks text-info'></i>&nbsp;&nbsp;<span id="info-download-speed">0.0</span></li>
                     </ul>
                     <div id="btnVLC" class="hide">
-                        <button class="btn btn-xs btn-success mt-10 btnSwitchToVlc" onclick="startVLC();"></button>
+                        <button class="btn btn-xs btn-flixtor mt-10 btnSwitchToVlc" onclick="startVLC();"></button>
                         <div class="font-12 mt-5 playerNoSound"></div>
                     </div>
                     <div id="btnDefaultPlayer" class="hide">
-                        <button class="btn btn-xs btn-primary mt-10 btnSwitchToDefault" onclick="startDefaultPlayer();"></button>
+                        <button class="btn btn-xs btn-flixtor mt-10 btnSwitchToDefault" onclick="startDefaultPlayer();"></button>
                     </div>
                 </div>
             </div>
