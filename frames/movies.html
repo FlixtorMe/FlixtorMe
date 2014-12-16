@@ -19,7 +19,8 @@
         <script src="../js/extensions/nwcontextmenu.js"></script>
         <script src="../js/extensions/mousetrap.min.js"></script>
 
-        <script src="../js/keyboard/keyboard.js"></script>
+        <script src="../js/movies.js"></script>
+        <script src="../js/keyboard/movies.js"></script>
 
         <!-- Modules -->
         <script>
@@ -109,7 +110,7 @@
                 <a href="#" class="col-sm-2 col-xs-2 col-md-2 header-element">
                     Flixtor
                 </a>
-                <a href="#" class="col-sm-2 col-xs-2 col-md-2 header-element menuMovies on" onclick="main.changeFrame('movies')">
+                <a href="#" class="col-sm-2 col-xs-2 col-md-2 header-element menuMovies selected" onclick="main.changeFrame('movies')">
 
                 </a>
                 <a href="#" class="col-sm-2 col-xs-2 col-md-2 header-element menuSeries" onclick="main.changeFrame('series')">
@@ -192,17 +193,33 @@
                                             var genres = '';
                                         }
 
-                                        content += "<div id='" + movie.imdbCode + "' class='element transition isotope-item'>" +
-                                                "<a class='shadow' onClick='showDetails(this);'>" +
-                                                "<div style='display: none'>"+JSON.stringify(movie)+"</div> " +
-                                                "<img alt='image' src='" + movie.poster + "' style='width:160px; height:230px;'>" +
-                                                "</a>" +
-                                                "<div class='p-5' style='max-width:160px;'>" +
-                                                "<div style='font-size:14px;'>" + movie.title + "</div>" +
-                                                "<div style='font-size:10px; color:#A8A8A8;'>" + genres + "</div>" +
-                                                "</div>" +
-                                                "<div style='clear:both'></div>" +
-                                                "</div>";
+                                        if( index == 0 ) {
+                                            content += "<div id='" + movie.imdbCode + "' class='element transition isotope-item'>" +
+                                                    "<a class='shadow on' onClick='showDetails(this);'>" +
+                                                    "<div style='display: none'>"+JSON.stringify(movie)+"</div> " +
+                                                    "<img alt='image' src='" + movie.poster + "' style='width:160px; height:230px;'>" +
+                                                    "</a>" +
+                                                    "<div class='p-5' style='max-width:160px;'>" +
+                                                    "<div style='font-size:14px;'>" + movie.title + "</div>" +
+                                                    "<div style='font-size:10px; color:#A8A8A8;'>" + genres + "</div>" +
+                                                    "</div>" +
+                                                    "<div style='clear:both'></div>" +
+                                                    "</div>";
+                                        }
+                                        else {
+                                            content += "<div id='" + movie.imdbCode + "' class='element transition isotope-item'>" +
+                                                    "<a class='shadow' onClick='showDetails(this);'>" +
+                                                    "<div style='display: none'>"+JSON.stringify(movie)+"</div> " +
+                                                    "<img alt='image' src='" + movie.poster + "' style='width:160px; height:230px;'>" +
+                                                    "</a>" +
+                                                    "<div class='p-5' style='max-width:160px;'>" +
+                                                    "<div style='font-size:14px;'>" + movie.title + "</div>" +
+                                                    "<div style='font-size:10px; color:#A8A8A8;'>" + genres + "</div>" +
+                                                    "</div>" +
+                                                    "<div style='clear:both'></div>" +
+                                                    "</div>";
+                                        }
+
                                     });
                                 }
                                 else {
@@ -317,7 +334,9 @@
                             for (var key in torrents) {
                                 var torrent = torrents[key];
                                 if( key !== '0' ) {
-                                    $("#quality").append('<button data-torrent="'+torrent+'" class="btn btn-quality" style="width: 100%;"><label title=""><div style="float: left;">'+key+'</div><div style="float: right;"><div style="width: 14px;" class="circle"></div></div><div style="clear: both;"></div></label></button>');
+                                    if( torrent !== "" ) {
+                                        $("#quality").append('<button data-torrent="'+torrent+'" class="btn btn-quality" style="width: 100%;"><label title=""><div style="float: left;">'+key+'</div><div style="float: right;"><div style="width: 14px;" class="circle"></div></div><div style="clear: both;"></div></label></button>');
+                                    }
                                 }
                             }
 
@@ -330,6 +349,37 @@
 
                             // Select first quality
                             $("#quality").find(".btn-quality:first").trigger("click");
+
+                            $("#btnBuy").click(function () {
+                                var shoppingUrl = 'https://www.google.com/search?q='+movie.title+' movie&tbm=shop';
+                                gui.Shell.openExternal(shoppingUrl);
+
+                            });
+
+                            $("#btnPlay").click(function () {
+                                if(movie.torrents !== "") {
+                                    var movieB64 = new Buffer(JSON.stringify(movie)).toString('base64');
+                                    main.go("players/movie-player.html?movieId=" + movieB64);
+                                }
+                            });
+
+                            $("body").on("click", ".xmbcPlay", function () {
+                                var deviceId = $(this).data("name");
+                                if(movie.torrents !== "") {
+                                    var movieB64 = new Buffer(JSON.stringify(movie)).toString('base64');
+                                    main.go("players/movie-player.html?movieId="+movieB64+"&xbmc="+deviceId);
+                                }
+
+
+                                var deviceId = $(this).data("name");
+                                var tmpCurrentTorrent = currentTorrent.split('magnet:?xt=urn:btih:');
+                                tmpCurrentTorrent = tmpCurrentTorrent[1];
+                                tmpCurrentTorrent = new Buffer(JSON.stringify(tmpCurrentTorrent)).toString('base64');
+                                var tmpTorrents = new Buffer(JSON.stringify(torrents)).toString('base64');
+                                var tmpTitle = new Buffer(JSON.stringify(episodeTitle)).toString('base64');
+                                var tmpFanart = new Buffer(JSON.stringify(fanart)).toString('base64')
+                                main.go("players/series-player.html?magnet=" + tmpCurrentTorrent+"&torrents="+tmpTorrents+"&title="+tmpTitle+"&image="+tmpFanart+"&xbmc="+deviceId);
+                            });
 
                             $("body").on("click", ".btn-quality", function () {
                                 $(".btn-quality").removeClass("current");
@@ -368,10 +418,10 @@
                                     $(current).find('#img-spinner').remove();
 
                                 })
-                                .catch(function (err) {
-                                    console.error(err);
-                                    $(current.find('label').attr('title', 'Seeds unknown / Peers unknown'));
-                                });
+                                        .catch(function (err) {
+                                            console.error(err);
+                                            $(current.find('label').attr('title', 'Seeds unknown / Peers unknown'));
+                                        });
 
                                 currentTorrent = torrent;
                             });
@@ -396,37 +446,6 @@
 
                                 currentSubtitle = subIso;
                                 console.log(currentSubtitle);
-                            });
-
-                            $("#btnBuy").click(function () {
-                                var shoppingUrl = 'https://www.google.com/search?q='+movie.title+' movie&tbm=shop';
-                                gui.Shell.openExternal(shoppingUrl);
-
-                            });
-
-                            $("#btnPlay").click(function () {
-                                if(movie.torrents !== "") {
-                                    var movieB64 = new Buffer(JSON.stringify(movie)).toString('base64');
-                                    main.go("players/movie-player.html?movieId=" + movieB64);
-                                }
-                            });
-
-                            $("body").on("click", ".xmbcPlay", function () {
-                                var deviceId = $(this).data("name");
-                                if(movie.torrents !== "") {
-                                    var movieB64 = new Buffer(JSON.stringify(movie)).toString('base64');
-                                    main.go("players/movie-player.html?movieId="+movieB64+"&xbmc="+deviceId);
-                                }
-
-
-                                var deviceId = $(this).data("name");
-                                var tmpCurrentTorrent = currentTorrent.split('magnet:?xt=urn:btih:');
-                                tmpCurrentTorrent = tmpCurrentTorrent[1];
-                                tmpCurrentTorrent = new Buffer(JSON.stringify(tmpCurrentTorrent)).toString('base64');
-                                var tmpTorrents = new Buffer(JSON.stringify(torrents)).toString('base64');
-                                var tmpTitle = new Buffer(JSON.stringify(episodeTitle)).toString('base64');
-                                var tmpFanart = new Buffer(JSON.stringify(fanart)).toString('base64')
-                                main.go("players/series-player.html?magnet=" + tmpCurrentTorrent+"&torrents="+tmpTorrents+"&title="+tmpTitle+"&image="+tmpFanart+"&xbmc="+deviceId);
                             });
 
                             $("#head-bar").hide();
@@ -522,42 +541,6 @@
                             }
 
                             applySearch();
-                        }
-
-                        function closeMovie()
-                        {
-                            $('#divMD').addClass('hide');
-                            sessionStorage.removeItem('movie');
-                        }
-
-                        function closeMovieDetail()
-                        {
-                            try{
-                                var subManager = yifysubtitle.getSubManager();
-                                if( subManager ) {
-                                    subManager.server.listen(0);
-                                    subManager.server.close();
-                                }
-                            }
-                            catch(e){
-                                console.log(e);
-                            }
-
-                            $("#customCSS").stop();
-                            $("#customCSS").removeAttr('style');
-                            $("#customCSS").empty();
-                            $("#content-overlay").hide();
-                            $("#movie").hide();
-                            $("#content").css("opacity", "1");
-                            $("#head-bar").show();
-                            $( "#btnBuy").unbind( "click" );
-                        }
-
-                        function closeTrailerOverlay()
-                        {
-                            $("#video-container-trailer").empty();
-                            $("#content-overlay").show();
-                            $(".top-titlebar-back-button").attr("onclick","closeMovieDetail()");
                         }
 
                         function addToFavorites(movieJson) {

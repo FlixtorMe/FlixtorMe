@@ -203,3 +203,8 @@ select {
     color: #ffffff;
     background-color: #374353;
 }
+
+.selected {
+    color: #ffffff;
+    background: #222d3a;
+}
