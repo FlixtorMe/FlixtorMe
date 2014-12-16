@@ -37,9 +37,22 @@
 <body>
 <div id="wrapper">
     <div id="top-bar">
-        <div type="button" class="top-titlebar-back-button" title="" onclick="main.goBack();">
-            <span class="glyphicon glyphicon-share-alt"></span>
-        </div>
+        <a href="#" class="col-sm-2 col-xs-2 col-md-2 header-element">
+            Flixtor
+        </a>
+        <a href="#" class="col-sm-2 col-xs-2 col-md-2 header-element menuMovies" onclick="main.changeFrame('movies')">
+
+        </a>
+        <a href="#" class="col-sm-2 col-xs-2 col-md-2 header-element menuSeries" onclick="main.changeFrame('series')">
+
+        </a>
+        <a href="#" class="col-sm-2 col-xs-2 col-md-2 header-element menuAnimes" onclick="main.changeFrame('animes')">
+
+        </a>
+        <a href="#" class="col-sm-2 col-xs-2 col-md-2 header-element menuTorrents" onclick="main.changeFrame('torrents')">
+
+        </a>
+
         <div type="button" class="top-titlebar-minimize-button" title="" onclick="main.minimize();">
             <span class="glyphicon glyphicon-minus"></span>
         </div>
@@ -49,7 +62,6 @@
         <div class="top-titlebar-close-button" onclick="main.closeApp();" title="">
             <span class="glyphicon glyphicon-remove"></span>
         </div>
-        <div class="top-titlebar-text">Flixtor</div>
     </div>
     <div id="content-wrapper">
         <div id="side-bar-full" class="hidden-xs side-bar">

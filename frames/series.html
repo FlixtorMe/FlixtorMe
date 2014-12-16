@@ -542,9 +542,7 @@
 
                                     $("#content-overlay").show();
                                     $("#serie").show();
-                                    $("#side-bar-full").hide();
                                     $("#content").css("opacity", "0");
-                                    $('#side-bar-small').attr("style", "display: none !important");
                                     $("#head-bar").hide();
                                 }
                                 else {
@@ -641,8 +639,6 @@
                             $("#serie .devices").empty();
                             $("#content-overlay").hide();
                             $("#serie").hide();
-                            $("#side-bar-full").show();
-                            $("#side-bar-small").removeAttr( 'style' );
                             $("#content").css("opacity", "1");
                             $("#head-bar").show();
                             $("#btnBuy").unbind( "click" );
@@ -805,8 +801,8 @@
                         <div class="row" style="margin-right:0;">
                             <div class="input-group">
                                 <span class="input-group-btn">
-                                    <span class="col-md-1 col-sm-1 col-xs-1">
-
+                                    <span type="button" class="top-titlebar-back-button" title="" onclick="closeSerieDetail();">
+                                        <span class="glyphicon glyphicon-share-alt"></span>
                                     </span>
                                     <span style="float: right;">
                                         <div id="quality" class="btn-group"></div>

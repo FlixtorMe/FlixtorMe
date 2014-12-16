@@ -63,13 +63,14 @@ a {
 }
 
 .top-titlebar-back-button {
-    position: absolute;
-    left: 10px;
-    margin-top: 10px;
+    margin-top: 5px;
+    margin-left: 30px;
     -webkit-app-region: no-drag;
     cursor: pointer;
     -webkit-transform: rotate(180deg);
     -webkit-transform: scale(-1, 1);
+    float: left;
+    font-size: 18px;
 }
 
 .top-titlebar-close-button:hover, .top-titlebar-settings-button:hover
@@ -440,4 +441,8 @@ label {
     display: block;
     margin-bottom: 0;
     font-weight: normal;
+}
+
+#trailerPlayer {
+    padding-top: 90px;
 }

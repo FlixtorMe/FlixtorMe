@@ -19,7 +19,7 @@
         <script src="../js/extensions/nwcontextmenu.js"></script>
         <script src="../js/extensions/mousetrap.min.js"></script>
 
-        <script src="../js/keyboard.js"></script>
+        <script src="../js/keyboard/keyboard.js"></script>
 
         <!-- Modules -->
         <script>
@@ -237,6 +237,7 @@
                             $('#runtime').empty();
                             $('#runtime').append('<span class="glyphicon glyphicon-time"></span>&nbsp;&nbsp');
                             $('#date').empty();
+                            $("#quality").empty();
 
                             $(devices).each(function(index) {
                                 var device = devices[index];
@@ -431,9 +432,7 @@
                             $("#head-bar").hide();
                             $("#content-overlay").show();
                             $("#movie").show();
-                            $("#side-bar-full").hide();
                             $("#content").css("opacity", "0");
-                            $('#side-bar-small').attr("style", "display: none !important");
                             $('#customCSS').animate({opacity: 0}, 0).animate({opacity: 0.7}, 3500);
                         }
 
@@ -549,8 +548,6 @@
                             $("#customCSS").empty();
                             $("#content-overlay").hide();
                             $("#movie").hide();
-                            $("#side-bar-full").show();
-                            $("#side-bar-small").removeAttr( 'style' );
                             $("#content").css("opacity", "1");
                             $("#head-bar").show();
                             $( "#btnBuy").unbind( "click" );
@@ -706,8 +703,8 @@
                         <div class="row" style="margin-right:0;">
                             <div class="input-group">
                                 <span class="input-group-btn">
-                                    <span class="col-md-1 col-sm-1 col-xs-1">
-
+                                    <span type="button" class="top-titlebar-back-button" title="" onclick="closeMovieDetail();">
+                                        <span class="glyphicon glyphicon-share-alt"></span>
                                     </span>
                                     <span style="float: right;">
                                         <div id="quality" class="btn-group"></div>
@@ -748,6 +745,12 @@
                                         </div>-->
                                     </div>
                                     <div id="plot" class="ptb-10" style="max-width:800px;"></div>
+                                    <div id="trailer" class="ptb-10">
+                                        <button id="btnTrailer" class="btn btn-primary btn-sm"><i class='glyphicon glyphicon-film'></i>&nbsp;&nbsp;</button>
+                                    </div>
+                                    <div id="buy" class="ptb-10">
+                                        <button id="btnBuy" class="btn btn-danger btn-sm"><i class='glyphicon glyphicon-shopping-cart'></i>&nbsp;&nbsp;</button>
+                                    </div>
                                     <!--<div class="ptb-10">
                                         <div class="btn-group">
                                             <button type="button" id="btnPlay" class="btn btn-success btn-sm"><i class='glyphicon glyphicon-play'></i>&nbsp;&nbsp;</button>
