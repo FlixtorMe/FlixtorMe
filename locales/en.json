@@ -172,5 +172,8 @@
 	"here": "here",
 	"New Flixtor version": "New Flixtor version",
 	"Eztv is unavailable. Please try it again later": "Eztv is unavailable. Please try it again later",
-	"Trakt service is unavailable. Please try it again later": "Trakt service is unavailable. Please try it again later"
+	"Trakt service is unavailable. Please try it again later": "Trakt service is unavailable. Please try it again later",
+	"Player settings:": "Player settings:",
+	"Custom subtitle color:": "Custom subtitle color:",
+	"Colorpicker": "Colorpicker"
 }

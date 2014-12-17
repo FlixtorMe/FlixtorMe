@@ -5,14 +5,18 @@
     <title>Flixtor</title>
     <!-- CSS -->
     <link href="../styles/bootstrap.min.css" rel="stylesheet">
+    <link href="../styles/colpick.css" rel="stylesheet">
     <link href="../styles/bootly.css" rel="stylesheet">
     <link href="../styles/general.css" rel="stylesheet">
+
+    <link href="../styles/settings.css" rel="stylesheet">
 
     <!-- Scripts -->
     <script type='text/javascript' src="../js/extensions/jquery.min.js"></script>
     <script type='text/javascript' src="../js/extensions/bootstrap.min.js"></script>
     <script src="../js/extensions/bootstrap-paginator.min.js"></script>
     <script src="../js/extensions/nwcontextmenu.js"></script>
+    <script src="../js/extensions/colpick.js"></script>
 
     <!-- Modules -->
     <script>
@@ -64,69 +68,6 @@
         </div>
     </div>
     <div id="content-wrapper">
-        <div id="side-bar-full" class="hidden-xs side-bar">
-            <ul>
-                <li id="side-bar-li-movies" onclick="main.changeFrame('movies')">
-                    <a class="menuMovies" href="#">
-                        <span class="glyphicon glyphicon-film"></span></a>
-                </li>
-                <li id="side-bar-li-series" onclick="main.changeFrame('series')">
-                    <a class="menuSeries" href="#">
-                        <span class="glyphicon glyphicon-expand"></span></a>
-                </li>
-                <li id="side-bar-li-animes" onclick="main.changeFrame('animes')">
-                    <a class="menuAnimes" href="#">
-                        <span class="glyphicon glyphicon-globe"></span></a>
-                </li>
-                <li id="side-bar-li-torrents" onclick="main.changeFrame('torrents')">
-                    <a class="menuTorrents" href="#">
-                        <span class="glyphicon glyphicon-th-list"></span></a>
-                </li>
-                <br><br>
-                <li id="side-bar-li-favorites" onclick="main.changeFrame('favorites')">
-                    <a class="menuFavorites" href="#">
-                        <span class="glyphicon glyphicon-heart"></span></a>
-                </li>
-                <li id="side-bar-li-settings" class="on" onclick="main.changeFrame('settings')">
-                    <a class="menuSettings" href="#">
-                        <span class="glyphicon glyphicon-cog"></span></a>
-                </li>
-            </ul>
-        </div>
-        <div id="side-bar-small" class="visible-xs side-bar">
-            <ul>
-                <li id="side-bar-li-movies-sm" onclick="main.changeFrame('movies')">
-                    <a href="#">
-                        <span class="glyphicon glyphicon-film"></span>
-                    </a>
-                </li>
-                <li id="side-bar-li-series-sm" onclick="main.changeFrame('series')">
-                    <a href="#">
-                        <span class="glyphicon glyphicon-expand"></span>
-                    </a>
-                </li>
-                <li id="side-bar-li-animes-sm" onclick="main.changeFrame('animes')">
-                    <a href="#">
-                        <span class="glyphicon glyphicon-globe"></span></a>
-                    </a>
-                </li>
-                <li id="side-bar-li-torrents-sm" onclick="main.changeFrame('torrents')">
-                    <a href="#">
-                        <span class="glyphicon glyphicon-th-list"></span>
-                    </a>
-                </li>
-                <br><br>
-                <li id="side-bar-li-favorites-sm" onclick="main.changeFrame('favorites')">
-                    <a href="#">
-                        <span class="glyphicon glyphicon-heart"></span></a>
-                </li>
-                <li id="side-bar-li-settings-sm" class="on" onclick="main.changeFrame('settings')">
-                    <a href="#">
-                        <span class="glyphicon glyphicon-cog"></span>
-                    </a>
-                </li>
-            </ul>
-        </div>
         <div id="popup"></div>
         <div id="content">
             <script type="text/javascript">
@@ -198,6 +139,21 @@
                             $('#subtitlesSaved').fadeOut(1500);
                         });
                     });*/
+
+                    // Custom subtitle color
+                    $('#subtitleColorSaved').append(saved+'&nbsp;<span class="glyphicon glyphicon-ok"></span>');
+                    $('#subtitleColor').colpick({
+                        layout:'hex',
+                        colorScheme:'dark',
+                        color: settings.readConfig('subtitleColor'),
+                        onSubmit:function(hsb,hex,rgb,el,bySetColor) {
+                            $('#subtitleColor').colpickHide();
+                            settings.writeConfig('subtitleColor', '#'+hex);
+                            $('#subtitleColorSaved').fadeIn('fast', function(){
+                                $('#subtitleColorSaved').fadeOut(1500);
+                            });
+                        }
+                    });
 
                     //Get connection limit
                     var connectionLimit = settings.readConfig('connectionLimit');
@@ -403,6 +359,16 @@
                            </div>
                            <label id="subtitlesSaved" style="display: none" class="control-label"></label>
                        </div>-->
+
+                        <div style="margin-top: 60px"><h3 class="playerSettings"></h3></div>
+                        <div class="form-group">
+                            <div style="padding-top: 7px" class="col-sm-2 settingsSubtitleColor"></div>
+                            <div class="col-sm-4">
+                                <button id="subtitleColor" type="button" class="btn btn-flixtor btn-sm"></button>
+                            </div>
+                            <label id="subtitleColorSuccess" style="display: none" class="control-label"></label>
+                        </div>
+
 
                        <div style="margin-top: 60px"><h3 class="advancedSettings"></h3></div>
                        <div class="form-group">

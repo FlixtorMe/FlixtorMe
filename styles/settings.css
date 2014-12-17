@@ -1,0 +1,25 @@
+.colpick {
+    background: #272f3a;
+    border: 1px solid #507494;
+}
+
+.colpick_submit {
+    background: #222d3a !important;
+    border: 1px solid #507494 !important;
+}
+
+.colpick_field_letter {
+    background: #222d3a !important;
+    border-right: 1px solid #507494 !important;
+    width: 15px !important;
+}
+
+.colpick_hex_field {
+    background: #222d3a !important;
+    border: 1px solid #507494 !important;
+}
+
+.colpick_hex_field input[type="text"] {
+    border: none !important;
+    width: 100% !important;
+}

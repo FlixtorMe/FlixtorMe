@@ -1,7 +1,7 @@
 //External modules
 var fs = require('fs');
 var data_path = global.window.nwDispatcher.requireNwGui().App.dataPath;
-var defaults = {"version":"2.2.1","language":"en","cacheDir":"./data","subtitle":"","connectionLimit":"100","dht":"500","streamingPort":"","clearCache":true, "metaProvider": "trakt"};
+var defaults = {"version":"2.2.1","language":"en","cacheDir":"./data","subtitle":"","subtitleColor":"#ffffff","connectionLimit":"100","dht":"500","streamingPort":"","clearCache":true, "metaProvider": "trakt"};
 
 var Settings = function() {
 

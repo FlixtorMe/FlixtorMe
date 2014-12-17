@@ -407,6 +407,9 @@ var Translations = function () {
         var defaultSettings = i18n.__('Default settings:');
         $('.defaultSettings').append(defaultSettings);
 
+        var playerSettings = i18n.__('Player settings:');
+        $('.playerSettings').append(playerSettings);
+
         var advancedSettings = i18n.__('Advanced settings:');
         $('.advancedSettings').append(advancedSettings);
 
@@ -425,6 +428,9 @@ var Translations = function () {
         var settingsClearCache = i18n.__('Clear data on close:');
         $('.settingsClearCache').append(settingsClearCache);
 
+        var settingsSubtitleColor = i18n.__('Custom subtitle color:');
+        $('.settingsSubtitleColor').append(settingsSubtitleColor);
+
         var settingsConnectionLimit = i18n.__('Connection limit:');
         $('.settingsConnectionLimit').append(settingsConnectionLimit);
 
@@ -433,6 +439,9 @@ var Translations = function () {
 
         var settingsSubtitle = i18n.__('Prefered subtitle:');
         $('.settingsSubtitle').append(settingsSubtitle);
+
+        var subtitleColor = i18n.__('Colorpicker');
+        $('#subtitleColor').append(subtitleColor);
 
         var restoreDefaults = i18n.__('Restore defaults');
         $('#restoreDefaults').append(restoreDefaults);
