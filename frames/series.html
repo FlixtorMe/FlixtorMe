@@ -26,6 +26,7 @@
             var gui = require('nw.gui');
             var subtitles = require('../js/subtitle.js');
             var favorites = require('../js/favorites.js');
+            var settings = require('../js/settings.js');
             var translations = require('../js/translations.js');
             var dateFormat = require('dateformat');
             var readTorrent = require('read-torrent');
@@ -510,14 +511,22 @@
                                         });
 
                                         readTorrent(torrent, function(err, torrentInfo) {
+                                            var defaultSubtitle = settings.readConfig("subtitle");
                                             subtitles.search(torrentInfo.name, function (subs) {
                                                 $('.subtitles').empty();
-                                                $('.subtitles').append('<li><a class="subtitle" data-subname="No subtitle" data-subiso="" >No subtitle</a></li>');
+                                                $('.subtitles').append('<li><a class="subtitle" data-subname="" data-subiso="" >No subtitle</a></li>');
+                                                $('.subtitle[data-subname="No subtitle"]').click();
                                                 if( subs !== false ) {
                                                     console.log(subs);
                                                     for (var key in subs) {
                                                         var sub = subs[key];
+                                                        if( sub.languageName === defaultSubtitle ) {
                                                             $(".subtitles").append('<li><a class="subtitle" data-subname="'+sub.languageName+'" data-subiso="'+sub.languageName+'" >'+sub.languageName+'</a></li>');
+                                                            $('.subtitle[data-subname="'+defaultSubtitle+'"]').click();
+                                                        }
+                                                        else {
+                                                            $(".subtitles").append('<li><a class="subtitle" data-subname="'+sub.languageName+'" data-subiso="'+sub.languageName+'" >'+sub.languageName+'</a></li>');
+                                                        }
                                                     }
                                                 }
                                             });

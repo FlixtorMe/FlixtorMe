@@ -30,6 +30,7 @@
             var remote = require('../js/remote.js');
             var yifysubtitle = require('../js/yifysubtitle.js');
             var favorites = require('../js/favorites.js');
+            var settings = require('../js/settings.js');
             var translations = require('../js/translations.js');
             var readTorrent = require('read-torrent');
             var health = require('torrent-health');
@@ -426,14 +427,22 @@
                                 currentTorrent = torrent;
                             });
 
+                            var defaultSubtitle = settings.readConfig("subtitle");
                             yifysubtitle.search(movie.imdbCode, function (subs) {
                                 $('.subtitles').empty();
-                                $('.subtitles').append('<li><a class="subtitle" data-subname="No subtitle" data-subiso="" >No subtitle</a></li>');
+                                $('.subtitles').append('<li><a class="subtitle" data-subname="" data-subiso="" >No subtitle</a></li>');
+
                                 if( subs !== false ) {
                                     console.log(subs);
                                     for (var key in subs) {
                                         var sub = subs[key];
-                                        $(".subtitles").append('<li><a class="subtitle" data-subname="'+sub.languageName+'" data-subiso="'+sub.languageName+'" >'+sub.languageName+'</a></li>');
+                                        if( sub.languageName === defaultSubtitle.toLowerCase() ) {
+                                            $(".subtitles").append('<li><a class="subtitle" data-subname="'+sub.languageName+'" data-subiso="'+sub.languageName+'" >'+sub.languageName+'</a></li>');
+                                            $('.subtitle[data-subname="'+defaultSubtitle.toLowerCase()+'"]').click();
+                                        }
+                                        else {
+                                            $(".subtitles").append('<li><a class="subtitle" data-subname="'+sub.languageName+'" data-subiso="'+sub.languageName+'" >'+sub.languageName+'</a></li>');
+                                        }
                                     }
                                 }
                             });
