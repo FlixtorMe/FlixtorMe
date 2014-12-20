@@ -19,6 +19,8 @@
         <script src="../js/extensions/jquery.isotope.min.js"></script>
         <script src="../js/extensions/nwcontextmenu.js"></script>
 
+        <script src="../js/series.js"></script>
+
         <!-- Modules -->
         <script>
             var main = require('../js/main.js');
@@ -36,14 +38,18 @@
             var xbmcDevices = [];
             var chromecastDevices = [];
 
+            var $container;
+
             $(document).ready(function() {
 
                 translations.initialize();
                 translations.translateDefaults();
 
+                $container = $('#serieContainer');
+
                 //Scroll bar
                 $(window).resize(function() {
-                    $("#serieContainer").css('max-height', ($(window).height() - 105) + "px");
+                    $("#series").css('height', ($(window).height() - 95) + "px");
                     var height = $("#content").height()-25;
                     $(".container").height(height);
                 }).trigger("resize");
@@ -72,27 +78,6 @@
                     }, 200));
                 });
 
-                $.fn.inView = function(){
-                    var win = $(window);
-                    obj = $(this);
-                    var scrollPosition = win.scrollTop();
-                    var visibleArea = win.scrollTop() + win.height();
-                    var objEndPos = (obj.offset().top + obj.outerHeight());
-
-                    return(visibleArea >= objEndPos && scrollPosition <= objEndPos ? true : false)
-                };
-
-                $('#serieContainer').scroll(function() {
-                    var element = $('.last').on('find');
-                    if(element.length > 0) {
-                        if(element.inView() === true) {
-                            serieFilter.page = serieFilter.page+1;
-                            element.removeClass('last');
-                            serieApplySearch();
-                        }
-                    }
-                });
-
                 // Browse for xbmc clients
                 var xbmcBrowser = new xbmc.Browser();
                 xbmcBrowser.on('deviceOn', function(device){
@@ -103,7 +88,7 @@
                 var chromecastBrowser = new chromecastjs.Browser();
                 chromecastBrowser.on('deviceOn', function(device){
                     chromecastDevices.push(device);
-                })
+                });
             });
         </script>
     </head>
@@ -142,8 +127,13 @@
                         var serieFilter = {};
 
                         function serieApplySearch() {
+
+                            $("#series").unbind("scroll");
+
                             //Show the spinner while we wait to display all the series.
-                            $("#wrapper").append("<div id='main-spinner' class='spinner-overlay'></div>");
+                            if( $('#serieContainer').is(':empty') ) {
+                                $("#wrapper").append("<div id='main-spinner' class='spinner-overlay'></div>");
+                            }
 
                             //By default we skip to 0.
                             if (!serieFilter.page) {
@@ -191,43 +181,14 @@
                                 }
 
                                 if (content != "") {
-
-                                    var $container = $('#serieContainer');
-                                    $container.append(content);
-                                    $container.isotope("insert", $container);
-
-                                    $( ".element" ).last().addClass('last');
+                                    $container.isotope( 'insert', $(content) );
+                                    infinitescroll();
                                 }
 
                                 //Remove the spinner since we got the data we wanted
                                 $("#main-spinner").remove();
                             });
 
-                        }
-
-                        function changeSearchText() {
-                            serieFilter.page = 1;
-                            serieFilter.searchValue = $("#txtSerieSearch").val();
-                            $("#serieContainer").empty();
-                            $('#serieContainer').isotope("destroy");
-                            $('#serieContainer').isotope({
-                                itemSelector: '.element',
-                                animationEngine: 'jquery',
-                                layoutMode: 'fitRows',
-                                animationOptions: {
-                                    duration: 600,
-                                    easing: 'linear',
-                                    queue: false
-                                }
-                            });
-
-                            if(serieFilter.searchValue.indexOf('magnet:?xt=urn:btih:') == 0) {
-                                var infoHash = serieFilter.searchValue.split('magnet:?xt=urn:btih:');
-                                main.go("players/player.html?torrentId=" + infoHash[1]);
-                            }
-                            else {
-                                serieApplySearch();
-                            }
                         }
 
                         function startTorrent(infoHash) {
@@ -393,7 +354,7 @@
                                         $("#episode-info").empty();
                                         $("#episode-overview").empty();
 
-                                        $(".selected").removeClass("selected");
+                                        $("#season-list").find(".selected").removeClass("selected");
                                         $(".media").removeClass("on");
                                         $(this).addClass("selected");
 
@@ -561,68 +522,6 @@
                                 $('.spinner-overlay').remove();
                             });
 
-                        }
-
-                        function changeFilterGenre(name) {
-                            serieFilter.page = 1;
-                            serieFilter.genre =  name;
-
-                            var translatedGenre = translations.translate(name);
-                            $("#filterByGenre").text(": " + translatedGenre);
-                            $("#serieContainer").empty();
-                            $('#serieContainer').isotope("destroy");
-                            $('#serieContainer').isotope({
-                                itemSelector: '.element',
-                                animationEngine: 'jquery',
-                                layoutMode: 'fitRows',
-                                animationOptions: {
-                                    duration: 600,
-                                    easing: 'linear',
-                                    queue: false
-                                }
-                            });
-
-                            serieApplySearch();
-                        }
-
-                        function changeFilterCategory(name) {
-                            //Change category name
-                            serieFilter.category = name;
-                            serieFilter.page = 1;
-
-                            var translatedCategory = translations.translate(name);
-                            $("#filterByCategory").text(" : " + translatedCategory);
-                            $("#serieContainer").empty();
-                            $('#serieContainer').isotope("destroy");
-                            $('#serieContainer').isotope({
-                                itemSelector: '.element',
-                                animationEngine: 'jquery',
-                                layoutMode: 'fitRows',
-                                animationOptions: {
-                                    duration: 600,
-                                    easing: 'linear',
-                                    queue: false
-                                }
-                            });
-
-                            //Create the category filter
-                            switch (serieFilter.category) {
-                                case "Most downloaded":
-                                    serieFilter.sort = "seeds";
-                                    break;
-                                case "Updated":
-                                    serieFilter.sort = "updated";
-                                    break;
-                                case "Year":
-                                    serieFilter.sort = "year";
-                                    break;
-                                case "Name":
-                                    serieFilter.sort = "name";
-                                    break;
-                            }
-
-                            //Apply the setting to search
-                            serieApplySearch();
                         }
 
                         function closeSerieDetail()
@@ -799,8 +698,10 @@
                         </div>
                     </div>
 
-                    <div id="serieContainer" class="isotope" style="overflow-y:auto !important;  margin-top: 10px; margin-right:10px;">
-                        <!-- Dynamic content here -->
+                    <div id="series" style="overflow-y:auto !important;">
+                        <div id="serieContainer" class="isotope" style="margin-top: 10px; margin-right:10px;">
+                            <!-- Dynamic content here -->
+                        </div>
                     </div>
                     <div id="popup"></div>
                 </div>

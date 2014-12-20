@@ -45,7 +45,7 @@
     cursor: pointer;
 }
 
-.selected {
+#season-list .selected {
     background-color: #374353;
 }
 

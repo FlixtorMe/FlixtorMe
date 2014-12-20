@@ -61,7 +61,7 @@ Mousetrap.bind(['enter', 'space'], function() {
     }
 });
 
-Mousetrap.bind('right', function() {
+/*Mousetrap.bind('right', function() {
     $('#movieContainer').scrollTo('.on');
     $(".on").parent().next(".element").find('.shadow').mouseover();
 });
@@ -69,4 +69,14 @@ Mousetrap.bind('right', function() {
 Mousetrap.bind('left', function() {
     $('#movieContainer').scrollTo('.on');
     $(".on").parent().prev(".element").find('.shadow').mouseover();
+});*/
+
+Mousetrap.bind('q', function() {
+    if( $(".current").next(".btn-quality").length > 0 ) {
+        $(".current").next(".btn-quality").click();
+    }
+    else {
+        $(".btn-quality")[0].click();
+    }
+
 });

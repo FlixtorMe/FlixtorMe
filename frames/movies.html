@@ -37,16 +37,20 @@
             var xbmc = require('nodebmc');
             var devices = [];
 
+            var $container;
+
             $(document).ready(function() {
 
                 translations.initialize();
                 translations.translateDefaults();
 
+                $container = $('#movieContainer');
+
                 main.checkForUpdates();
 
                 //Scroll bar
                 $(window).resize(function() {
-                    $("#movieContainer").css('max-height', ($(window).height() - 105) + "px");
+                    $("#movies").css('height', ($(window).height() - 95) + "px");
                 }).trigger("resize");
 
                 //Search key press (enter)
@@ -73,28 +77,6 @@
                         }
                     }, 200));
                 });
-
-                $.fn.inView = function(){
-                    var win = $(window);
-                    obj = $(this);
-                    var scrollPosition = win.scrollTop();
-                    var visibleArea = win.scrollTop() + win.height();
-                    var objEndPos = (obj.offset().top + obj.outerHeight());
-
-                    return(visibleArea >= objEndPos && scrollPosition <= objEndPos ? true : false)
-                };
-
-                $('#movieContainer').scroll(function() {
-                    var element = $('.last').on('find');
-                    if(element.length > 0) {
-                        if(element.inView() === true) {
-                            movieFilter.page = movieFilter.page+1;
-                            element.removeClass('last');
-                            applySearch();
-                        }
-                    }
-                });
-
 
                 // Browse for xbmc clients
                 var browser = new xbmc.Browser();
@@ -141,8 +123,13 @@
                         var movieFilter = {};
 
                         function applySearch() {
+
+                            $("#movies").unbind("scroll");
+
                             //Display the spinner while we wait for the data.
-                            $("#wrapper").append("<div class='spinner-overlay'></div>");
+                            if( $('#movieContainer').is(':empty') ) {
+                                $("#wrapper").append("<div id='main-spinner' class='spinner-overlay'></div>");
+                            }
 
                             //We skip to 0
                             if (!movieFilter.page) {
@@ -182,7 +169,7 @@
                                                 gen = gen.trim();
                                                 translatedGen = translations.translate(gen);
                                                  translatedGenres.push(translatedGen);
-                                            })
+                                            });
 
                                             for (var i = 0; i < translatedGenres.length; ++i) {
                                                 translatedGenres[i] = translatedGenres[i].replace(" ", "-");
@@ -194,32 +181,17 @@
                                             var genres = '';
                                         }
 
-                                        if( index == 0 ) {
-                                            content += "<div id='" + movie.imdbCode + "' class='element transition isotope-item'>" +
-                                                    "<a class='shadow on' onClick='showDetails(this);'>" +
-                                                    "<div style='display: none'>"+JSON.stringify(movie)+"</div> " +
-                                                    "<img alt='image' src='" + movie.poster + "' style='width:160px; height:230px;'>" +
-                                                    "</a>" +
-                                                    "<div class='p-5' style='max-width:160px;'>" +
-                                                    "<div style='font-size:14px;'>" + movie.title + "</div>" +
-                                                    "<div style='font-size:10px; color:#A8A8A8;'>" + genres + "</div>" +
-                                                    "</div>" +
-                                                    "<div style='clear:both'></div>" +
-                                                    "</div>";
-                                        }
-                                        else {
-                                            content += "<div id='" + movie.imdbCode + "' class='element transition isotope-item'>" +
-                                                    "<a class='shadow' onClick='showDetails(this);'>" +
-                                                    "<div style='display: none'>"+JSON.stringify(movie)+"</div> " +
-                                                    "<img alt='image' src='" + movie.poster + "' style='width:160px; height:230px;'>" +
-                                                    "</a>" +
-                                                    "<div class='p-5' style='max-width:160px;'>" +
-                                                    "<div style='font-size:14px;'>" + movie.title + "</div>" +
-                                                    "<div style='font-size:10px; color:#A8A8A8;'>" + genres + "</div>" +
-                                                    "</div>" +
-                                                    "<div style='clear:both'></div>" +
-                                                    "</div>";
-                                        }
+                                        content += "<div id='" + movie.imdbCode + "' class='element transition isotope-item'>" +
+                                                "<a class='shadow' onClick='showDetails(this);'>" +
+                                                "<div style='display: none'>"+JSON.stringify(movie)+"</div> " +
+                                                "<img alt='image' src='" + movie.poster + "' style='width:160px; height:230px;'>" +
+                                                "</a>" +
+                                                "<div class='p-5' style='max-width:160px;'>" +
+                                                "<div style='font-size:14px;'>" + movie.title + "</div>" +
+                                                "<div style='font-size:10px; color:#A8A8A8;'>" + genres + "</div>" +
+                                                "</div>" +
+                                                "<div style='clear:both'></div>" +
+                                                "</div>";
 
                                     });
                                 }
@@ -228,12 +200,8 @@
                                 }
 
                                 if (content !== "") {
-
-                                    var $container = $('#movieContainer');
-                                    $container.append(content);
-                                    $container.isotope("insert", $container);
-
-                                    $( ".element" ).last().addClass('last');
+                                    $container.isotope( 'insert', $(content) );
+                                    infinitescroll();
                                 }
 
                                 $('.spinner-overlay').remove();
@@ -256,6 +224,7 @@
                             $('#runtime').append('<span class="glyphicon glyphicon-time"></span>&nbsp;&nbsp');
                             $('#date').empty();
                             $("#quality").empty();
+                            $("#poster").attr('src', "");
 
                             $(devices).each(function(index) {
                                 var device = devices[index];
@@ -286,7 +255,7 @@
                                     gen = gen.trim();
                                     translatedGen = translations.translate(gen);
                                     translatedGenres.push(translatedGen);
-                                })
+                                });
 
                                 for (var i = 0; i < translatedGenres.length; ++i) {
                                     translatedGenres[i] = translatedGenres[i].replace(" ", "-");
@@ -464,94 +433,6 @@
                             $('#customCSS').animate({opacity: 0}, 0).animate({opacity: 0.7}, 3500);
                         }
 
-                        function changeSearchText() {
-                            movieFilter.page = 1;
-                            movieFilter.searchValue = $('#txtMovieSearch').val();
-                            $('#movieContainer').empty();
-                            $('#movieContainer').isotope("destroy");
-                            $('#movieContainer').isotope({
-                                itemSelector: '.element',
-                                animationEngine: 'jquery',
-                                layoutMode: 'fitRows',
-                                animationOptions: {
-                                    duration: 600,
-                                    easing: 'linear',
-                                    queue: false
-                                }
-                            });
-
-                            if(movieFilter.searchValue.indexOf('magnet:?xt=urn:btih:') == 0) {
-                                var infoHash = movieFilter.searchValue.split('magnet:?xt=urn:btih:');
-                                main.go("players/player.html?torrentId=" + infoHash[1]);
-                            }
-                            else {
-                                applySearch();
-                            }
-                        }
-
-                        function changeFilterGenre(name) {
-                            movieFilter.genre =  name;
-                            movieFilter.page = 1;
-                            var translatedGenre = translations.translate(name);
-                            $("#filterByGenre").text(": " + translatedGenre);
-                            $('#movieContainer').empty();
-                            $('#movieContainer').isotope("destroy");
-                            $('#movieContainer').isotope({
-                                itemSelector: '.element',
-                                animationEngine: 'jquery',
-                                layoutMode: 'fitRows',
-                                animationOptions: {
-                                    duration: 600,
-                                    easing: 'linear',
-                                    queue: false
-                                }
-                            });
-
-                            applySearch();
-                        }
-
-                        function changeFilterCategory(name) {
-                            movieFilter.category = name;
-                            movieFilter.page = 1;
-
-                            var translatedCategory = translations.translate(name);
-                            $("#filterByCategory").text(" : " + translatedCategory);
-                            $('#movieContainer').empty();
-                            $('#movieContainer').isotope("destroy");
-                            $('#movieContainer').isotope({
-                                itemSelector: '.element',
-                                animationEngine: 'jquery',
-                                layoutMode: 'fitRows',
-                                animationOptions: {
-                                    duration: 600,
-                                    easing: 'linear',
-                                    queue: false
-                                }
-                            });
-
-                            //Create the category filter
-                            switch (movieFilter.category) {
-                            case "Most downloaded":
-                                movieFilter.sort = "seeds";
-                                break;
-                            case "Date":
-                                movieFilter.sort = "date";
-                                break;
-                            case "Year":
-                                movieFilter.sort = "year";
-                                break;
-                            case "Rating":
-                                movieFilter.sort = "rating";
-                                break;
-                            case "Alphabetic":
-                                movieFilter.sort = "alphabet";
-                                movieFilter.order = 'asc';
-                                break;
-                            }
-
-                            applySearch();
-                        }
-
                         function addToFavorites(movieJson) {
                             $('.favorites-template').empty();
                             var movie = $.parseJSON(movieJson.firstChild.innerHTML);
@@ -568,121 +449,121 @@
                         }
 
                     </script>
-                    <div id="movies">
-                        <div id="head-bar" class="p-10">
-                            <div class="row" style="margin-right:0;">
-                                <div class="col-lg-10">
-                                    <div class="input-group">
-                                        <input id="txtMovieSearch" type="text" class="form-control flixtor-input" placeholder="">
-                                        <span class="input-group-btn">
-                                            <button class="btn btn-flixtor" id="btnSearchMovie" type="button" onclick="changeSearchText();">
-                                                <span class="glyphicon glyphicon-search"></span>
+                    <div id="head-bar" class="p-10">
+                        <div class="row" style="margin-right:0;">
+                            <div class="col-lg-10">
+                                <div class="input-group">
+                                    <input id="txtMovieSearch" type="text" class="form-control flixtor-input" placeholder="">
+                                    <span class="input-group-btn">
+                                        <button class="btn btn-flixtor" id="btnSearchMovie" type="button" onclick="changeSearchText();">
+                                            <span class="glyphicon glyphicon-search"></span>
+                                        </button>
+                                        <span class="ml-10">
+                                            <button type="button" class="btn btn-flixtor dropdown-toggle" data-toggle="dropdown">Genre
+                                                <span id="filterByGenre"></span>
+                                                <span class="caret"></span>
                                             </button>
-                                            <span class="ml-10">
-                                                <button type="button" class="btn btn-flixtor dropdown-toggle" data-toggle="dropdown">Genre
-                                                    <span id="filterByGenre"></span>
-                                                    <span class="caret"></span>
-                                                </button>
-                                                <ul class="dropdown-menu dropdown-menu-flixtor" style="max-height:400px;overflow-y:auto;" role="menu" id="ddmGenres">
-                                                    <li>
-                                                        <a class="genreAll" onclick="changeFilterGenre('All');"></a>
-                                                    </li>
-                                                    <li>
-                                                        <a class="genreAction" onclick="changeFilterGenre('Action');"></a>
-                                                    </li>
-                                                    <li>
-                                                        <a class="genreAdventure" onclick="changeFilterGenre('Adventure');"></a>
-                                                    </li>
-                                                    <li>
-                                                        <a class="genreAnimation" onclick="changeFilterGenre('Animation');"></a>
-                                                    </li>
-                                                    <li>
-                                                        <a class="genreComedy" onclick="changeFilterGenre('Comedy');"></a>
-                                                    </li>
-                                                    <li>
-                                                        <a class="genreCrime" onclick="changeFilterGenre('Crime');"></a>
-                                                    </li>
-                                                    <li>
-                                                        <a class="genreDocumentary" onclick="changeFilterGenre('Documentary');"></a>
-                                                    </li>
-                                                    <li>
-                                                        <a class="genreDrama" onclick="changeFilterGenre('Drama');"></a>
-                                                    </li>
-                                                    <li>
-                                                        <a class="genreFamily" onclick="changeFilterGenre('Family');"></a>
-                                                    </li>
-                                                    <li>
-                                                        <a class="genreFantasy" onclick="changeFilterGenre('Fantasy');"></a>
-                                                    </li>
-                                                    <li>
-                                                        <a class="genreFilm-Noir" onclick="changeFilterGenre('Film-Noir');"></a>
-                                                    </li>
-                                                    <li>
-                                                        <a class="genreHistory" onclick="changeFilterGenre('History');"></a>
-                                                    </li>
-                                                    <li>
-                                                        <a class="genreHorror" onclick="changeFilterGenre('Horror');"></a>
-                                                    </li>
-                                                    <li>
-                                                        <a class="genreMusic" onclick="changeFilterGenre('Music');"></a>
-                                                    </li>
-                                                    <li>
-                                                        <a class="genreMusical" onclick="changeFilterGenre('Musical');"></a>
-                                                    </li>
-                                                    <li>
-                                                        <a class="genreMystery" onclick="changeFilterGenre('Mystery');"></a>
-                                                    </li>
-                                                    <li>
-                                                        <a class="genreRomance" onclick="changeFilterGenre('Romance');"></a>
-                                                    </li>
-                                                    <li>
-                                                        <a class="genreSci-Fi" onclick="changeFilterGenre('Sci-Fi');"></a>
-                                                    </li>
-                                                    <li>
-                                                        <a class="genreSport" onclick="changeFilterGenre('Sport');"></a>
-                                                    </li>
-                                                    <li>
-                                                        <a class="genreThriller" onclick="changeFilterGenre('Thriller');"></a>
-                                                    </li>
-                                                    <li>
-                                                        <a class="genreWar" onclick="changeFilterGenre('War');"></a>
-                                                    </li>
-                                                    <li>
-                                                        <a class="genreWestern" onclick="changeFilterGenre('Western');"></a>
-                                                    </li>
-                                                </ul>
-                                            </span>
-                                            <span class="ml-10">
-                                                <button type="button" class="btn btn-flixtor dropdown-toggle" data-toggle="dropdown">Filter
-                                                    <span id="filterByCategory"></span>
-                                                    <span class="caret"></span>
-                                                </button>
-                                                <ul class="dropdown-menu dropdown-menu-flixtor pull-right" role="menu" id="ddmFilter">
-                                                    <li>
-                                                        <a class="filterMostDownloaded" onclick="changeFilterCategory('Most downloaded')"></a>
-                                                    </li>
-                                                    <li>
-                                                        <a class="filterDate" onclick="changeFilterCategory('Date')"></a>
-                                                    </li>
-                                                    <li>
-                                                        <a class="filterYear" onclick="changeFilterCategory('Year')"></a>
-                                                    </li>
-                                                    <li>
-                                                        <a class="filterRating" onclick="changeFilterCategory('Rating')"></a>
-                                                    </li>
-                                                    <li>
-                                                        <a class="filterAlphabetic" onclick="changeFilterCategory('Alphabetic')"></a>
-                                                    </li>
-                                                </ul>
-                                            </span>
+                                            <ul class="dropdown-menu dropdown-menu-flixtor" style="max-height:400px;overflow-y:auto;" role="menu" id="ddmGenres">
+                                                <li>
+                                                    <a class="genreAll" onclick="changeFilterGenre('All');"></a>
+                                                </li>
+                                                <li>
+                                                    <a class="genreAction" onclick="changeFilterGenre('Action');"></a>
+                                                </li>
+                                                <li>
+                                                    <a class="genreAdventure" onclick="changeFilterGenre('Adventure');"></a>
+                                                </li>
+                                                <li>
+                                                    <a class="genreAnimation" onclick="changeFilterGenre('Animation');"></a>
+                                                </li>
+                                                <li>
+                                                    <a class="genreComedy" onclick="changeFilterGenre('Comedy');"></a>
+                                                </li>
+                                                <li>
+                                                    <a class="genreCrime" onclick="changeFilterGenre('Crime');"></a>
+                                                </li>
+                                                <li>
+                                                    <a class="genreDocumentary" onclick="changeFilterGenre('Documentary');"></a>
+                                                </li>
+                                                <li>
+                                                    <a class="genreDrama" onclick="changeFilterGenre('Drama');"></a>
+                                                </li>
+                                                <li>
+                                                    <a class="genreFamily" onclick="changeFilterGenre('Family');"></a>
+                                                </li>
+                                                <li>
+                                                    <a class="genreFantasy" onclick="changeFilterGenre('Fantasy');"></a>
+                                                </li>
+                                                <li>
+                                                    <a class="genreFilm-Noir" onclick="changeFilterGenre('Film-Noir');"></a>
+                                                </li>
+                                                <li>
+                                                    <a class="genreHistory" onclick="changeFilterGenre('History');"></a>
+                                                </li>
+                                                <li>
+                                                    <a class="genreHorror" onclick="changeFilterGenre('Horror');"></a>
+                                                </li>
+                                                <li>
+                                                    <a class="genreMusic" onclick="changeFilterGenre('Music');"></a>
+                                                </li>
+                                                <li>
+                                                    <a class="genreMusical" onclick="changeFilterGenre('Musical');"></a>
+                                                </li>
+                                                <li>
+                                                    <a class="genreMystery" onclick="changeFilterGenre('Mystery');"></a>
+                                                </li>
+                                                <li>
+                                                    <a class="genreRomance" onclick="changeFilterGenre('Romance');"></a>
+                                                </li>
+                                                <li>
+                                                    <a class="genreSci-Fi" onclick="changeFilterGenre('Sci-Fi');"></a>
+                                                </li>
+                                                <li>
+                                                    <a class="genreSport" onclick="changeFilterGenre('Sport');"></a>
+                                                </li>
+                                                <li>
+                                                    <a class="genreThriller" onclick="changeFilterGenre('Thriller');"></a>
+                                                </li>
+                                                <li>
+                                                    <a class="genreWar" onclick="changeFilterGenre('War');"></a>
+                                                </li>
+                                                <li>
+                                                    <a class="genreWestern" onclick="changeFilterGenre('Western');"></a>
+                                                </li>
+                                            </ul>
                                         </span>
+                                        <span class="ml-10">
+                                            <button type="button" class="btn btn-flixtor dropdown-toggle" data-toggle="dropdown">Filter
+                                                <span id="filterByCategory"></span>
+                                                <span class="caret"></span>
+                                            </button>
+                                            <ul class="dropdown-menu dropdown-menu-flixtor pull-right" role="menu" id="ddmFilter">
+                                                <li>
+                                                    <a class="filterMostDownloaded" onclick="changeFilterCategory('Most downloaded')"></a>
+                                                </li>
+                                                <li>
+                                                    <a class="filterDate" onclick="changeFilterCategory('Date')"></a>
+                                                </li>
+                                                <li>
+                                                    <a class="filterYear" onclick="changeFilterCategory('Year')"></a>
+                                                </li>
+                                                <li>
+                                                    <a class="filterRating" onclick="changeFilterCategory('Rating')"></a>
+                                                </li>
+                                                <li>
+                                                    <a class="filterAlphabetic" onclick="changeFilterCategory('Alphabetic')"></a>
+                                                </li>
+                                            </ul>
+                                        </span>
+                                    </span>
 
-                                    </div>
                                 </div>
-                                <div class="clearfix"></div>
                             </div>
+                            <div class="clearfix"></div>
                         </div>
-                        <div id="movieContainer" class="isotope" style="overflow-y:auto !important; margin-top: 10px; margin-right:10px;">
+                    </div>
+                    <div id="movies" style="overflow-y:auto !important;">
+                        <div id="movieContainer" class="isotope" style="margin-top: 10px; margin-right:10px;">
                             <!-- Dynamic content here-->
                         </div>
                     </div>

@@ -204,7 +204,7 @@ select {
     background-color: #374353;
 }
 
-.selected {
+#top-bar .selected {
     color: #ffffff;
     background: #222d3a;
 }
