@@ -1,7 +1,8 @@
 //External modules
 var fs = require('fs');
 var data_path = global.window.nwDispatcher.requireNwGui().App.dataPath;
-var defaults = {"version":"2.2.2","language":"en","cacheDir":"./data","subtitle":"","subtitleColor":"#ffffff","connectionLimit":"100","dht":"500","streamingPort":"","clearCache":true, "metaProvider": "trakt"};
+var defaults = {"version":"2.2.2","language":"en","cacheDir":"./data","subtitle":"","subtitleColor":"#ffffff","connectionLimit":"100","dht":"500",
+    "streamingPort":"","clearCache":true,"metaProvider":"trakt","ytsEndpoint":"http://yts.re/api/","eztvEndpoint":"http://eztvapi.re/","kickassEndpoint":"https://kickass.so"};
 
 var Settings = function() {
 

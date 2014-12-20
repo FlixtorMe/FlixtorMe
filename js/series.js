@@ -7,6 +7,48 @@ function infinitescroll() {
     });
 }
 
+function appendResult(result) {
+    var content = "";
+    if( result !== 'error' ) {
+        $(result).each(function(index) {
+            var serie = result[index];
+
+            if (typeof serie.images.poster !== 'undefined' && !(~serie.images.poster.toString().indexOf('poster-dark')) ) {
+                var newChars = "-300";
+                var position = serie.images.poster.lastIndexOf(".");
+                var tmpOne = serie.images.poster.substr(0, position);
+                var tmpTwo = serie.images.poster.substr(position, serie.images.poster.length);
+                var seriePoster = tmpOne + newChars + tmpTwo;
+            }
+            else {
+                var seriePoster = '../images/no-poster.png';
+            }
+            content += "<div class='element transition isotope-item'>" +
+                "<a class='shadow' onClick='showDetails(this);'>" +
+                "<div style='display: none'>"+serie._id+"</div> " +
+                "<img alt='image' src='" + seriePoster + "' style='width:160px; height:230px;'/>" +
+                "</a>" +
+                "<div class='p-5' style='max-width:160px;'>" +
+                "<div style='font-size:14px;'>" + serie.title + "</div>" +
+                "</div>" +
+                "<div style='clear:both'></div>" +
+                "</div>";
+        });
+
+    }
+    else {
+        console.log("Service not available");
+    }
+
+    if (content != "") {
+        $container.isotope( 'insert', $(content) );
+        infinitescroll();
+    }
+
+    //Remove the spinner since we got the data we wanted
+    $("#main-spinner").remove();
+}
+
 function changeSearchText() {
     serieFilter.page = 1;
     serieFilter.searchValue = $("#txtSerieSearch").val();

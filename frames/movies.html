@@ -149,16 +149,17 @@
                             }
 
                             //Search for movies
-                            callwcf.searchMovies(movieFilter.sort, movieFilter.searchValue, movieFilter.genre, movieFilter.max, movieFilter.page, movieFilter.order, function(results) {
-                                appendResult(results);
+                            callwcf.searchMovies(movieFilter.sort, movieFilter.searchValue, movieFilter.genre, movieFilter.max, movieFilter.page, movieFilter.order, function(result) {
+                                appendResult(result);
                             });
                         }
 
-                        function showDetails(movieJson) {
+                        function showDetails(imdbCode) {
+                            var movie = $.parseJSON(sessionStorage[imdbCode]);
+
                             var torrents;
                             var currentTorrent;
                             var currentSubtitle;
-                            var movie = $.parseJSON(movieJson.firstChild.innerHTML);
 
                             $('#title' ).empty();
                             $('#genres').empty();
@@ -171,6 +172,7 @@
                             $('#date').empty();
                             $("#quality").empty();
                             $("#poster").attr('src', "");
+                            $(".fanart").remove();
 
                             $(devices).each(function(index) {
                                 var device = devices[index];
@@ -179,7 +181,8 @@
                             });
 
                             //Insert backdrop path
-                            $( "<style> #customCSS {position: absolute; top: 0; bottom: 0;left: 0; right: 0; z-index: -100; background: url("+movie.fanart+") no-repeat center 90px fixed; -webkit-background-size: cover; background-size: cover; color: #e9e9e9;}</style>" ).appendTo("#customCSS");
+                            //$( "<style> #customCSS {display: none; position: absolute; top: 0; bottom: 0;left: 0; right: 0; z-index: -100; background: url("+movie.fanart+") no-repeat center 90px fixed; -webkit-background-size: cover; background-size: cover; color: #e9e9e9;}</style>" ).appendTo("#customCSS");
+                            $( "<img class='fanart' src='"+movie.fanart+"'>" ).appendTo("#content-overlay");
 
                             favorites.checkIfFavorite( movie.imdbCode, function(result) {
                                 if( result == true ) {
@@ -245,8 +248,7 @@
 
                             console.log(movie);
 
-                            torrents = movie.torrents[0];
-
+                            torrents = movie.torrents;
                             for (var key in torrents) {
                                 var torrent = torrents[key];
                                 if( key !== '0' ) {
@@ -376,7 +378,10 @@
                             $("#content-overlay").show();
                             $("#movie").show();
                             $("#content").css("opacity", "0");
-                            $('#customCSS').animate({opacity: 0}, 0).animate({opacity: 0.7}, 3500);
+
+                            $('.fanart').load(function(){
+                                $('.fanart').fadeIn(5000);
+                            });
                         }
 
                         function addToFavorites(movieJson) {

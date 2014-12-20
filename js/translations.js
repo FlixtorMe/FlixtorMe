@@ -431,6 +431,15 @@ var Translations = function () {
         var settingsSubtitleColor = i18n.__('Custom subtitle color:');
         $('.settingsSubtitleColor').append(settingsSubtitleColor);
 
+        var settingsYtsEndpoint = i18n.__('Yts api endpoint:');
+        $('.settingsYtsEndpoint').append(settingsYtsEndpoint);
+
+        var settingsEztvEndpoint = i18n.__('Eztv api endpoint:');
+        $('.settingsEztvEndpoint').append(settingsEztvEndpoint);
+
+        var settingsKickassEndpoint = i18n.__('Kickass api endpoint:');
+        $('.settingsKickassEndpoint').append(settingsKickassEndpoint);
+
         var settingsConnectionLimit = i18n.__('Connection limit:');
         $('.settingsConnectionLimit').append(settingsConnectionLimit);
 

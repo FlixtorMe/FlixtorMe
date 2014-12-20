@@ -7,14 +7,13 @@ function infinitescroll() {
     });
 }
 
-function appendResult(results) {
+function appendResult(result) {
     var content = "";
-    if( results !== 'error' ) {
-        $(results).each(function(index) {
-            var movie = results[index];
+    if( result !== 'error' ) {
+        $.each(result, function(index, movie) {
 
-            if ($('#'+movie.imdbCode).length > 0){
-                return true;
+            if( !(sessionStorage[movie.imdbCode]) ){
+                sessionStorage.setItem(movie.imdbCode, JSON.stringify(movie));
             }
 
             if (typeof movie.genres !== 'undefined') {
@@ -39,8 +38,7 @@ function appendResult(results) {
             }
 
             content += "<div id='" + movie.imdbCode + "' class='element transition isotope-item'>" +
-                "<a class='shadow' onClick='showDetails(this);'>" +
-                "<div style='display: none'>"+JSON.stringify(movie)+"</div> " +
+                "<a class='shadow' onClick='showDetails(" + "\"" + movie.imdbCode + "\"" + ");'>" +
                 "<img alt='image' src='" + movie.poster + "' style='width:160px; height:230px;'>" +
                 "</a>" +
                 "<div class='p-5' style='max-width:160px;'>" +

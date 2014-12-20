@@ -1,6 +1,17 @@
-var https = require('https'),
-  $ = require('cheerio'),
-  host = 'kickass.so';
+var $ = require('cheerio');
+var settings = require('../settings.js');
+var https = require('https');
+
+var kickassEndpoint = settings.readConfig('kickassEndpoint');
+var baseUrl = kickassEndpoint.substr(kickassEndpoint.indexOf('://')+3);
+if( kickassEndpoint.match(/^http:\/\/.*/) ) {
+    var protocol = require('http');
+    var port = 80;
+}
+else if( kickassEndpoint.match(/^https:\/\/.*/) ) {
+    var protocol = require('https');
+    var port = 443;
+}
 
 exports.scrape = function(category, query, field, page, callback){
   if( field === null ) {
@@ -10,14 +21,15 @@ exports.scrape = function(category, query, field, page, callback){
       page = 1;
   }
   var gunzip = require('zlib').createGunzip();
-  var req = https.request({
-    host: host,
-    port: 443,
+  var req = protocol.request({
+    host: baseUrl,
+    port: port,
     path: '/usearch/'+encodeURIComponent(query)+'%20category:'+category+'/'+page+'/?field='+field+'&sorder=desc',
     method: 'GET',
     headers: { 'user-agent': 'Mozilla/5.0', 'accept-encoding': 'gzip' }
   });
   req.on('response', function(response){
+      console.log(response);
     var data = '';
     response.pipe(gunzip);
     gunzip.on('data', function(chunk){
@@ -39,7 +51,7 @@ exports.scrape = function(category, query, field, page, callback){
             size_arr = size.split(' ');
           torrents.push({
             count: count,
-            link: 'https://'+host+cell.children('.torrentname').children('.normalgrey').attr('href'),
+            link: baseUrl+cell.children('.torrentname').children('.normalgrey').attr('href'),
             title: title,
             hash: hash.toString(),
             size: Math.ceil(size_arr[1] == 'GB' ? parseFloat(size_arr[0]) * 1024 * 1024 * 1024 : (size_arr[1] == 'MB' ? parseFloat(size_arr[0]) * 1024 * 1024 : parseFloat(size_arr[0]))),

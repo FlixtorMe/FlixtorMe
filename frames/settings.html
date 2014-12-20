@@ -155,6 +155,78 @@
                         }
                     });
 
+                    //Get yts api endpoint
+                    var ytsEndpoint = settings.readConfig('ytsEndpoint');
+                    $('#ytsEndpoint').attr("placeholder",ytsEndpoint);
+                    $('#ytsEndpointSaved').append(saved+'&nbsp;<span class="glyphicon glyphicon-ok"></span>');
+                    // Set connection limit
+                    $('#ytsEndpoint').focusout(function() {
+                        var newYtsEndpoint = $(this).val();
+                        // Check the input
+                        if( newYtsEndpoint.length >= 1 ) {
+                            settings.writeConfig('ytsEndpoint', newYtsEndpoint);
+                            $(this).attr("placeholder", newYtsEndpoint);
+                            $('#ytsEndpointSaved').fadeIn('fast', function(){
+                                $('#ytsEndpointSaved').fadeOut(1500);
+                            });
+                        }
+                        else {
+                            settings.writeConfig('ytsEndpoint', ytsEndpoint);
+                            $(this).attr('placeholder', ytsEndpoint);
+                            $('#ytsEndpointSaved').fadeIn('fast', function(){
+                                $('#ytsEndpointSaved').fadeOut(1500);
+                            });
+                        }
+                    });
+
+                    //Get eztv api endpoint
+                    var eztvEndpoint = settings.readConfig('eztvEndpoint');
+                    $('#eztvEndpoint').attr("placeholder",eztvEndpoint);
+                    $('#eztvEndpointSaved').append(saved+'&nbsp;<span class="glyphicon glyphicon-ok"></span>');
+                    // Set connection limit
+                    $('#eztvEndpoint').focusout(function() {
+                        var newEztvEndpoint = $(this).val();
+                        // Check the input
+                        if( newEztvEndpoint.length >= 1 ) {
+                            settings.writeConfig('eztvEndpoint', newEztvEndpoint);
+                            $(this).attr("placeholder", newEztvEndpoint);
+                            $('#eztvEndpointSaved').fadeIn('fast', function(){
+                                $('#eztvEndpointSaved').fadeOut(1500);
+                            });
+                        }
+                        else {
+                            settings.writeConfig('eztvEndpoint', eztvEndpoint);
+                            $(this).attr('placeholder', eztvEndpoint);
+                            $('#eztvEndpointSaved').fadeIn('fast', function(){
+                                $('#eztvEndpointSaved').fadeOut(1500);
+                            });
+                        }
+                    });
+
+                    //Get kickass api endpoint
+                    var kickassEndpoint = settings.readConfig('kickassEndpoint');
+                    $('#kickassEndpoint').attr("placeholder",kickassEndpoint);
+                    $('#kickassEndpointSaved').append(saved+'&nbsp;<span class="glyphicon glyphicon-ok"></span>');
+                    // Set connection limit
+                    $('#kickassEndpoint').focusout(function() {
+                        var newKickassEndpoint = $(this).val();
+                        // Check the input
+                        if( newKickassEndpoint.length >= 1 ) {
+                            settings.writeConfig('kickassEndpoint', newKickassEndpoint);
+                            $(this).attr("placeholder", newKickassEndpoint);
+                            $('#kickassEndpointSaved').fadeIn('fast', function(){
+                                $('#kickassEndpointSaved').fadeOut(1500);
+                            });
+                        }
+                        else {
+                            settings.writeConfig('kickassEndpoint', kickassEndpoint);
+                            $(this).attr('placeholder', kickassEndpoint);
+                            $('#kickassEndpointSaved').fadeIn('fast', function(){
+                                $('#kickassEndpointSaved').fadeOut(1500);
+                            });
+                        }
+                    });
+
                     //Get connection limit
                     var connectionLimit = settings.readConfig('connectionLimit');
                     $('#connectionLimit').attr("placeholder",connectionLimit);
@@ -177,7 +249,6 @@
                                 $('#connectionLimitSaved').fadeOut(1500);
                             });
                         }
-
                     });
 
                     //Get dht
@@ -298,6 +369,12 @@
                         defaultsubtitle.attr('selected', 'selected');
                         $('#streamingPort').attr("placeholder", random);
                         $('#streamingPort').val('');
+                        $('#ytsEndpoint').attr("placeholder", 'http://yts.re/api/');
+                        $('#ytsEndpoint').val('');
+                        $('#eztvEndpoint').attr("placeholder", 'http://eztvapi.re/');
+                        $('#eztvEndpoint').val('');
+                        $('#kickassEndpoint').attr("placeholder", 'https://kickass.so');
+                        $('#kickassEndpoint').val('');
                         $('#connectionLimit').attr("placeholder", '100');
                         $('#connectionLimit').val('');
                         $('#dht').attr("placeholder", '500');
@@ -307,7 +384,7 @@
                         $('#restoreDefaultsSuccess').fadeIn('fast', function(){
                             $('#restoreDefaultsSuccess').fadeOut(1500);
                         });
-                    })
+                    });
                     $('#restoreDefaultsSuccess').append('&nbsp;&nbsp;'+restored+' &nbsp;<span class="glyphicon glyphicon-ok"></span>');
                 });
             </script>
@@ -414,6 +491,27 @@
 
 
                        <div style="margin-top: 60px"><h3 class="advancedSettings"></h3></div>
+                        <div class="form-group">
+                            <div style="padding-top: 7px" class="col-sm-2 settingsYtsEndpoint"></div>
+                            <div class="col-sm-4">
+                                <input type="text" class="form-control" id="ytsEndpoint" placeholder="">
+                            </div>
+                            <label id="ytsEndpointSaved" style="display: none" class="control-label"></label>
+                        </div>
+                        <div class="form-group">
+                            <div style="padding-top: 7px" class="col-sm-2 settingsEztvEndpoint"></div>
+                            <div class="col-sm-4">
+                                <input type="text" class="form-control" id="eztvEndpoint" placeholder="">
+                            </div>
+                            <label id="eztvEndpointSaved" style="display: none" class="control-label"></label>
+                        </div>
+                        <div class="form-group">
+                            <div style="padding-top: 7px" class="col-sm-2 settingsKickassEndpoint"></div>
+                            <div class="col-sm-4">
+                                <input type="text" class="form-control" id="kickassEndpoint" placeholder="">
+                            </div>
+                            <label id="kickassEndpointSaved" style="display: none" class="control-label"></label>
+                        </div>
                        <div class="form-group">
                            <div style="padding-top: 7px" class="col-sm-2 settingsConnectionLimit"></div>
                            <div class="col-sm-4">

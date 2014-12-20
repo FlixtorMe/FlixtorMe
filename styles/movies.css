@@ -1,5 +1,6 @@
 #movie {
     padding: 8% 12% 2% 12%;
+    overflow-y: auto;
 }
 
 #title {
@@ -51,4 +52,15 @@
 .on {
     box-shadow: none;
     display: inline;
+}
+
+.fanart {
+    position: absolute;
+    top: 90px;
+    color: #e9e9e9;
+    -webkit-background-size: cover;
+    background-size: cover;
+    width: 100%;
+    height: 100%;
+    display: none;
 }

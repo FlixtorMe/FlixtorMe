@@ -175,5 +175,9 @@
 	"Trakt service is unavailable. Please try it again later": "Trakt service is unavailable. Please try it again later",
 	"Player settings:": "Player settings:",
 	"Custom subtitle color:": "Custom subtitle color:",
-	"Colorpicker": "Colorpicker"
+	"Colorpicker": "Colorpicker",
+	"Yts api endpoint:": "Yts api endpoint:",
+	"Yts is unavailable. Please try it again later": "Yts is unavailable. Please try it again later",
+	"Eztv api endpoint:": "Eztv api endpoint:",
+	"Kickass api endpoint:": "Kickass api endpoint:"
 }
