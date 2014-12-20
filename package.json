@@ -1,5 +1,5 @@
 {
-  "main": "app://host/frames/series.html",
+  "main": "app://host/frames/movies.html",
   "name": "Flixtor",
   "description": "Movie and serie streamer",
   "version": "2.2.2",

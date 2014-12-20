@@ -7,6 +7,63 @@ function infinitescroll() {
     });
 }
 
+function appendResult(results) {
+    var content = "";
+    if( results !== 'error' ) {
+        $(results).each(function(index) {
+            var movie = results[index];
+
+            if ($('#'+movie.imdbCode).length > 0){
+                return true;
+            }
+
+            if (typeof movie.genres !== 'undefined') {
+                var splitGem = movie.genres.split(',');
+                var translatedGen;
+                var translatedGenres = [];
+                $(splitGem).each(function(index) {
+                    var gen = splitGem[index];
+                    gen = gen.trim();
+                    translatedGen = translations.translate(gen);
+                    translatedGenres.push(translatedGen);
+                });
+
+                for (var i = 0; i < translatedGenres.length; ++i) {
+                    translatedGenres[i] = translatedGenres[i].replace(" ", "-");
+                }
+                var genres = translatedGenres.join(", ");
+
+            }
+            else {
+                var genres = '';
+            }
+
+            content += "<div id='" + movie.imdbCode + "' class='element transition isotope-item'>" +
+                "<a class='shadow' onClick='showDetails(this);'>" +
+                "<div style='display: none'>"+JSON.stringify(movie)+"</div> " +
+                "<img alt='image' src='" + movie.poster + "' style='width:160px; height:230px;'>" +
+                "</a>" +
+                "<div class='p-5' style='max-width:160px;'>" +
+                "<div style='font-size:14px;'>" + movie.title + "</div>" +
+                "<div style='font-size:10px; color:#A8A8A8;'>" + genres + "</div>" +
+                "</div>" +
+                "<div style='clear:both'></div>" +
+                "</div>";
+
+        });
+    }
+    else {
+        console.log("Service not available");
+    }
+
+    if (content !== "") {
+        $container.isotope( 'insert', $(content) );
+        infinitescroll();
+    }
+
+    $('.spinner-overlay').remove();
+}
+
 function closeMovieDetail()
 {
     try{
