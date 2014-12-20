@@ -1,6 +1,5 @@
 var $ = require('cheerio');
 var settings = require('../settings.js');
-var https = require('https');
 
 var kickassEndpoint = settings.readConfig('kickassEndpoint');
 var baseUrl = kickassEndpoint.substr(kickassEndpoint.indexOf('://')+3);
