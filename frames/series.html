@@ -152,12 +152,6 @@
 
                         }
 
-                        function startTorrent(infoHash) {
-                            //Hide view episodes panel and start the torrent
-                            $("#divSD").addClass("hide");
-                            main.playTorrent(infoHash);
-                        }
-
                         function showDetails(serieID) {
                             $("#wrapper").append("<div id='main-spinner' class='spinner-overlay'></div>");
                             $('#title' ).empty();
@@ -178,7 +172,6 @@
                             $('#info').empty();
                             $('#info').append('<span class="glyphicon glyphicon-info-sign"></span>&nbsp;&nbsp;');
 
-                            var serie = serieID.firstChild.innerHTML;
                             var torrents;
                             var currentTorrent;
                             var currentSubtitle;
@@ -197,9 +190,9 @@
                                 $("#serie .devices").append('<li class="xmbcPlay" data-name="'+device.name+'"><a><i class="glyphicon glyphicon-play"></i>&nbsp;&nbsp;'+device.name+'</a></li>');
                             });
 
-                            callwcf.searchSerieDetail( serie, function(results) {
+                            callwcf.searchSerieDetail( serieID, function(results) {
                                 if( results !== 'error' ) {
-                                    serie = results;
+                                    var serie = results;
 
                                     console.log(serie);
 

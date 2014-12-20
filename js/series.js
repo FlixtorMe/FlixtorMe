@@ -24,8 +24,7 @@ function appendResult(result) {
                 var seriePoster = '../images/no-poster.png';
             }
             content += "<div class='element transition isotope-item'>" +
-                "<a class='shadow' onClick='showDetails(this);'>" +
-                "<div style='display: none'>"+serie._id+"</div> " +
+                "<a class='shadow' onClick='showDetails(" + "\"" + serie._id + "\"" + ");'>" +
                 "<img alt='image' src='" + seriePoster + "' style='width:160px; height:230px;'/>" +
                 "</a>" +
                 "<div class='p-5' style='max-width:160px;'>" +
