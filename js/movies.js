@@ -50,9 +50,6 @@ function appendResult(result) {
 
         });
     }
-    else {
-        console.log("Service not available");
-    }
 
     if (content !== "") {
         $container.isotope( 'insert', $(content) );

@@ -7,6 +7,9 @@ var ytsEndpoint = settings.readConfig('ytsEndpoint');
 var eztvEndpoint = settings.readConfig('eztvEndpoint');
 var provider = settings.readConfig('metaProvider');
 
+// Include meta provider
+var metaProvider = require('../js/providers/metadata/'+provider+'.js');
+
 function parseYtsData(data, movies, imdbIds, callback) {
     $.each(data.MovieList, function (key, val) {
 
@@ -15,6 +18,10 @@ function parseYtsData(data, movies, imdbIds, callback) {
             "movieYear" : val.MovieYear,
             "imdbCode" : val.ImdbCode,
             "rating" : val.MovieRating,
+            "trailer" : "",
+            "runtime" : "",
+            "overview" : "",
+            "tagline" : "",
             "torrents":{}
         };
 
@@ -74,91 +81,25 @@ function parseYtsData(data, movies, imdbIds, callback) {
 
     if( provider == 'themoviedb' ) {
         /* THE Movie DB API */
-        $.each(movies, function (index, movie) {
-            var url = "http://api.themoviedb.org/3/movie/"+movie.imdbCode+"?api_key=a7e7f09a1273d6b663a4ea3c86859375&append_to_response=trailers";
-            $.getJSON(url, function (data) {
-            }).success(function (data) {
-                    movie.runtime = data.runtime;
-                    movie.overview = data.overview;
-                    var genres = data.genres;
-                    for (var i = 0; i < genres.length; ++i) {
-                        genres[i] = genres[i].name;
-                    }
-                    genres = genres.join(", ");
-                    movie.genres = genres;
-                    if( typeof data.poster !== 'undefined' || data.poster_path !== '' ) {
-                        movie.poster = "https://image.tmdb.org/t/p/w185"+data.poster_path;
-                    }
-                    else {
-                        movie.poster = '../images/no-poster.png';
-                    }
-                    movie.fanart = "https://image.tmdb.org/t/p/original"+data.backdrop_path;
-                    if( movies.length+-1 == index ) {
-                        console.log(movies);
-                        callback(movies);
-                    }
-                    if( data.trailers.youtube.length > 0 ) {
-                        movie.trailer = "https://www.youtube.com/watch?v="+data.trailers.youtube[0].source;
-                    }
-
-                }).error(function () {
-                    utilities.showPrompt("An uncaughtException was found", "<span>"+translations.translate("The moviedb service is unavailable. Please try it again later")+"</span>.", "ok", function(answer) {
-                    });
-                    callback("error");
-                });
-        });
-    }
-    else {
-        /* TRAKT API */
-        var API_ENDPOINT = "http://api.trakt.tv/";
-        var MOVIE_PATH = 'movie';
-        var API_KEY = "24f87043f125cd2f9e8b48c114c0d6b3";
-        var url = API_ENDPOINT+MOVIE_PATH+"/summaries.json/"+API_KEY+"/"+imdbIds.join(',')+"/full";
-
-        console.log(url);
-        $.getJSON(url, function (data) {
-        }).success(function (data) {
-            if( data.status === "failure" ) {
+        metaProvider.getMetadata(movies, imdbIds, function(result) {
+            if( result == "error" ) {
                 callback("error");
             }
             else {
-                $.each(data, function (key, item) {
-                    movies[item.imdb_id]['trailer'] = item.trailer;
-                    movies[item.imdb_id]['runtime'] = item.runtime;
-                    movies[item.imdb_id]['overview'] = item.overview;
-                    movies[item.imdb_id]['tagline'] = item.tagline;
-                    movies[item.imdb_id]['runtime'] = item.trailer;
-
-                    if (typeof item.images.poster === 'undefined' || item.images.poster === '' || ~ item.images.poster.toString().indexOf('poster-dark') ) {
-                        movies[item.imdb_id]['poster'] = '../images/no-poster.png';
-                    }
-                    else {
-                        var newChars = '-300';
-                        var position = item.images.poster.lastIndexOf(".");
-                        var tmpOne = item.images.poster.substr(0, position);
-                        var tmpTwo = item.images.poster.substr(position, item.images.poster.length);
-                        var moviePoster = tmpOne + newChars + tmpTwo;
-                        movies[item.imdb_id]['poster'] = moviePoster;
-                    }
-
-                    movies[item.imdb_id]['fanart'] = item.images.fanart;
-
-                    var genres = item.genres;
-                    for (var i = 0; i < genres.length; ++i) {
-                        genres[i] = genres[i].replace(" ", "-");
-                    }
-                    genres = genres.join(", ");
-                    movies[item.imdb_id]['genres'] = genres;
-
-                });
-
                 callback(movies);
             }
-        }).error(function () {
-            utilities.showPrompt("An uncaughtException was found", "<span>"+translations.translate("Trakt service is unavailable. Please try it again later")+"</span>.", "ok", function(answer) {
-            });
-            callback("error");
         });
+    }
+    else {
+        metaProvider.getMetadata(movies, imdbIds, function(result) {
+            if( result == "error" ) {
+                callback("error");
+            }
+            else {
+                callback(movies);
+            }
+        });
+
     }
 }
 
