@@ -1,3 +1,7 @@
+#series {
+    margin: 10px 10px 10px 0px;
+}
+
 .container {
     overflow-y: auto;
     height: 100%;
