@@ -91,7 +91,11 @@ $(document).ready(function() {
     if(magnet) {
         //Insert backdrop path
         if(image) {
-            $( "<style> body { background: url("+image+") no-repeat center center fixed; -webkit-background-size: cover; background-size: cover; color: #e9e9e9;}</style>" ).appendTo("#customCSS");
+            $( "<img class='fanart' src='"+image+"'>" ).appendTo("#movie").css("z-index", "-500").css("top", "40px").css("opacity", "0.2");
+            //$( "<style> body { background: url("+image+") no-repeat center center fixed; -webkit-background-size: cover; background-size: cover; color: #e9e9e9;}</style>" ).appendTo("#customCSS");
+            $('.fanart').load(function(){
+                $('.fanart').fadeIn(5000);
+            });
         }
 
         var count = 0;
@@ -140,7 +144,7 @@ $(document).ready(function() {
             var sourceId = $(this).data("source");
             var title = $(this).data("title");
             var imdbID = $(this).data("imdb");
-            playTorrent(infoHash, imdbID);
+            //playTorrent(infoHash, imdbID);
             var translatedLoadingFromSource = translations.translate('Loading from source');
             $("#current-source").html(translatedLoadingFromSource+" " + sourceId);
 
