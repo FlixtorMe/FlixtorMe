@@ -18,7 +18,7 @@ var utilities = require('../../utilities.js');
 var getMetadata = function (movies, imdbIds, callback) {
     var index = 1;
     $.each(movies, function (key, movie) {
-        var url = "http://api.thdemoviedb.org/3/movie/"+movie.imdbCode+"?api_key=a7e7f09a1273d6b663a4ea3c86859375&append_to_response=trailers";
+        var url = "http://api.themoviedb.org/3/movie/"+movie.imdbCode+"?api_key=a7e7f09a1273d6b663a4ea3c86859375&append_to_response=trailers";
         $.getJSON(url, function (data) {
         }).success(function (data) {
             movie.runtime = data.runtime;

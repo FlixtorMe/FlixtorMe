@@ -356,7 +356,6 @@
                                         var torrentHash = currentTorrent.split('magnet:?xt=urn:btih:');
                                         torrentHash = torrentHash[1].split('&');
                                         torrentHash = torrentHash[0];
-                                        console.log(torrentHash);
                                         var currentTorrents = new Buffer(JSON.stringify(torrents)).toString('base64');
                                         var currentFanart = new Buffer(JSON.stringify(fanart)).toString('base64');
                                         main.go("players/series-player.html?magnet="+torrentHash+"&torrents="+currentTorrents+"&title="+episodeTitle+"&image="+currentFanart+"&subtitle="+currentSubtitle);
@@ -364,24 +363,22 @@
 
                                     $("body").on("click", ".xmbcPlay", function () {
                                         var deviceId = $(this).data("name");
-                                        var tmpCurrentTorrent = currentTorrent.split('magnet:?xt=urn:btih:');
-                                        tmpCurrentTorrent = tmpCurrentTorrent[1];
-                                        tmpCurrentTorrent = new Buffer(JSON.stringify(tmpCurrentTorrent)).toString('base64');
-                                        var tmpTorrents = new Buffer(JSON.stringify(torrents)).toString('base64');
-                                        var tmpTitle = new Buffer(JSON.stringify(episodeTitle)).toString('base64');
-                                        var tmpFanart = new Buffer(JSON.stringify(fanart)).toString('base64');
-                                        main.go("players/series-player.html?magnet=" + tmpCurrentTorrent+"&torrents="+tmpTorrents+"&title="+tmpTitle+"&image="+tmpFanart+"&xbmc="+deviceId);
+                                        var torrentHash = currentTorrent.split('magnet:?xt=urn:btih:');
+                                        torrentHash = torrentHash[1].split('&');
+                                        torrentHash = torrentHash[0];
+                                        var currentTorrents = new Buffer(JSON.stringify(torrents)).toString('base64');
+                                        var currentFanart = new Buffer(JSON.stringify(fanart)).toString('base64');
+                                        main.go("players/series-player.html?magnet="+torrentHash+"&torrents="+currentTorrents+"&title="+episodeTitle+"&image="+currentFanart+"&xbmc="+deviceId);
                                     });
 
                                     $("body").on("click", ".chromecastPlay", function () {
                                         var deviceId = $(this).data("name");
-                                        var tmpCurrentTorrent = currentTorrent.split('magnet:?xt=urn:btih:');
-                                        tmpCurrentTorrent = tmpCurrentTorrent[1];
-                                        tmpCurrentTorrent = new Buffer(JSON.stringify(tmpCurrentTorrent)).toString('base64');
-                                        var tmpTorrents = new Buffer(JSON.stringify(torrents)).toString('base64');
-                                        var tmpTitle = new Buffer(JSON.stringify(episodeTitle)).toString('base64');
-                                        var tmpFanart = new Buffer(JSON.stringify(fanart)).toString('base64');
-                                        main.go("players/series-player.html?magnet=" + tmpCurrentTorrent+"&torrents="+tmpTorrents+"&title="+tmpTitle+"&image="+tmpFanart+"&chromecast="+deviceId);
+                                        var torrentHash = currentTorrent.split('magnet:?xt=urn:btih:');
+                                        torrentHash = torrentHash[1].split('&');
+                                        torrentHash = torrentHash[0];
+                                        var currentTorrents = new Buffer(JSON.stringify(torrents)).toString('base64');
+                                        var currentFanart = new Buffer(JSON.stringify(fanart)).toString('base64');
+                                        main.go("players/series-player.html?magnet="+torrentHash+"&torrents="+currentTorrents+"&title="+episodeTitle+"&image="+currentFanart+"&chromecast="+deviceId);
                                     });
 
                                     $("body").on("click", ".btn-quality", function () {
@@ -391,8 +388,6 @@
                                         var torrent = $(this).data("torrent");
 
                                         $(current).find('.circle').append('<img style="width: 14px; height: 14px; position: absolute; right: 5px; top: 3px;" id="img-spinner" src="../images/ajax-loader.gif" alt="Loading"/>');
-                                        //$(current).find('label').append('<img style="width: 14px; height: 14px; position: absolute; right: 8px; top: 3px;" id="img-spinner" src="../images/ajax-loader.gif" alt="Loading"/>');
-
                                         health(torrent).then(function(health) {
                                             var ratio = health.peers > 0 ? (health.seeds / health.peers) : health.seeds;
 
@@ -448,7 +443,6 @@
                                             });
                                         });
                                         currentTorrent = torrent;
-                                        console.log(currentTorrent);
                                     });
 
                                     $("body").on("click", ".subtitle", function () {
@@ -458,7 +452,6 @@
                                         $('#btnSubtitle').append('<i class="glyphicon glyphicon-play"></i>&nbsp;&nbsp;'+subName+'');
 
                                         currentSubtitle = subIso;
-                                        console.log(currentSubtitle);
                                     });
 
                                     $(".container").height('100%');
@@ -500,13 +493,11 @@
                                 console.log(e);
                             }
 
-                            $("#serie .devices").empty();
                             $("#content-overlay").hide();
                             $("#serie").hide();
                             $("#content").css("opacity", "1");
                             $("#head-bar").show();
                             $("#btnBuy").unbind( "click" );
-                            $("#accordion").empty();
                         }
 
                         function addToFavorites(seriesJson) {

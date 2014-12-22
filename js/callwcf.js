@@ -5,10 +5,6 @@ var translations = require('../js/translations.js');
 
 var ytsEndpoint = settings.readConfig('ytsEndpoint');
 var eztvEndpoint = settings.readConfig('eztvEndpoint');
-var provider = settings.readConfig('metaProvider');
-
-// Include meta provider
-var metaProvider = require('../js/providers/metadata/'+provider+'.js');
 
 function parseYtsData(data, movies, imdbIds, callback) {
     $.each(data.MovieList, function (key, val) {
@@ -79,28 +75,19 @@ function parseYtsData(data, movies, imdbIds, callback) {
          });*/
     });
 
-    if( provider == 'themoviedb' ) {
-        /* THE Movie DB API */
-        metaProvider.getMetadata(movies, imdbIds, function(result) {
-            if( result == "error" ) {
-                callback("error");
-            }
-            else {
-                callback(movies);
-            }
-        });
-    }
-    else {
-        metaProvider.getMetadata(movies, imdbIds, function(result) {
-            if( result == "error" ) {
-                callback("error");
-            }
-            else {
-                callback(movies);
-            }
-        });
+    var provider = settings.readConfig('metaProvider');
 
-    }
+    // Include meta provider
+    var metaProvider = require('../js/providers/metadata/'+provider+'.js');
+
+    metaProvider.getMetadata(movies, imdbIds, function(result) {
+        if( result == "error" ) {
+            callback("error");
+        }
+        else {
+            callback(movies);
+        }
+    });
 }
 
 //External functions
