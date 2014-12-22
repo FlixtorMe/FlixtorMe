@@ -113,31 +113,33 @@
             }
         </style>
         <div id="wrapper" style="background: rgba(0,0,0, 0.2); height: 100%;">
-        <div id="top-bar">
-            <a href="#" class="col-sm-2 col-xs-2 col-md-2 header-element">
-                Flixtor
-            </a>
-            <a href="#" class="col-sm-2 col-xs-2 col-md-2 header-element menuMovies" onclick="main.changeFrame('movies')">
+        <div id="top-bar-wrapper">
+            <div id="top-bar">
+                <a href="#" class="col-sm-2 col-xs-2 col-md-2 header-element">
+                    Flixtor
+                </a>
+                <a href="#" class="col-sm-2 col-xs-2 col-md-2 header-element menuMovies" onclick="main.changeFrame('movies')">
 
-            </a>
-            <a href="#" class="col-sm-2 col-xs-2 col-md-2 header-element menuSeries" onclick="main.changeFrame('series')">
+                </a>
+                <a href="#" class="col-sm-2 col-xs-2 col-md-2 header-element menuSeries" onclick="main.changeFrame('series')">
 
-            </a>
-            <a href="#" class="col-sm-2 col-xs-2 col-md-2 header-element menuAnimes" onclick="main.changeFrame('animes')">
+                </a>
+                <a href="#" class="col-sm-2 col-xs-2 col-md-2 header-element menuAnimes" onclick="main.changeFrame('animes')">
 
-            </a>
-            <a href="#" class="col-sm-2 col-xs-2 col-md-2 header-element menuTorrents selected" onclick="main.changeFrame('torrents')">
+                </a>
+                <a href="#" class="col-sm-2 col-xs-2 col-md-2 header-element menuTorrents selected" onclick="main.changeFrame('torrents')">
 
-            </a>
+                </a>
 
-            <div type="button" class="top-titlebar-minimize-button" title="" onclick="main.minimize();">
-                <span class="glyphicon glyphicon-minus"></span>
-            </div>
-            <div type="button" class="top-titlebar-fullscreen-button" title="" onclick="main.toggleFullScreen();">
-                <span class="glyphicon glyphicon-fullscreen"></span>
-            </div>
-            <div class="top-titlebar-close-button" onclick="main.closeApp();" title="">
-                <span class="glyphicon glyphicon-remove"></span>
+                <div type="button" class="top-titlebar-minimize-button" title="" onclick="main.minimize();">
+                    <span class="glyphicon glyphicon-minus"></span>
+                </div>
+                <div type="button" class="top-titlebar-fullscreen-button" title="" onclick="main.toggleFullScreen();">
+                    <span class="glyphicon glyphicon-fullscreen"></span>
+                </div>
+                <div class="top-titlebar-close-button" onclick="main.closeApp();" title="">
+                    <span class="glyphicon glyphicon-remove"></span>
+                </div>
             </div>
         </div>
             <div id="content-wrapper">

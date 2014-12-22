@@ -208,3 +208,9 @@ select {
     color: #ffffff;
     background: #222d3a;
 }
+
+#top-bar-wrapper {
+    background: url('../images/background.png') repeat center center fixed;
+    width: 100%;
+    height: 40px;
+}

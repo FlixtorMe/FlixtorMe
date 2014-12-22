@@ -42,8 +42,6 @@ $(document).ready(function() {
     $("#wrapper").append("<div class='spinner-overlay'></div>");
 
     var magnet = utilities.getQueryString('magnet');
-    magnet = new Buffer(magnet, 'base64').toString('utf-8');
-    magnet = jQuery.parseJSON(magnet);
     console.log(magnet);
 
     var torrents = utilities.getQueryString('torrents');
@@ -52,8 +50,6 @@ $(document).ready(function() {
     console.log(torrents);
 
     var title = utilities.getQueryString('title');
-    title = new Buffer(title, 'base64').toString('utf-8');
-    title = jQuery.parseJSON(title);
     console.log(title);
 
     var image = utilities.getQueryString('image');
@@ -108,7 +104,8 @@ $(document).ready(function() {
             var quality = index;
 
             var infoHash = torrent.url.split('magnet:?xt=urn:btih:');
-            infoHash = infoHash[1];
+            infoHash = infoHash[1].split('&');
+            infoHash = infoHash[0];
 
             var translatedSource = translations.translate('Source');
             var translatedQuality = translations.translate('Quality');
@@ -441,31 +438,33 @@ function setSubtitles()
             z-index: 1;
         }
     </style>
-    <div id="top-bar">
-        <a href="#" class="col-sm-2 col-xs-2 col-md-2 header-element">
-            Flixtor
-        </a>
-        <a href="#" class="col-sm-2 col-xs-2 col-md-2 header-element menuMovies" onclick="main.changeFrame('movies')">
+    <div id="top-bar-wrapper" style="position: absolute; z-index: 9999;">
+        <div id="top-bar">
+            <a href="#" class="col-sm-2 col-xs-2 col-md-2 header-element">
+                Flixtor
+            </a>
+            <a href="#" class="col-sm-2 col-xs-2 col-md-2 header-element menuMovies" onclick="main.changeFrame('movies')">
 
-        </a>
-        <a href="#" class="col-sm-2 col-xs-2 col-md-2 header-element menuSeries on" onclick="main.changeFrame('series')">
+            </a>
+            <a href="#" class="col-sm-2 col-xs-2 col-md-2 header-element menuSeries selected" onclick="main.changeFrame('series')">
 
-        </a>
-        <a href="#" class="col-sm-2 col-xs-2 col-md-2 header-element menuAnimes" onclick="main.changeFrame('animes')">
+            </a>
+            <a href="#" class="col-sm-2 col-xs-2 col-md-2 header-element menuAnimes" onclick="main.changeFrame('animes')">
 
-        </a>
-        <a href="#" class="col-sm-2 col-xs-2 col-md-2 header-element menuTorrents" onclick="main.changeFrame('torrents')">
+            </a>
+            <a href="#" class="col-sm-2 col-xs-2 col-md-2 header-element menuTorrents" onclick="main.changeFrame('torrents')">
 
-        </a>
+            </a>
 
-        <div type="button" class="top-titlebar-minimize-button" title="" onclick="main.minimize();">
-            <span class="glyphicon glyphicon-minus"></span>
-        </div>
-        <div type="button" class="top-titlebar-fullscreen-button" title="" onclick="main.toggleFullScreen();">
-            <span class="glyphicon glyphicon-fullscreen"></span>
-        </div>
-        <div class="top-titlebar-close-button" onclick="main.closeApp();" title="">
-            <span class="glyphicon glyphicon-remove"></span>
+            <div type="button" class="top-titlebar-minimize-button" title="" onclick="main.minimize();">
+                <span class="glyphicon glyphicon-minus"></span>
+            </div>
+            <div type="button" class="top-titlebar-fullscreen-button" title="" onclick="main.toggleFullScreen();">
+                <span class="glyphicon glyphicon-fullscreen"></span>
+            </div>
+            <div class="top-titlebar-close-button" onclick="main.closeApp();" title="">
+                <span class="glyphicon glyphicon-remove"></span>
+            </div>
         </div>
     </div>
     <script type="text/javascript" src="/js/extensions/video.js"></script>
@@ -523,7 +522,7 @@ function setSubtitles()
         </div>
         <script type="text/javascript" src="/js/videojsButtons.js"></script>
     </div>
-    <div class="modal-backdrop fade in" style="opacity:0.85;"></div>
+    <div class="modal-backdrop fade in" style="opacity:0.85; margin-top: 40px;"></div>
 </div>
 <script>
     $(document).ready(function() {
@@ -586,7 +585,7 @@ function setSubtitles()
     var timeout, mX, mY;
     $("body").mousemove(function( event ) {
         //If mouse is hovering the top menu than keep it open or when vlc is on
-        if($("#top-bar").is(":hover") || $("#right-nav").is(":hover") || !$("#loader").hasClass("hide") || $("#VLC").length) {
+        if($("#top-bar-wrapper").is(":hover") || $("#right-nav").is(":hover") || !$("#loader").hasClass("hide") || $("#VLC").length) {
             clearTimeout(timeout);
             return;
         }
@@ -597,8 +596,8 @@ function setSubtitles()
             mY = event.pageY;
 
             //Show top bar
-            if($("#top-bar").is(":hidden")) {
-                $("#top-bar").show();
+            if($("#top-bar-wrapper").is(":hidden")) {
+                $("#top-bar-wrapper").show();
             }
 
             //Show right nav
@@ -616,7 +615,7 @@ function setSubtitles()
 
         //Mouse is idle
         timeout = setTimeout(function() {
-            $("#top-bar").hide();
+            $("#top-bar-wrapper").hide();
             $(".vjs-control-bar").removeClass("vjs-fade-in").addClass("vjs-fade-out");
             $("#right-nav").hide();
             $("body").css("cursor","none");
@@ -626,13 +625,13 @@ function setSubtitles()
 
     $(window).mouseout(function( event ) {
         if($("#torrentVideo").length > 0) {
-            if($("#top-bar").is(":hover") || $("#right-nav").is(":hover") || !$("#loader").hasClass("hide") || $("#VLC").length) {
+            if($("#top-bar-wrapper").is(":hover") || $("#right-nav").is(":hover") || !$("#loader").hasClass("hide") || $("#VLC").length) {
                 return;
             }
 
             if($("#torrentVideo").length) {
                 if($("#torrentVideo").hasClass("vjs-fullscreen")) {
-                    $("#top-bar").hide();
+                    $("#top-bar-wrapper").hide();
                     $("#right-nav").hide();
                 }
             }

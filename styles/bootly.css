@@ -8,11 +8,6 @@ a {
     cursor: pointer;
 }
 
-#content-wrapper
-{
-    margin-top: 40px;
-}
-
 /* Top bar */
 #top-bar {
     height: 40px;
@@ -444,5 +439,5 @@ label {
 }
 
 #trailerPlayer {
-    padding-top: 90px;
+    padding-top: 40px;
 }

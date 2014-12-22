@@ -10,6 +10,7 @@
         <!--        <link href="/styles/video-skin.css" rel="stylesheet">-->
         <link href="/styles/bootstrap.min.css" rel="stylesheet">
         <link href="/styles/bootly.css" rel="stylesheet">
+        <link href="/styles/general.css" rel="stylesheet">
         <link href="/styles/videojs.errors.css" rel="stylesheet">
         <link href="/styles/video-skin.css" rel="stylesheet">
 
@@ -385,20 +386,34 @@
                     z-index: 1;
                 }
             </style>
-            <div id="top-bar">
-                <div type="button" class="top-titlebar-back-button" title="" onclick="main.goBack();">
-                    <span class="glyphicon glyphicon-share-alt"></span>
+            <div id="top-bar-wrapper" style="position: absolute; z-index: 9999;">
+                <div id="top-bar">
+                    <a href="#" class="col-sm-2 col-xs-2 col-md-2 header-element">
+                        Flixtor
+                    </a>
+                    <a href="#" class="col-sm-2 col-xs-2 col-md-2 header-element menuMovies selected" onclick="main.changeFrame('movies')">
+
+                    </a>
+                    <a href="#" class="col-sm-2 col-xs-2 col-md-2 header-element menuSeries" onclick="main.changeFrame('series')">
+
+                    </a>
+                    <a href="#" class="col-sm-2 col-xs-2 col-md-2 header-element menuAnimes" onclick="main.changeFrame('animes')">
+
+                    </a>
+                    <a href="#" class="col-sm-2 col-xs-2 col-md-2 header-element menuTorrents" onclick="main.changeFrame('torrents')">
+
+                    </a>
+
+                    <div type="button" class="top-titlebar-minimize-button" title="" onclick="main.minimize();">
+                        <span class="glyphicon glyphicon-minus"></span>
+                    </div>
+                    <div type="button" class="top-titlebar-fullscreen-button" title="" onclick="main.toggleFullScreen();">
+                        <span class="glyphicon glyphicon-fullscreen"></span>
+                    </div>
+                    <div class="top-titlebar-close-button" onclick="main.closeApp();" title="">
+                        <span class="glyphicon glyphicon-remove"></span>
+                    </div>
                 </div>
-                <div type="button" class="top-titlebar-minimize-button" title="" onclick="main.minimize();">
-                    <span class="glyphicon glyphicon-minus"></span>
-                </div>
-                <div type="button" class="top-titlebar-fullscreen-button" title="" onclick="main.toggleFullScreen();">
-                    <span class="glyphicon glyphicon-fullscreen"></span>
-                </div>
-                <div class="top-titlebar-close-button" onclick="main.closeApp();" title="">
-                    <span class="glyphicon glyphicon-remove"></span>
-                </div>
-                <div class="top-titlebar-text">Flixtor</div>
             </div>
             <script type="text/javascript" src="/js/extensions/video.js"></script>
             <div id="movie" class="modal fade in" style="top:0;">
@@ -518,7 +533,7 @@
             var timeout, mX, mY;
             $("body").mousemove(function( event ) {
                 //If mouse is hovering the top menu than keep it open or when vlc is on
-                if($("#top-bar").is(":hover") || $("#right-nav").is(":hover") || !$("#loader").hasClass("hide") || $("#VLC").length) {
+                if($("#top-bar-wrapper").is(":hover") || $("#right-nav").is(":hover") || !$("#loader").hasClass("hide") || $("#VLC").length) {
                     clearTimeout(timeout);
                     return;
                 }
@@ -529,8 +544,8 @@
                     mY = event.pageY;
 
                     //Show top bar
-                    if($("#top-bar").is(":hidden")) {
-                        $("#top-bar").show();
+                    if($("#top-bar-wrapper").is(":hidden")) {
+                        $("#top-bar-wrapper").show();
                     }
 
                     //Show right nav
@@ -548,7 +563,7 @@
 
                 //Mouse is idle
                 timeout = setTimeout(function() {
-                    $("#top-bar").hide();
+                    $("#top-bar-wrapper").hide();
                     $(".vjs-control-bar").removeClass("vjs-fade-in").addClass("vjs-fade-out");
                     $("#right-nav").hide();
                     $("body").css("cursor","none");
@@ -558,13 +573,13 @@
 
             $(window).mouseout(function( event ) {
                 if($("#torrentVideo").length > 0) {
-                    if($("#top-bar").is(":hover") || $("#right-nav").is(":hover") || !$("#loader").hasClass("hide") || $("#VLC").length) {
+                    if($("#top-bar-wrapper").is(":hover") || $("#right-nav").is(":hover") || !$("#loader").hasClass("hide") || $("#VLC").length) {
                         return;
                     }
 
                     if($("#torrentVideo").length) {
                         if($("#torrentVideo").hasClass("vjs-fullscreen")) {
-                            $("#top-bar").hide();
+                            $("#top-bar-wrapper").hide();
                             $("#right-nav").hide();
                         }
                     }

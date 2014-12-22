@@ -94,31 +94,33 @@
     </head>
     <body>
     <div id="wrapper">
-            <div id="top-bar">
-                <a href="#" class="col-sm-2 col-xs-2 col-md-2 header-element">
-                    Flixtor
-                </a>
-                <a href="#" class="col-sm-2 col-xs-2 col-md-2 header-element menuMovies" onclick="main.changeFrame('movies')">
+            <div id="top-bar-wrapper">
+                <div id="top-bar">
+                    <a href="#" class="col-sm-2 col-xs-2 col-md-2 header-element">
+                        Flixtor
+                    </a>
+                    <a href="#" class="col-sm-2 col-xs-2 col-md-2 header-element menuMovies" onclick="main.changeFrame('movies')">
 
-                </a>
-                <a href="#" class="col-sm-2 col-xs-2 col-md-2 header-element menuSeries selected" onclick="main.changeFrame('series')">
+                    </a>
+                    <a href="#" class="col-sm-2 col-xs-2 col-md-2 header-element menuSeries selected" onclick="main.changeFrame('series')">
 
-                </a>
-                <a href="#" class="col-sm-2 col-xs-2 col-md-2 header-element menuAnimes" onclick="main.changeFrame('animes')">
+                    </a>
+                    <a href="#" class="col-sm-2 col-xs-2 col-md-2 header-element menuAnimes" onclick="main.changeFrame('animes')">
 
-                </a>
-                <a href="#" class="col-sm-2 col-xs-2 col-md-2 header-element menuTorrents" onclick="main.changeFrame('settings')">
+                    </a>
+                    <a href="#" class="col-sm-2 col-xs-2 col-md-2 header-element menuTorrents" onclick="main.changeFrame('settings')">
 
-                </a>
+                    </a>
 
-                <div type="button" class="top-titlebar-minimize-button" title="" onclick="main.minimize();">
-                    <span class="glyphicon glyphicon-minus"></span>
-                </div>
-                <div type="button" class="top-titlebar-fullscreen-button" title="" onclick="main.toggleFullScreen();">
-                    <span class="glyphicon glyphicon-fullscreen"></span>
-                </div>
-                <div class="top-titlebar-close-button" onclick="main.closeApp();" title="">
-                    <span class="glyphicon glyphicon-remove"></span>
+                    <div type="button" class="top-titlebar-minimize-button" title="" onclick="main.minimize();">
+                        <span class="glyphicon glyphicon-minus"></span>
+                    </div>
+                    <div type="button" class="top-titlebar-fullscreen-button" title="" onclick="main.toggleFullScreen();">
+                        <span class="glyphicon glyphicon-fullscreen"></span>
+                    </div>
+                    <div class="top-titlebar-close-button" onclick="main.closeApp();" title="">
+                        <span class="glyphicon glyphicon-remove"></span>
+                    </div>
                 </div>
             </div>
             <div id="content-wrapper">
@@ -153,26 +155,29 @@
                         }
 
                         function showDetails(serieID) {
+                            // Reset content
                             $("#wrapper").append("<div id='main-spinner' class='spinner-overlay'></div>");
                             $('#title' ).empty();
-                            $('.favorites-template').empty();
-                            $('#genres').empty();
-                            $('#genres').append('<span class="glyphicon glyphicon-tag"></span>&nbsp;&nbsp');
-                            $('#rating').css('width', '0% !important');
-                            $('#rating').attr('title', '');
+                            $("#poster").attr('src', '');
+                            $('#date').empty().append('<span class="glyphicon glyphicon-calendar"></span>&nbsp;&nbsp;');
+                            $('#runtime').empty().append('<span class="glyphicon glyphicon-time"></span>&nbsp;&nbsp');
+                            $('#genres').empty().append('<span class="glyphicon glyphicon-tag"></span>&nbsp;&nbsp');
+                            $('#info').empty().append('<span class="glyphicon glyphicon-info-sign"></span>&nbsp;&nbsp;');
+                            $('#status').empty().append('<span class="glyphicon glyphicon-bookmark"></span>&nbsp;&nbsp');
+                            $('#network').empty().append('<span class="glyphicon glyphicon-home"></span>&nbsp;&nbsp');
+                            $('#rating').css('width', '0% !important').attr('title', '');
                             $('#plot').empty();
-                            $('#status').empty();
-                            $('#status').append('<span class="glyphicon glyphicon-bookmark"></span>&nbsp;&nbsp');
-                            $('#network').empty();
-                            $('#network').append('<span class="glyphicon glyphicon-home"></span>&nbsp;&nbsp');
-                            $('#runtime').empty();
-                            $('#runtime').append('<span class="glyphicon glyphicon-time"></span>&nbsp;&nbsp');
-                            $('#date').empty();
-                            $('#date').append('<span class="glyphicon glyphicon-calendar"></span>&nbsp;&nbsp;');
-                            $('#info').empty();
-                            $('#info').append('<span class="glyphicon glyphicon-info-sign"></span>&nbsp;&nbsp;');
+                            $('.devices').empty();
+                            $("#accordion").empty();
+                            $('.subtitles').empty();
+                            $("#episode-title").empty();
+                            $("#quality").empty();
+                            $("#episode-airdate").empty();
+                            $("#episode-info").empty();
+                            $("#episode-overview").empty();
 
-                            var torrents;
+                            // Init variables
+                            var torrents = {};
                             var currentTorrent;
                             var currentSubtitle;
                             var episodeTitle;
@@ -193,8 +198,6 @@
                             callwcf.searchSerieDetail( serieID, function(results) {
                                 if( results !== 'error' ) {
                                     var serie = results;
-
-                                    console.log(serie);
 
                                     favorites.checkIfFavorite( serie.imdb_id, function(result) {
                                         if( result == true ) {
@@ -271,7 +274,6 @@
                                     $("#rating").attr("style", "width:" + serie.rating.percentage + "% !important");
                                     $("#rating").attr("title", (0.1*serie.rating.percentage).toFixed(1)+"/10");
 
-                                    var torrents = {};
                                     $(serie.episodes).each(function(index) {
                                         var value = serie.episodes[index];
                                         if (!torrents[value.season]) torrents[value.season] = {};
@@ -321,7 +323,6 @@
                                         var season = $(this).data("season");
                                         torrents = $(this).data("torrents");
 
-
                                         for (var key in torrents) {
                                             var torrent = torrents[key];
                                             if( key !== '0' ) {
@@ -352,13 +353,13 @@
                                     });
 
                                     $("#btnPlay").click(function () {
-                                        var tmpCurrentTorrent = currentTorrent.split('magnet:?xt=urn:btih:');
-                                        tmpCurrentTorrent = tmpCurrentTorrent[1];
-                                        tmpCurrentTorrent = new Buffer(JSON.stringify(tmpCurrentTorrent)).toString('base64');
-                                        var tmpTorrents = new Buffer(JSON.stringify(torrents)).toString('base64');
-                                        var tmpTitle = new Buffer(JSON.stringify(episodeTitle)).toString('base64');
-                                        var tmpFanart = new Buffer(JSON.stringify(fanart)).toString('base64');
-                                        main.go("players/series-player.html?magnet=" + tmpCurrentTorrent+"&torrents="+tmpTorrents+"&title="+tmpTitle+"&image="+tmpFanart+"&subtitle="+currentSubtitle);
+                                        var torrentHash = currentTorrent.split('magnet:?xt=urn:btih:');
+                                        torrentHash = torrentHash[1].split('&');
+                                        torrentHash = torrentHash[0];
+                                        console.log(torrentHash);
+                                        var currentTorrents = new Buffer(JSON.stringify(torrents)).toString('base64');
+                                        var currentFanart = new Buffer(JSON.stringify(fanart)).toString('base64');
+                                        main.go("players/series-player.html?magnet="+torrentHash+"&torrents="+currentTorrents+"&title="+episodeTitle+"&image="+currentFanart+"&subtitle="+currentSubtitle);
                                     });
 
                                     $("body").on("click", ".xmbcPlay", function () {
@@ -447,6 +448,7 @@
                                             });
                                         });
                                         currentTorrent = torrent;
+                                        console.log(currentTorrent);
                                     });
 
                                     $("body").on("click", ".subtitle", function () {
