@@ -176,6 +176,7 @@
                             $("#quality").empty();
                             $("#poster").attr('src', "");
                             $(".fanart").remove();
+                            $('.devices').empty();
 
                             $(devices).each(function(index) {
                                 var device = devices[index];
@@ -184,7 +185,6 @@
                             });
 
                             //Insert backdrop path
-                            //$( "<style> #customCSS {display: none; position: absolute; top: 0; bottom: 0;left: 0; right: 0; z-index: -100; background: url("+movie.fanart+") no-repeat center 90px fixed; -webkit-background-size: cover; background-size: cover; color: #e9e9e9;}</style>" ).appendTo("#customCSS");
                             $( "<img class='fanart' src='"+movie.fanart+"'>" ).appendTo("#content-overlay");
 
                             favorites.checkIfFavorite( movie.imdbCode, function(result) {
@@ -257,6 +257,8 @@
                                 if( key !== '0' ) {
                                     if( torrent !== "" ) {
                                         $("#quality").append('<button data-torrent="'+torrent+'" class="btn btn-quality" style="width: 100%;"><label title=""><div style="float: left;">'+key+'</div><div style="float: right;"><div style="width: 14px;" class="circle"></div></div><div style="clear: both;"></div></label></button>');
+                                        // Select first quality
+                                        $("#quality").find(".btn-quality:first").trigger("click");
                                     }
                                 }
                             }
@@ -267,9 +269,6 @@
                                 size: 14,
                                 emptyFill: "#272f3a"
                             });
-
-                            // Select first quality
-                            $("#quality").find(".btn-quality:first").trigger("click");
 
                             $("#btnBuy").click(function () {
                                 var shoppingUrl = 'https://www.google.com/search?q='+movie.title+' movie&tbm=shop';
@@ -309,7 +308,6 @@
                                 var torrent = $(this).data("torrent");
 
                                 $(current).find('.circle').append('<img style="width: 14px; height: 14px; position: absolute; right: 5px; top: 3px;" id="img-spinner" src="../images/ajax-loader.gif" alt="Loading"/>');
-                                //$(current).find('label').append('<img style="width: 14px; height: 14px; position: absolute; right: 8px; top: 3px;" id="img-spinner" src="../images/ajax-loader.gif" alt="Loading"/>');
 
                                 health(torrent).then(function(health) {
                                     var ratio = health.peers > 0 ? (health.seeds / health.peers) : health.seeds;
@@ -385,6 +383,9 @@
                             $('.fanart').load(function(){
                                 $('.fanart').fadeIn(5000);
                             });
+
+                            // Select first quality
+                            $("#quality").find(".btn-quality:first").trigger("click");
                         }
 
                         function addToFavorites(movieJson) {
@@ -571,26 +572,24 @@
                                         <div class="favorites-template" style="display:inline-block;">
                                         </div>-->
                                     </div>
-                                    <div id="plot" class="ptb-10" style="max-width:800px;"></div>
-                                    <div id="trailer" class="ptb-10">
-                                        <button id="btnTrailer" class="btn btn-primary btn-sm"><i class='glyphicon glyphicon-film'></i>&nbsp;&nbsp;</button>
+                                    <div id="plot" class="pt-10 pb-20" style="max-width:800px;"></div>
+
+                                    <div id="play" class="btn-group">
+                                        <button type="button" id="btnPlay" class="btn btn-flixtor btn-sm"><i class='glyphicon glyphicon-play'></i>&nbsp;&nbsp;</button>
+                                        <button type="button" class="btn btn-flixtor dropdown-toggle btn-sm disabled" data-toggle="dropdown">
+                                            <span class="caret"></span>
+                                        </button>
+                                        <ul class="dropdown-menu-flixtor dropdown-menu devices" role="menu">
+                                        </ul>
                                     </div>
-                                    <div id="buy" class="ptb-10">
-                                        <button id="btnBuy" class="btn btn-danger btn-sm"><i class='glyphicon glyphicon-shopping-cart'></i>&nbsp;&nbsp;</button>
+                                    <div id="trailer">
+                                        <button id="btnTrailer" class="btn btn-flixtor btn-sm"><i class='glyphicon glyphicon-film'></i>&nbsp;&nbsp;</button>
                                     </div>
-                                    <!--<div class="ptb-10">
-                                        <div class="btn-group">
-                                            <button type="button" id="btnPlay" class="btn btn-success btn-sm"><i class='glyphicon glyphicon-play'></i>&nbsp;&nbsp;</button>
-                                            <button type="button" class="btn btn-success dropdown-toggle btn-sm disabled" data-toggle="dropdown">
-                                                <span class="caret"></span>
-                                            </button>
-                                            <ul class="dropdown-menu" role="menu">
-                                            </ul>
-                                        </div>
-                                        <button id="btnTrailer" class="btn btn-primary btn-sm"><i class='glyphicon glyphicon-film'></i>&nbsp;&nbsp;</button>
-                                        <button id="btnBuy" class="btn btn-danger btn-sm"><i class='glyphicon glyphicon-shopping-cart'></i>&nbsp;&nbsp;</button>
+                                    <div id="buy">
+                                        <button id="btnBuy" class="btn btn-flixtor btn-sm"><i class='glyphicon glyphicon-shopping-cart'></i>&nbsp;&nbsp;</button>
                                     </div>
-                                    <div id="runtime" class="pt-5"><span class="glyphicon glyphicon-time"></span>&nbsp;&nbsp;</div>-->
+                                    <div class="clearfix"></div>
+                                    <!--<div id="runtime" class="pt-5"><span class="glyphicon glyphicon-time"></span>&nbsp;&nbsp;</div>-->
                                 </div>
 
                                 <div class="thumb col-sm-3 hidden-xs">
