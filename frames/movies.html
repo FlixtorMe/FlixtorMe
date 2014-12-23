@@ -31,6 +31,7 @@
             var yifysubtitle = require('../js/yifysubtitle.js');
             var favorites = require('../js/favorites.js');
             var settings = require('../js/settings.js');
+            settings.initConfig();
             var translations = require('../js/translations.js');
             var readTorrent = require('read-torrent');
             var health = require('torrent-health');
@@ -156,8 +157,8 @@
                             });
                         }
 
-                        function showDetails(imdbCode) {
-                            var movie = $.parseJSON(sessionStorage[imdbCode]);
+                        function showDetails(movieJson) {
+                            var movie = $.parseJSON(movieJson.firstChild.innerHTML);
 
                             var torrents;
                             var currentTorrent;

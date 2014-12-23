@@ -1,12 +1,17 @@
+var sha1 = require('sha1');
 var utilities = require('../js/utilities.js');
 var settings = require('../js/settings.js');
+var cache = require('../js/cache.js');
 var ts = require('../js/kickasstorrents/torrentScraper.js');
 var translations = require('../js/translations.js');
+
+var data_path = global.window.nwDispatcher.requireNwGui().App.dataPath;
+var cachePath = data_path+"/Cache";
 
 var ytsEndpoint = settings.readConfig('ytsEndpoint');
 var eztvEndpoint = settings.readConfig('eztvEndpoint');
 
-function parseYtsData(data, movies, imdbIds, callback) {
+function parseYtsData(cacheFile, data, movies, imdbIds, callback) {
     $.each(data.MovieList, function (key, val) {
 
         var movie =  {
@@ -85,6 +90,8 @@ function parseYtsData(data, movies, imdbIds, callback) {
             callback("error");
         }
         else {
+            // Cache the result
+            cache.setCache(cacheFile, cachePath, JSON.stringify(movies));
             callback(movies);
         }
     });
@@ -99,19 +106,31 @@ var searchMovies = function (sort, keywords, genre, limit, page, order, callback
 
     var movies = {};
     var imdbIds = [];
-    console.log(ytsEndpoint+"list.json?sort="+sort+"&limit="+limit+"&genre="+genre+"&keywords="+keywords+"&order="+order+"&set="+page+"");
-    $.getJSON(ytsEndpoint+"list.json?sort="+sort+"&limit="+limit+"&genre="+genre+"&keywords="+keywords+"&order="+order+"&set="+page+"", function (data) {
-    }).success(function (data) {
-        if (data.status !== 'fail' || data.MovieList !== undefined ) {
-            parseYtsData(data, movies, imdbIds, callback);
+    var ytsUrl = ytsEndpoint+"list.json?sort="+sort+"&limit="+limit+"&genre="+genre+"&keywords="+keywords+"&order="+order+"&set="+page+"";
+    console.log(ytsUrl);
+
+    // Check if request is cached
+    var hash = sha1(ytsUrl);
+    cache.getCacheIfValid(hash, cachePath, 3600, function(result) {
+        if( result == null ) {
+            console.log("Get remote content");
+            $.getJSON(ytsUrl, function (data) {
+            }).success(function (data) {
+                if (data.status !== 'fail' || data.MovieList !== undefined ) {
+                    parseYtsData(hash, data, movies, imdbIds, callback);
+                }
+                else {
+                    callback("error");
+                }
+            }).error(function () {
+                utilities.showPrompt("An uncaughtException was found", "<span>"+translations.translate("Yts is unavailable. Please try it again later")+"</span>.", "ok", function(answer) {
+                });
+                callback("error");
+            });
+        } else {
+            console.log("Get cached content");
+            callback(JSON.parse(result));
         }
-        else {
-            callback("error");
-        }
-    }).error(function () {
-        utilities.showPrompt("An uncaughtException was found", "<span>"+translations.translate("Yts is unavailable. Please try it again later")+"</span>.", "ok", function(answer) {
-        });
-        callback("error");
     });
 };
 

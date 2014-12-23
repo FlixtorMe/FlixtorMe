@@ -6,6 +6,15 @@ var defaults = {"version":"2.2.2","language":"en","cacheDir":"./data","subtitle"
 
 var Settings = function() {
 
+    this.initConfig = function () {
+        var file = data_path+"/config.json";
+        fs.exists(file, function(exists) {
+            if( !exists ) {
+                Settings.restoreConfig();
+            }
+        })
+    };
+
     this.readConfig = function(section) {
         if ( !fs.existsSync(data_path+'/config.json') ) {
             var stringifyDefaults = JSON.stringify(defaults);

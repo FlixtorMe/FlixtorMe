@@ -12,10 +12,6 @@ function appendResult(result) {
     if( result !== 'error' ) {
         $.each(result, function(index, movie) {
 
-            if( !(sessionStorage[movie.imdbCode]) ){
-                sessionStorage.setItem(movie.imdbCode, JSON.stringify(movie));
-            }
-
             if (typeof movie.genres !== 'undefined') {
                 var splitGem = movie.genres.split(',');
                 var translatedGen;
@@ -38,7 +34,8 @@ function appendResult(result) {
             }
 
             content += "<div id='" + movie.imdbCode + "' class='element transition isotope-item'>" +
-                "<a class='shadow' onClick='showDetails(" + "\"" + movie.imdbCode + "\"" + ");'>" +
+                "<a class='shadow' onClick='showDetails(this);'>" +
+                "<div style='display: none'>"+JSON.stringify(movie)+"</div> " +
                 "<img alt='image' src='" + movie.poster + "' style='width:160px; height:230px;'>" +
                 "</a>" +
                 "<div class='p-5' style='max-width:160px;'>" +
