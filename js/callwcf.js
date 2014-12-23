@@ -6,7 +6,7 @@ var ts = require('../js/kickasstorrents/torrentScraper.js');
 var translations = require('../js/translations.js');
 
 var data_path = global.window.nwDispatcher.requireNwGui().App.dataPath;
-var cachePath = data_path+"/Cache";
+var cachePath = data_path+"/cache";
 
 var ytsEndpoint = settings.readConfig('ytsEndpoint');
 var eztvEndpoint = settings.readConfig('eztvEndpoint');
@@ -145,20 +145,35 @@ var searchSeries = function (sort, keywords, genre, limit, page, callback) {
     }
     $ = window.$;
 
-    console.log(eztvEndpoint+"shows/"+page+"?sort="+sort+"&limit="+limit+"&genre="+genre+"&keywords"+keywords+"&order=-1");
-    $.getJSON(eztvEndpoint+"shows/"+page+"?sort="+sort+"&limit="+limit+"&genre="+genre+"&keywords="+keywords+"&order=-1", function (data) {
-    }).success(function (data) {
-        if (data !== undefined) {
-            callback(data);
+    var ezTvUrl = eztvEndpoint+"shows/"+page+"?sort="+sort+"&limit="+limit+"&genre="+genre+"&keywords"+keywords+"&order=-1";
+    console.log(ezTvUrl);
+
+    // Check if request is cached
+    var hash = sha1(ezTvUrl);
+    cache.getCacheIfValid(hash, cachePath, 3600, function(result) {
+        if( result == null ) {
+            console.log("Get remote content");
+            $.getJSON(ezTvUrl, function (data) {
+            }).success(function (data) {
+                if (data !== undefined) {
+                    // Cache the result
+                    cache.setCache(hash, cachePath, JSON.stringify(data));
+                    callback(data);
+                }
+                else {
+                    callback("error");
+                }
+            }).error(function () {
+                utilities.showPrompt("An uncaughtException was found", "<span>"+translations.translate("Eztv is unavailable. Please try it again later")+"</span>.", "ok", function(answer) {
+                });
+                callback("error");
+            });
+        } else {
+            console.log("Get cached content");
+            callback(JSON.parse(result));
         }
-        else {
-            callback("error");
-        }
-    }).error(function () {
-        utilities.showPrompt("An uncaughtException was found", "<span>"+translations.translate("Eztv is unavailable. Please try it again later")+"</span>.", "ok", function(answer) {
-        });
-        callback("error");
     });
+
 };
 
 //External functions

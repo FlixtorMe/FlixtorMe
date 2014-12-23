@@ -71,7 +71,7 @@
     </div>
     <div id="content-wrapper">
         <div id="popup"></div>
-        <div id="content">
+        <div id="content" style="overflow-y: scroll;">
             <script type="text/javascript">
                 $(document).ready(function () {
                     var localization = require('../js/localization.js');
@@ -388,6 +388,15 @@
                         });
                     });
                     $('#restoreDefaultsSuccess').append('&nbsp;&nbsp;'+restored+' &nbsp;<span class="glyphicon glyphicon-ok"></span>');
+
+                    $('#purgeCache').click(function() {
+                        settings.purgeCache();
+                        $('#purgeCacheSuccess').fadeIn('fast', function(){
+                            $('#purgeCacheSuccess').fadeOut(1500);
+                        });
+                    });
+                    $('#purgeCacheSuccess').append('&nbsp;&nbsp;'+restored+' &nbsp;<span class="glyphicon glyphicon-ok"></span>');
+
                 });
             </script>
 
@@ -559,7 +568,13 @@
                             <div class="col-sm-3">
                                 <button id="restoreDefaults" type="button" class="btn btn-flixtor btn-sm"></button>
                             </div>
+
+                            <div class="col-sm-3">
+                                <button id="purgeCache" type="button" class="btn btn-flixtor btn-sm"></button>
+                            </div>
+
                             <label id="restoreDefaultsSuccess" style="display: none" class="control-label"></label>
+                            <label id="purgeCacheSuccess" style="display: none" class="control-label"></label>
                         </div>
                     </div>
                 </div>

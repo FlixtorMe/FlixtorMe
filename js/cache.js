@@ -29,8 +29,18 @@ var getCacheIfValid = function (cacheFile, cacheFolder, ttl, callback) {
 
 var setCache = function (cacheFile, cacheFolder, result) {
     var file = cacheFolder+"/"+cacheFile;
-    fs.writeFile(file, result, function (err) {
-        if (err) return console.log(err);
+    fs.exists(cacheFolder, function(exists) {
+        if( !exists ) {
+            fs.mkdir(cacheFolder, 0777, function(err) {
+                fs.writeFile(file, result, function (err) {
+                    if (err) return console.log(err);
+                });
+            });
+        } else {
+            fs.writeFile(file, result, function (err) {
+                if (err) return console.log(err);
+            });
+        }
     });
 };
 

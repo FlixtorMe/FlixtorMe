@@ -454,6 +454,9 @@ var Translations = function () {
 
         var restoreDefaults = i18n.__('Restore defaults');
         $('#restoreDefaults').append(restoreDefaults);
+
+        var purgeCache = i18n.__('Clear cache');
+        $('#purgeCache').append(purgeCache);
     };
 };
 

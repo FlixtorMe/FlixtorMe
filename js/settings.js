@@ -94,6 +94,25 @@ var Settings = function() {
             console.log(err);
         }
     };
+
+    this.purgeCache = function () {
+        var cacheFolder = data_path+"/cache";
+        var deleteFolderRecursive = function(path) {
+            if( fs.existsSync(path) ) {
+                fs.readdirSync(path).forEach(function(file, index){
+                    var currentPath = path + "/" + file;
+                    if( fs.lstatSync(currentPath).isDirectory() ) {
+                        deleteFolderRecursive(currentPath);
+                    } else {
+                        fs.unlinkSync(currentPath);
+                    }
+                });
+                fs.rmdirSync(path);
+            }
+        };
+
+        deleteFolderRecursive(cacheFolder);
+    };
 };
 
 module.exports = new Settings();
