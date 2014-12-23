@@ -144,7 +144,7 @@ $(document).ready(function() {
             var sourceId = $(this).data("source");
             var title = $(this).data("title");
             var imdbID = $(this).data("imdb");
-            //playTorrent(infoHash, imdbID);
+            playTorrent(infoHash, imdbID);
             var translatedLoadingFromSource = translations.translate('Loading from source');
             $("#current-source").html(translatedLoadingFromSource+" " + sourceId);
 

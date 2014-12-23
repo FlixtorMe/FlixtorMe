@@ -303,7 +303,7 @@ function go(url) {
 }
 
 function changeFrame (frame) {
-    url = frame + ".html";
+    url = "app://host/frames/"+frame + ".html";
     window.location = url;
     saveHistory(url);
 }
