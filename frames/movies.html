@@ -154,6 +154,8 @@
                             //Search for movies
                             callwcf.searchMovies(movieFilter.sort, movieFilter.searchValue, movieFilter.genre, movieFilter.max, movieFilter.page, movieFilter.order, function(result) {
                                 appendResult(result);
+
+                                $("#movieContainer").find(".shadow:first").addClass("on");
                             });
                         }
 

@@ -61,7 +61,7 @@ Mousetrap.bind(['enter', 'space'], function() {
     }
 });
 
-/*Mousetrap.bind('right', function() {
+Mousetrap.bind('right', function() {
     $('#movieContainer').scrollTo('.on');
     $(".on").parent().next(".element").find('.shadow').mouseover();
 });
@@ -69,7 +69,7 @@ Mousetrap.bind(['enter', 'space'], function() {
 Mousetrap.bind('left', function() {
     $('#movieContainer').scrollTo('.on');
     $(".on").parent().prev(".element").find('.shadow').mouseover();
-});*/
+});
 
 Mousetrap.bind('q', function() {
     if( $(".current").next(".btn-quality").length > 0 ) {
@@ -79,4 +79,16 @@ Mousetrap.bind('q', function() {
         $(".btn-quality")[0].click();
     }
 
+});
+
+Mousetrap.bind('t', function() {
+    if( $('#content-overlay').is(':visible') ) {
+        $('#content-overlay').find('#btnTrailer').click();
+    }
+});
+
+Mousetrap.bind('b', function() {
+    if( $('#content-overlay').is(':visible') ) {
+        $('#content-overlay').find('#btnBuy').click();
+    }
 });
