@@ -16,14 +16,9 @@ $.fn.scrollTo = function( target, options, callback ){
     });
 };
 
-// MOVIES SPECIFIC KEYS
+// SERIES SPECIFIC KEYS
 Mousetrap.bind('backspace', function() {
-    if( $('#video-container-trailer').is(':visible') ) {
-        closeTrailerOverlay();
-    }
-    else {
-        closeMovieDetail();
-    }
+    closeSerieDetail();
 });
 
 Mousetrap.bind('tab', function() {
@@ -40,18 +35,42 @@ Mousetrap.bind(['enter', 'space'], function() {
         $('#content-overlay').find('#btnPlay').click();
     }
     else {
-        $('#movieContainer').find('.on').click();
+        $('#serieContainer').find('.on').click();
     }
 });
 
 Mousetrap.bind('right', function() {
-    $(".on").parent().next(".element").find('.shadow').mouseover();
-    $('#movies').scrollTo('.on');
+    if( $('#content-overlay').is(':visible') ) {
+        $(".ui-accordion-header-active").next().next(".accordion-header").click();
+        $(".ui-accordion-header-active").next().children(":first").click();
+    }
+    else {
+        $(".on").parent().next(".element").find('.shadow').mouseover();
+        $('#series').scrollTo('.on');
+    }
 });
 
 Mousetrap.bind('left', function() {
-    $(".on").parent().prev(".element").find('.shadow').mouseover();
-    $('#movies').scrollTo('.on');
+    if( $('#content-overlay').is(':visible') ) {
+        $(".ui-accordion-header-active").prev().prev(".accordion-header").click();
+        $(".ui-accordion-header-active").next().children(":first").click();
+    }
+    else {
+        $(".on").parent().prev(".element").find('.shadow').mouseover();
+        $('#series').scrollTo('.on');
+    }
+});
+
+Mousetrap.bind('up', function() {
+    if( $('#content-overlay').is(':visible') ) {
+        $(".ui-accordion-header-active").next().find(".selected").prev(".episode").click();
+    }
+});
+
+Mousetrap.bind('down', function() {
+    if( $('#content-overlay').is(':visible') ) {
+        $(".ui-accordion-header-active").next().find(".selected").next(".episode").click();
+    }
 });
 
 Mousetrap.bind('q', function() {
@@ -62,12 +81,6 @@ Mousetrap.bind('q', function() {
         $(".btn-quality")[0].click();
     }
 
-});
-
-Mousetrap.bind('t', function() {
-    if( $('#content-overlay').is(':visible') ) {
-        $('#content-overlay').find('#btnTrailer').click();
-    }
 });
 
 Mousetrap.bind('b', function() {

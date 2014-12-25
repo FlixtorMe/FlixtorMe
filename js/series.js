@@ -45,6 +45,32 @@ function appendResult(result) {
     $("#main-spinner").remove();
 }
 
+function closeSerieDetail() {
+    try{
+        var subManager = subtitles.getSubManager();
+        if( subManager ) {
+            subManager.server.listen(0);
+            subManager.server.close();
+        }
+    }
+    catch(e) {
+        console.log(e);
+    }
+
+    try{
+        $("#accordion").accordion("destroy");
+    }
+    catch(e) {
+        console.log(e);
+    }
+
+    $("#content-overlay").hide();
+    $("#serie").hide();
+    $("#content").css("opacity", "1");
+    $("#head-bar").show();
+    $("#btnBuy").unbind( "click" );
+}
+
 function changeSearchText() {
     serieFilter.page = 1;
     serieFilter.searchValue = $("#txtSerieSearch").val();
@@ -134,3 +160,8 @@ function changeFilterCategory(name) {
     //Apply the setting to search
     serieApplySearch();
 }
+
+$(document).on('mouseover','a.shadow',function(){
+    $(".on").removeClass("on");
+    $(this).addClass("on");
+});

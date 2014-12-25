@@ -18,8 +18,12 @@
 
         <script src="../js/extensions/jquery.isotope.min.js"></script>
         <script src="../js/extensions/nwcontextmenu.js"></script>
+        <script src="../js/extensions/mousetrap.min.js"></script>
 
         <script src="../js/series.js"></script>
+        <!-- Keyboard includes -->
+        <script src="../js/keyboard/general.js"></script>
+        <script src="../js/keyboard/series.js"></script>
 
         <!-- Modules -->
         <script>
@@ -150,6 +154,8 @@
                             //Search for series
                             callwcf.searchSeries( serieFilter.sort, serieFilter.searchValue, serieFilter.genre, serieFilter.max, serieFilter.page, function(result) {
                                 appendResult(result);
+
+                                $("#serieContainer").find(".shadow:first").addClass("on");
                             });
 
                         }
@@ -471,33 +477,6 @@
                                 $('.spinner-overlay').remove();
                             });
 
-                        }
-
-                        function closeSerieDetail()
-                        {
-                            try{
-                                var subManager = subtitles.getSubManager();
-                                if( subManager ) {
-                                    subManager.server.listen(0);
-                                    subManager.server.close();
-                                }
-                            }
-                            catch(e) {
-                                console.log(e);
-                            }
-
-                            try{
-                                $("#accordion").accordion("destroy");
-                            }
-                            catch(e) {
-                                console.log(e);
-                            }
-
-                            $("#content-overlay").hide();
-                            $("#serie").hide();
-                            $("#content").css("opacity", "1");
-                            $("#head-bar").show();
-                            $("#btnBuy").unbind( "click" );
                         }
 
                         function addToFavorites(seriesJson) {
