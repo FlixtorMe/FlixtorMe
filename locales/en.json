@@ -180,5 +180,19 @@
 	"Yts is unavailable. Please try it again later": "Yts is unavailable. Please try it again later",
 	"Eztv api endpoint:": "Eztv api endpoint:",
 	"Kickass api endpoint:": "Kickass api endpoint:",
-	"Clear cache": "Clear cache"
+	"Clear cache": "Clear cache",
+	"drama": "drama",
+	"mystery": "mystery",
+	"thriller": "thriller",
+	"adventure": "adventure",
+	"fantasy": "fantasy",
+	"science-fiction": "science-fiction",
+	"action": "action",
+	"crime": "crime",
+	"animation": "animation",
+	"comedy": "comedy",
+	"family": "family",
+	"romance": "romance",
+	"horror": "horror",
+	"documentary": "documentary"
 }
