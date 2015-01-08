@@ -194,5 +194,8 @@
 	"family": "family",
 	"romance": "romance",
 	"horror": "horror",
-	"documentary": "documentary"
+	"documentary": "documentary",
+	"war": "war",
+	"music": "music",
+	"history": "history"
 }
