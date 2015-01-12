@@ -209,12 +209,8 @@
                                             return true;
                                         }
 
-                                        if (typeof movie.poster !== 'undefined') {
-                                            var newChars = '-300';
-                                            var position = movie.poster.lastIndexOf(".");
-                                            var tmpOne = movie.poster.substr(0, position);
-                                            var tmpTwo = movie.poster.substr(position, movie.poster.length);
-                                            var moviePoster = tmpOne + newChars + tmpTwo;
+                                        if (typeof movie.poster !== 'undefined' || movie.poster != null) {
+                                            var moviePoster = movie.poster.replace("original", "thumb");
                                         }
                                         else {
                                             var moviePoster = '../images/no-poster.png';
@@ -287,17 +283,13 @@
                             $( "<style> #customCSS {position: absolute; top: 0; bottom: 0;left: 0; right: 0; z-index: -100; background: url("+movie.fanart+") no-repeat center center fixed; -webkit-background-size: cover; background-size: cover; color: #e9e9e9;}</style>" ).appendTo("#customCSS");
 
                             //Set variables to html
-                            if (typeof movie.poster !== 'undefined') {
-                                var newChars = '-300';
-                                var position = movie.poster.lastIndexOf(".");
-                                var tmpOne = movie.poster.substr(0, position);
-                                var tmpTwo = movie.poster.substr(position, movie.poster.length);
-                                var moviePoster = tmpOne + newChars + tmpTwo;
+                            if (typeof movie.poster !== 'undefined' || movie.poster != null) {
+                                var moviePoster = movie.poster.replace("original", "thumb");
                                 $("#poster").attr('src', moviePoster);
-
                             }
                             else {
                                 $("#poster").attr('src', '../images/no-poster.png');
+
                             }
 
                             if (typeof movie.genres !== 'undefined') {
