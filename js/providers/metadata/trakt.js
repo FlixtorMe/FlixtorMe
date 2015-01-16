@@ -1,19 +1,19 @@
 var utilities = require('../../utilities.js');
 
 /* Editable movie values
-    var movie =  {
-        "title" : "",     (required)
-        "movieYear" : "", (optional)
-        "imdbCode" : "",  (required)
-        "rating" : "",    (optional)
-        "trailer" : "",   (optional)
-        "runtime" : "",   (optional)
-        "overview" : "",  (required)
-        "tagline" : "",   (required)
-        "poster" : "",    (required)
-        "fanart" : "",    (optional)
-    };
-*/
+ var movie =  {
+ "title" : "",     (required)
+ "movieYear" : "", (optional)
+ "imdbCode" : "",  (required)
+ "rating" : "",    (optional)
+ "trailer" : "",   (optional)
+ "runtime" : "",   (optional)
+ "overview" : "",  (required)
+ "tagline" : "",   (required)
+ "poster" : "",    (required)
+ "fanart" : "",    (optional)
+ };
+ */
 
 var getMetadata = function (movies, imdbIds, callback) {
     var API_ENDPOINT = "http://api.trakt.tv/";
@@ -39,7 +39,8 @@ var getMetadata = function (movies, imdbIds, callback) {
                         movies[item.imdb_id]['poster'] = '../../../images/no-poster.png';
                     }
                     else {
-                        movies[item.imdb_id]['poster'] = item.images.poster.replace("/original/", "/thumb/");
+                        var moviePoster = item.images.poster.replace("/original/", "/thumb/");
+                        movies[item.imdb_id]['poster'] = moviePoster;
                     }
 
                     movies[item.imdb_id]['fanart'] = item.images.fanart;
