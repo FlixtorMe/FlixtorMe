@@ -14,11 +14,7 @@ function appendResult(result) {
             var serie = result[index];
 
             if (typeof serie.images.poster !== 'undefined' && !(~serie.images.poster.toString().indexOf('poster-dark')) ) {
-                var newChars = "-300";
-                var position = serie.images.poster.lastIndexOf(".");
-                var tmpOne = serie.images.poster.substr(0, position);
-                var tmpTwo = serie.images.poster.substr(position, serie.images.poster.length);
-                var seriePoster = tmpOne + newChars + tmpTwo;
+                var seriePoster = serie.images.poster.replace("/original/", "/thumb/");
             }
             else {
                 var seriePoster = '../images/no-poster.png';

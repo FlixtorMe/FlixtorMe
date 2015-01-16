@@ -39,12 +39,7 @@ var getMetadata = function (movies, imdbIds, callback) {
                         movies[item.imdb_id]['poster'] = '../../../images/no-poster.png';
                     }
                     else {
-                        var newChars = '-300';
-                        var position = item.images.poster.lastIndexOf(".");
-                        var tmpOne = item.images.poster.substr(0, position);
-                        var tmpTwo = item.images.poster.substr(position, item.images.poster.length);
-                        var moviePoster = tmpOne + newChars + tmpTwo;
-                        movies[item.imdb_id]['poster'] = moviePoster;
+                        movies[item.imdb_id]['poster'] = item.images.poster.replace("/original/", "/thumb/");
                     }
 
                     movies[item.imdb_id]['fanart'] = item.images.fanart;
