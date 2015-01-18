@@ -30,16 +30,6 @@ Mousetrap.bind('backspace', function() {
     }
 });
 
-/* Section switch(movies, series, etc.) (tab) */
-Mousetrap.bind('tab', function() {
-    if( location.pathname.split('/').slice(-1)[0] == "torrents.html" ) {
-        $(".menuMovies").click();
-    }
-    else {
-        $(".selected").next().click();
-    }
-});
-
 /* On detail page play movie (enter/space)
 *  On overview page open detail page (enter/space)
 */

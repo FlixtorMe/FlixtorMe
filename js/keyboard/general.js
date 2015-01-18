@@ -3,6 +3,16 @@ var win = gui.Window.get();
 
 // GENERAL KEYS
 
+/* Section switch(movies, series, etc.) (tab) */
+Mousetrap.bind('tab', function() {
+    if( location.pathname.split('/').slice(-1)[0] == "settings.html" ) {
+        $(".menuMovies").click();
+    }
+    else {
+        $(".selected").next().click();
+    }
+});
+
 /* Close app (esc) */
 Mousetrap.bind('esc', function() {
     win.close();
