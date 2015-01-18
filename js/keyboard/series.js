@@ -17,10 +17,13 @@ $.fn.scrollTo = function( target, options, callback ){
 };
 
 // SERIES SPECIFIC KEYS
+
+/* Go back (detail page) (backspace) */
 Mousetrap.bind('backspace', function() {
     closeSerieDetail();
 });
 
+/* Section switch(movies, series, etc.) (tab) */
 Mousetrap.bind('tab', function() {
     if( location.pathname.split('/').slice(-1)[0] == "torrents.html" ) {
         $(".menuMovies").click();
@@ -30,6 +33,9 @@ Mousetrap.bind('tab', function() {
     }
 });
 
+/* On detail page play show (enter/space)
+*  On overview page open detail page (enter/space)
+*/
 Mousetrap.bind(['enter', 'space'], function() {
     if( $('#content-overlay').is(':visible') ) {
         $('#content-overlay').find('#btnPlay').click();
@@ -39,6 +45,9 @@ Mousetrap.bind(['enter', 'space'], function() {
     }
 });
 
+/* Detail page: Next season (right)
+*  Overview page: Next item (right)
+*/
 Mousetrap.bind('right', function() {
     if( $('#content-overlay').is(':visible') ) {
         $(".ui-accordion-header-active").next().next(".accordion-header").click();
@@ -50,6 +59,9 @@ Mousetrap.bind('right', function() {
     }
 });
 
+/* Detail page: Prev season (left)
+*  Overview page: Prev item (left)
+*/
 Mousetrap.bind('left', function() {
     if( $('#content-overlay').is(':visible') ) {
         $(".ui-accordion-header-active").prev().prev(".accordion-header").click();
@@ -61,18 +73,21 @@ Mousetrap.bind('left', function() {
     }
 });
 
+/* Prev episode (up) */
 Mousetrap.bind('up', function() {
     if( $('#content-overlay').is(':visible') ) {
         $(".ui-accordion-header-active").next().find(".selected").prev(".episode").click();
     }
 });
 
+/* Next episode (down) */
 Mousetrap.bind('down', function() {
     if( $('#content-overlay').is(':visible') ) {
         $(".ui-accordion-header-active").next().find(".selected").next(".episode").click();
     }
 });
 
+/* Quality switch (q) */
 Mousetrap.bind('q', function() {
     if( $(".current").next(".btn-quality").length > 0 ) {
         $(".current").next(".btn-quality").click();
@@ -83,6 +98,7 @@ Mousetrap.bind('q', function() {
 
 });
 
+/* Buy button click (b) */
 Mousetrap.bind('b', function() {
     if( $('#content-overlay').is(':visible') ) {
         $('#content-overlay').find('#btnBuy').click();

@@ -67,13 +67,15 @@
                             $( "<style> body { background: url("+movie.fanart+") no-repeat center center fixed; -webkit-background-size: cover; background-size: cover; color: #e9e9e9;}</style>" ).appendTo("#customCSS");
                         }
 
+                        console.log(movie.torrents);
                         var count = 0;
-                        Object.keys(movie.torrents[0]).forEach(function(index) {
-                            if( index === "0" && Object.keys(movie.torrents[0]).length > 1 ) {
+
+                        Object.keys(movie.torrents).forEach(function(index) {
+                            if( index === "0" && Object.keys(movie.torrents).length > 1 ) {
                                 return true;
                             }
 
-                            var torrent = movie.torrents[0][index];
+                            var torrent = movie.torrents[index];
 
                             if( torrent === "" ) {
                                 return true;
@@ -427,14 +429,14 @@
                         </div>
                     </div>
                     <h5 id="current-source" class="pull-left"></h5>
-                    <button class="pull-right btn btn-xs btn-danger mt-10 btnCancel" onclick="main.goBack();"></button>
+                    <button class="pull-right btn btn-xs btn-flixtor mt-10 btnCancel" onclick="main.goBack();"></button>
                 </div>
                 <div id="error" class="container center-block hide" style="margin-top:300px; max-width:500px;">
                     <h4 class="playerErrorTitle"></h4>
                     <div class="playerErrorMessage"></div>
                     <div class="font-12 playerErrorNote"></div>
-                    <button class="pull-left btn btn-xs btn-success mt-10 btnSwitchToVlc" onclick="startVLC();"></button>
-                    <button class="pull-right btn btn-xs btn-danger mt-10 btnCancel" onclick="main.goBack();"></button>
+                    <button class="pull-left btn btn-xs btn-flixtor mt-10 btnSwitchToVlc" onclick="startVLC();"></button>
+                    <button class="pull-right btn btn-xs btn-flixtor mt-10 btnCancel" onclick="main.goBack();"></button>
                 </div>
                 <div id="right-nav" class="hidden-xs hidden-sm" style="position:absolute; top:40px; z-index:1; background: rgba(0,0,0,0.8); bottom:0; width:250px; right:0; border-left:thin solid black">
                     <div style="margin:10px 10px 0 10px;">
@@ -456,11 +458,11 @@
                                 <li><i class='glyphicon glyphicon-tasks text-info'></i>&nbsp;&nbsp;<span id="info-download-speed">0.0</span></li>
                             </ul>
                             <div id="btnVLC" class="hide">
-                                <button class="btn btn-xs btn-success mt-10 btnSwitchToVlc" onclick="startVLC();"></button>
+                                <button class="btn btn-xs btn-flixtor mt-10 btnSwitchToVlc" onclick="startVLC();"></button>
                                 <div class="font-12 mt-5 playerNoSound"></div>
                             </div>
                             <div id="btnDefaultPlayer" class="hide">
-                                <button class="btn btn-xs btn-primary mt-10 btnSwitchToDefault" onclick="startDefaultPlayer();"></button>
+                                <button class="btn btn-xs btn-flixtor mt-10 btnSwitchToDefault" onclick="startDefaultPlayer();"></button>
                             </div>
                         </div>
                     </div>

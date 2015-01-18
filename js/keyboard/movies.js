@@ -17,6 +17,10 @@ $.fn.scrollTo = function( target, options, callback ){
 };
 
 // MOVIES SPECIFIC KEYS
+
+/* Detail page: Go back to overview page (backspace)
+*  Trailer page: Go back to detail page (backspace)
+*/
 Mousetrap.bind('backspace', function() {
     if( $('#video-container-trailer').is(':visible') ) {
         closeTrailerOverlay();
@@ -26,6 +30,7 @@ Mousetrap.bind('backspace', function() {
     }
 });
 
+/* Section switch(movies, series, etc.) (tab) */
 Mousetrap.bind('tab', function() {
     if( location.pathname.split('/').slice(-1)[0] == "torrents.html" ) {
         $(".menuMovies").click();
@@ -35,6 +40,9 @@ Mousetrap.bind('tab', function() {
     }
 });
 
+/* On detail page play movie (enter/space)
+*  On overview page open detail page (enter/space)
+*/
 Mousetrap.bind(['enter', 'space'], function() {
     if( $('#content-overlay').is(':visible') ) {
         $('#content-overlay').find('#btnPlay').click();
@@ -44,16 +52,19 @@ Mousetrap.bind(['enter', 'space'], function() {
     }
 });
 
+/* Next item (right) */
 Mousetrap.bind('right', function() {
     $(".on").parent().next(".element").find('.shadow').mouseover();
     $('#movies').scrollTo('.on');
 });
 
+/* Prev item (left) */
 Mousetrap.bind('left', function() {
     $(".on").parent().prev(".element").find('.shadow').mouseover();
     $('#movies').scrollTo('.on');
 });
 
+/* Quality switch (q) */
 Mousetrap.bind('q', function() {
     if( $(".current").next(".btn-quality").length > 0 ) {
         $(".current").next(".btn-quality").click();
@@ -64,12 +75,14 @@ Mousetrap.bind('q', function() {
 
 });
 
+/* Open trailer (t) */
 Mousetrap.bind('t', function() {
     if( $('#content-overlay').is(':visible') ) {
         $('#content-overlay').find('#btnTrailer').click();
     }
 });
 
+/* Buy button click (b) */
 Mousetrap.bind('b', function() {
     if( $('#content-overlay').is(':visible') ) {
         $('#content-overlay').find('#btnBuy').click();
