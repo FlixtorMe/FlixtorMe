@@ -338,14 +338,13 @@ function getYoutubeID(ytID) {
 function checkForUpdates() {
     if( !(window.sessionStorage.history) ) {
         var $ = window.$;
-        var currentVersion = settings.readConfig('version');
-        $.getJSON("http://update.flixtor.me", function (data) {
+        var currentVersion = gui.App.manifest.version
+        $.getJSON("http://update.flixtor.me/desktop", function (data) {
         }).success(function (data) {
-                if( data.version !== currentVersion ) {
-                    utilities.showPrompt(translations.translate("New Flixtor version"), "<span>"+translations.translate("A new Flixtor release is available. You can directly download it")+" <a id='download-url' href='javascript:void(0)'>"+translations.translate("here")+"</a></span>.", "ok", function(answer) {
-                    });
-                }
-            }).error(function () {
+            if( data.version !== currentVersion ) {
+                utilities.showPrompt(translations.translate("New Flixtor version"), "<span>"+translations.translate("A new Flixtor release is available. You can directly download it")+" <a id='download-url' href='javascript:void(0)'>"+translations.translate("here")+"</a></span>.", "ok", function(answer) {
+                });
+            }
         });
         $("body").on("click", "#download-url", function () {
             var platform = getPlatform();
