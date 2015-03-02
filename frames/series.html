@@ -195,11 +195,7 @@
                                         var serie = results[index];
 
                                         if (typeof serie.images.poster !== 'undefined') {
-                                            var newChars = "-300";
-                                            var position = serie.images.poster.lastIndexOf(".");
-                                            var tmpOne = serie.images.poster.substr(0, position);
-                                            var tmpTwo = serie.images.poster.substr(position, serie.images.poster.length);
-                                            var seriePoster = tmpOne + newChars + tmpTwo;
+                                            var seriePoster = serie.images.poster.replace("/original/", "/thumb/");
                                         }
                                         else {
                                             var seriePoster = '../images/no-poster.png';
@@ -292,11 +288,7 @@
                                     $( "<style> #customCSS {position: absolute; top: 0; bottom: 0;left: 0; right: 0; z-index: -100; background: url("+serie.images.fanart+") no-repeat center center fixed; -webkit-background-size: cover; background-size: cover; color: #e9e9e9;}</style>" ).appendTo("#customCSS");
 
                                     //Set variables to html
-                                    var newChars = '-300';
-                                    var position = serie.images.poster.lastIndexOf(".");
-                                    var tmpOne = serie.images.poster.substr(0, position);
-                                    var tmpTwo = serie.images.poster.substr(position, serie.images.poster.length);
-                                    var seriePoster = tmpOne + newChars + tmpTwo;
+                                    var seriePoster = serie.images.poster.replace("/original/", "/thumb/");
                                     $("#poster").attr('src', seriePoster);
 
                                     $("#title").html(serie.title);
