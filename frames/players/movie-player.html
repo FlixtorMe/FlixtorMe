@@ -21,25 +21,52 @@
             var address = require('network-address');
             var unorm = require('unorm');
             var xbmc = require('nodebmc');
+            var chromecastjs = require('chromecast-js');
 
             var main = require('../js/main.js');
             var translations = require('../js/translations.js');
             var settings = require('../js/settings.js');
 
             var devices = [];
-            var external = false;
+            var external = '';
             var xbmcDevice;
+            var chromecastDevice;
+
+            var preferedSubtitle;
 
             $(document).ready(function() {
                 translations.initialize();
                 translations.translateDefaults();
 
+                var magnet = utilities.getQueryString('magnet');
+                console.log(magnet);
+
+                var torrents = utilities.getQueryString('torrents');
+                torrents = new Buffer(torrents, 'base64').toString('utf-8');
+                torrents = jQuery.parseJSON(torrents);
+                console.log(torrents);
+
+                var title = utilities.getQueryString('title');
+                console.log(title);
+
+                var imdb = utilities.getQueryString('id');
+                console.log(imdb);
+
+                var image = utilities.getQueryString('image');
+                if( image != undefined && image != '' ) {
+                    image = new Buffer(image, 'base64').toString('utf-8');
+                    image = jQuery.parseJSON(image);
+                    console.log(image);
+                }
+
+                preferedSubtitle = utilities.getQueryString('subtitle');
+                console.log(preferedSubtitle);
+
                 $("#wrapper").append("<div class='spinner-overlay'></div>");
-                var queryString = utilities.getQueryString('movieId');
 
                 xbmcDevice = utilities.getQueryString('xbmc');
                 if( xbmcDevice != undefined && xbmcDevice != '' ) {
-                    external = true;
+                    external = 'xbmc';
                     xbmcDevice = xbmcDevice.replace('%20', ' ');
 
                     // Browse for xbmc clients
@@ -49,86 +76,74 @@
                     });
                 }
 
-                if(queryString.indexOf('magnet:?xt=urn:btih:') == 0) {
-                    var infoHash = queryString.split('magnet:?xt=urn:btih:');
-                    playTorrent(infoHash[1]);
+                chromecastDevice = utilities.getQueryString('chromecast');
+                if( chromecastDevice != undefined && chromecastDevice != '' ) {
+                    external = 'chromecast';
+                    chromecastDevice = chromecastDevice.replace('%20', ' ');
 
+                    // Browse for chromecast clients
+                    var chromecastBrowser = new chromecastjs.Browser();
+                    chromecastBrowser.on('deviceOn', function(device){
+                        devices.push(device);
+                    });
+                }
+
+                if(magnet) {
+                    //Insert backdrop path
+                    if(image) {
+                        $( "<style> body { background: url("+image+") no-repeat center center fixed; -webkit-background-size: cover; background-size: cover; color: #e9e9e9;}</style>" ).appendTo("#customCSS");
+                    }
+
+                    var count = 0;
+                    Object.keys(torrents).forEach(function(index) {
+                        var torrent = torrents[index];
+                        var quality = torrent.quality;
+                        var infoHash = torrent.hash;
+
+                        var translatedSource = translations.translate('Source');
+                        var translatedQuality = translations.translate('Quality');
+
+                        console.log(magnet);
+                        console.log(infoHash);
+                        if( infoHash == magnet ) {
+                            $("#source-content").append("<li><a id='source-" + (count + 1) + "' class='source default-source' title="+translatedQuality+"': " + quality + "' data-imdb='" + imdb + "' data-infohash='" + infoHash + "' data-title='" + quality + "' data-source='" + (count + 1) + "' '><span>"+translatedSource+" " + (count + 1) + "</span><span class='pull-right'>"+translatedQuality+" "+quality+"</span><div class='clear-fix'></div><div class='text-right'></span></div></a></li>");
+                        }
+                        else {
+                            $("#source-content").append("<li><a id='source-" + (count + 1) + "' class='source' title="+translatedQuality+"': " + quality + "' data-imdb='" + imdb + "' data-infohash='" + infoHash + "' data-title='" + quality + "' data-source='" + (count + 1) + "' '><span>"+translatedSource+" " + (count + 1) + "</span><span class='pull-right'>"+translatedQuality+" "+quality+"</span><div class='clear-fix'></div><div class='text-right'></span></div></a></li>");
+                        }
+                        count++;
+                    });
+
+                    $(".source").click(function () {
+                        //Reset hover style
+                        $(".source").removeClass("on");
+
+                        //Set hover style
+                        $(this).addClass("on");
+
+                        //Remove video
+                        $('#torrentVideo').remove();
+                        $("#VLC").remove();
+
+                        $("#loader").removeClass("hide");
+
+                        //Play the actual torrent
+                        var infoHash = $(this).data("infohash");
+                        var sourceId = $(this).data("source");
+                        var title = $(this).data("title");
+                        var imdbID = $(this).data("imdb");
+                        playTorrent(infoHash, imdbID);
+                        var translatedLoadingFromSource = translations.translate('Loading from source');
+                        $("#current-source").html(translatedLoadingFromSource+" " + sourceId);
+
+                        $("#info-torrent-name").html(title);
+                    });
+
+                    //Start playing first source
+                    $('.default-source').click();
                     $("#movie").addClass("show");
                     $(".spinner-overlay").remove();
-                    showInfo();
-
-                }
-                else {
-                    var movie = new Buffer(queryString, 'base64').toString('utf-8');
-                    movie = jQuery.parseJSON(movie);
-                    if(movie) {
-                        //Insert backdrop path
-                        if(movie.fanart) {
-                            $( "<style> body { background: url("+movie.fanart+") no-repeat center center fixed; -webkit-background-size: cover; background-size: cover; color: #e9e9e9;}</style>" ).appendTo("#customCSS");
-                        }
-
-                        console.log(movie.torrents);
-                        var count = 0;
-
-                        Object.keys(movie.torrents).forEach(function(index) {
-                            if( index === "0" && Object.keys(movie.torrents).length > 1 ) {
-                                return true;
-                            }
-
-                            var torrent = movie.torrents[index];
-
-                            if( torrent === "" ) {
-                                return true;
-                            }
-
-                            if( index === "0" ) {
-                                var translatedUnknownQuality = translations.translate('unknown');
-                                var quality = translatedUnknownQuality;
-                            }
-                            else {
-                                var quality = index;
-                            }
-
-                            var infoHash = torrent.split('magnet:?xt=urn:btih:');
-                            infoHash = infoHash[1];
-
-                            var translatedSource = translations.translate('Source');
-                            var translatedQuality = translations.translate('Quality');
-                            $("#source-content").append("<li><a id='source-" + (count + 1) + "' class='source' title="+translatedQuality+"': " + quality + "' data-imdb='" + movie.imdbCode + "' data-infohash='" + infoHash + "' data-title='" + quality + "' data-source='" + (count + 1) + "' '><span>"+translatedSource+" " + (count + 1) + "</span><span class='pull-right'>"+translatedQuality+" "+quality+"</span><div class='clear-fix'></div><div class='text-right'></span></div></a></li>");
-                            count++;
-                        });
-
-                        $(".source").click(function () {
-                            //Reset hover style
-                            $(".source").removeClass("on");
-
-                            //Set hover style
-                            $(this).addClass("on");
-
-                            //Remove video
-                            $('#torrentVideo').remove();
-                            $("#VLC").remove();
-
-                            $("#loader").removeClass("hide");
-
-                            //Play the actual torrent
-                            var infoHash = $(this).data("infohash");
-                            var sourceId = $(this).data("source");
-                            var title = $(this).data("title");
-                            var imdbID = $(this).data("imdb");
-                            playTorrent(infoHash, imdbID);
-                            var translatedLoadingFromSource = translations.translate('Loading from source');
-                            $("#current-source").html(translatedLoadingFromSource+" " + sourceId);
-
-                            $("#info-torrent-name").html(title);
-                        });
-
-                        //Start playing first source
-                        $('#source-1').click();
-                        $("#movie").addClass("show");
-                        $(".spinner-overlay").remove();
-                        showSource();
-                    }
+                    showSource();
                 }
 
             });
@@ -159,11 +174,14 @@
 
                         //Show the video player
                         $("#loader").addClass("hide");
-                        if( external == false ) {
+                        if( external == '' ) {
                             startDefaultPlayer();
                         }
-                        else {
+                        else if( external == 'xbmc' ) {
                             startXBMCPlayer();
+                        }
+                        else if( external == 'chromecast' ) {
+                            startChromecastPlayer();
                         }
                     } else {
                         console.log("Not ready yet!");
@@ -287,6 +305,25 @@
                     if( device.name == xbmcDevice ) {
                         device.play('http://'+ip+':'+port+'', function(){
                             console.log('Playing in xbmc!');
+                        });
+                    }
+                });
+            }
+
+            function startChromecastPlayer() {
+                $("#btnDefaultPlayer").removeClass("hide");
+                $("#btnVLC").removeClass("hide");
+
+                var ip = utilities.getIP();
+                var port = main.getEnginePort();
+                $(devices).each(function(index) {
+                    var device = devices[index];
+                    if( device.config.name == chromecastDevice ) {
+                        device.connect();
+                        device.on('connected', function(){
+                            device.play('http://'+ip+':'+port+'', 0, function(){
+                                console.log('Playing in your chromecast!');
+                            });
                         });
                     }
                 });

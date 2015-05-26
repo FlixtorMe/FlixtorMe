@@ -39,9 +39,9 @@
             var health = require('torrent-health');
             var xbmc = require('nodebmc');
             var chromecastjs = require('chromecast-js');
+
             var xbmcDevices = [];
             var chromecastDevices = [];
-
             var $container;
 
             $(document).ready(function() {
@@ -360,7 +360,7 @@
                                         torrentHash = torrentHash[0];
                                         var currentTorrents = new Buffer(JSON.stringify(torrents)).toString('base64');
                                         var currentFanart = new Buffer(JSON.stringify(fanart)).toString('base64');
-                                        main.go("players/series-player.html?magnet="+torrentHash+"&torrents="+currentTorrents+"&title="+episodeTitle+"&image="+currentFanart+"&subtitle="+currentSubtitle);
+                                        main.go("players/series-player.html?magnet="+torrentHash+"&torrents="+currentTorrents+"&title="+episodeTitle+"&image="+currentFanart+"&id="+serie._id+"&subtitle="+currentSubtitle);
                                     });
 
                                     $("body").on("click", ".xmbcPlay", function () {
@@ -370,7 +370,7 @@
                                         torrentHash = torrentHash[0];
                                         var currentTorrents = new Buffer(JSON.stringify(torrents)).toString('base64');
                                         var currentFanart = new Buffer(JSON.stringify(fanart)).toString('base64');
-                                        main.go("players/series-player.html?magnet="+torrentHash+"&torrents="+currentTorrents+"&title="+episodeTitle+"&image="+currentFanart+"&xbmc="+deviceId);
+                                        main.go("players/series-player.html?magnet="+torrentHash+"&torrents="+currentTorrents+"&title="+episodeTitle+"&image="+currentFanart+"&id="+serie._id+"&xbmc="+deviceId);
                                     });
 
                                     $("body").on("click", ".chromecastPlay", function () {
@@ -380,7 +380,7 @@
                                         torrentHash = torrentHash[0];
                                         var currentTorrents = new Buffer(JSON.stringify(torrents)).toString('base64');
                                         var currentFanart = new Buffer(JSON.stringify(fanart)).toString('base64');
-                                        main.go("players/series-player.html?magnet="+torrentHash+"&torrents="+currentTorrents+"&title="+episodeTitle+"&image="+currentFanart+"&chromecast="+deviceId);
+                                        main.go("players/series-player.html?magnet="+torrentHash+"&torrents="+currentTorrents+"&title="+episodeTitle+"&image="+currentFanart+"&id="+serie._id+"&chromecast="+deviceId);
                                     });
 
                                     $("body").on("click", ".btn-quality", function () {

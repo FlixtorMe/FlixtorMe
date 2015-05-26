@@ -52,6 +52,9 @@ $(document).ready(function() {
     var title = utilities.getQueryString('title');
     console.log(title);
 
+    var imdb = utilities.getQueryString('id');
+    console.log(imdb);
+
     var image = utilities.getQueryString('image');
     if( image != undefined && image != '' ) {
         image = new Buffer(image, 'base64').toString('utf-8');
@@ -86,8 +89,6 @@ $(document).ready(function() {
         });
     }
 
-    //var movie = new Buffer(queryString, 'base64').toString('utf-8');
-    //movie = jQuery.parseJSON(movie);
     if(magnet) {
         //Insert backdrop path
         if(image) {
@@ -117,16 +118,15 @@ $(document).ready(function() {
             console.log(magnet);
             console.log(infoHash);
             if( infoHash == magnet ) {
-                $("#source-content").append("<li><a id='source-" + (count + 1) + "' class='source default-source' title="+translatedQuality+"': " + quality + "' data-imdb='" + movie.imdbCode + "' data-infohash='" + infoHash + "' data-title='" + quality + "' data-source='" + (count + 1) + "' '><span>"+translatedSource+" " + (count + 1) + "</span><span class='pull-right'>"+translatedQuality+" "+quality+"</span><div class='clear-fix'></div><div class='text-right'></span></div></a></li>");
+                $("#source-content").append("<li><a id='source-" + (count + 1) + "' class='source default-source' title="+translatedQuality+"': " + quality + "' data-imdb='" + imdb + "' data-infohash='" + infoHash + "' data-title='" + quality + "' data-source='" + (count + 1) + "' '><span>"+translatedSource+" " + (count + 1) + "</span><span class='pull-right'>"+translatedQuality+" "+quality+"</span><div class='clear-fix'></div><div class='text-right'></span></div></a></li>");
             }
             else {
-                $("#source-content").append("<li><a id='source-" + (count + 1) + "' class='source' title="+translatedQuality+"': " + quality + "' data-imdb='" + movie.imdbCode + "' data-infohash='" + infoHash + "' data-title='" + quality + "' data-source='" + (count + 1) + "' '><span>"+translatedSource+" " + (count + 1) + "</span><span class='pull-right'>"+translatedQuality+" "+quality+"</span><div class='clear-fix'></div><div class='text-right'></span></div></a></li>");
+                $("#source-content").append("<li><a id='source-" + (count + 1) + "' class='source' title="+translatedQuality+"': " + quality + "' data-imdb='" + imdb + "' data-infohash='" + infoHash + "' data-title='" + quality + "' data-source='" + (count + 1) + "' '><span>"+translatedSource+" " + (count + 1) + "</span><span class='pull-right'>"+translatedQuality+" "+quality+"</span><div class='clear-fix'></div><div class='text-right'></span></div></a></li>");
             }
             count++;
         });
 
-        $(".source").click(function () {
-            console.log("edd");
+        $(".default-source").click(function () {
             //Reset hover style
             $(".source").removeClass("on");
 
@@ -335,7 +335,7 @@ function startChromecastPlayer() {
     var port = main.getEnginePort();
     $(devices).each(function(index) {
         var device = devices[index];
-        if( device.config.name == xbmcDevice ) {
+        if( device.config.name == chromecastDevice ) {
             device.connect();
             device.on('connected', function(){
                 device.play('http://'+ip+':'+port+'', 0, function(){

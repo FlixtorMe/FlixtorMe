@@ -11,90 +11,21 @@ var cachePath = data_path+"/cache";
 var ytsEndpoint = settings.readConfig('ytsEndpoint');
 var eztvEndpoint = settings.readConfig('eztvEndpoint');
 
-function parseYtsData(cacheFile, data, movies, imdbIds, callback) {
-    $.each(data.MovieList, function (key, val) {
+function parseYtsData(cacheFile, data, movies, callback) {
+    $.each(data.data.movies, function (key, val) {
 
         var movie =  {
-            "title" : val.MovieTitleClean.replace(/\([^)]*\)|1080p|DIRECTORS CUT|EXTENDED|UNRATED|3D|[()]/g, ''),
-            "movieYear" : val.MovieYear,
-            "imdbCode" : val.ImdbCode,
-            "rating" : val.MovieRating,
-            "trailer" : "",
-            "runtime" : "",
-            "overview" : "",
-            "tagline" : "",
-            "torrents":{}
+            "id" : val.id,
+            "title" : val.title,
+            "imdbCode" : val.imdb_code,
+            "poster" : val.medium_cover_image
         };
 
-        if( val.Quality === '1080p' ) {
-            movie.torrents['1080p'] = val.TorrentMagnetUrl;
-        }
-        else if( val.Quality === '720p' ) {
-            movie.torrents['720p'] = val.TorrentMagnetUrl;
-        }
-        else {
-            movie.torrents['unknown'] = val.TorrentMagnetUrl;
-        }
-
-        if(movies.hasOwnProperty(val.ImdbCode)){
-            var tmpMovie = movies[val.ImdbCode];
-            if( val.Quality === '1080p' ) {
-                tmpMovie.torrents['1080p'] = val.TorrentMagnetUrl;
-            }
-            else if( val.Quality === '720p' ) {
-                tmpMovie.torrents['720p'] = val.TorrentMagnetUrl;
-            }
-            else {
-                tmpMovie.torrents['unknown'] = val.TorrentMagnetUrl;
-            }
-
-            return true;
-        }
-
-        imdbIds.push(val.ImdbCode);
-        movies[val.ImdbCode] = movie;
-
-        /* OMDB API
-         $.each(movies, function (index, movie) {
-         var url = "http://www.omdbapi.com/?i="+movie.imdbCode+"&plot=full&r=json";
-         $.getJSON(url, function (data) {
-         }).success(function (data) {
-         movie.runtime = data.Runtime;
-         movie.overview = data.Plot;
-         if (typeof data.poster !== 'undefined' || data.poster_path !== '' ) {
-         movie.poster = data.Poster;
-         }
-         else {
-         movie.poster = '../images/no-poster.png';
-         }
-         movie.fanart = data.Poster;
-         if( movies.length+-1 == index ) {
-         console.log(movies);
-         callback(movies);
-         }
-         }).error(function () {
-         utilities.showPrompt("An uncaughtException was found", "<span>The OMDB service is unavailable. Please try it again later</span>.", "ok", function(answer) {
-         });
-         callback("error");
-         });
-         });*/
+        movies[val.id] = movie;
     });
 
-    var provider = settings.readConfig('metaProvider');
-
-    // Include meta provider
-    var metaProvider = require('../js/providers/metadata/'+provider+'.js');
-
-    metaProvider.getMetadata(movies, imdbIds, function(result) {
-        if( result == "error" ) {
-            callback("error");
-        }
-        else {
-            // Cache the result
-            cache.setCache(cacheFile, cachePath, JSON.stringify(movies));
-            callback(movies);
-        }
-    });
+    cache.setCache(cacheFile, cachePath, JSON.stringify(movies));
+    callback(movies);
 }
 
 //External functions
@@ -105,8 +36,7 @@ var searchMovies = function (sort, keywords, genre, limit, page, order, callback
     $ = window.$;
 
     var movies = {};
-    var imdbIds = [];
-    var ytsUrl = ytsEndpoint+"list.json?sort="+sort+"&limit="+limit+"&genre="+genre+"&keywords="+keywords+"&order="+order+"&set="+page+"";
+    var ytsUrl = ytsEndpoint+"list_movies.json?sort_by="+sort+"&limit="+limit+"&genre="+genre+"&query_term="+keywords+"&order_by="+order+"&page="+page+"";
     console.log(ytsUrl);
 
     // Check if request is cached
@@ -116,8 +46,8 @@ var searchMovies = function (sort, keywords, genre, limit, page, order, callback
             console.log("Get remote content");
             $.getJSON(ytsUrl, function (data) {
             }).success(function (data) {
-                if (data.status !== 'fail' || data.MovieList !== undefined ) {
-                    parseYtsData(hash, data, movies, imdbIds, callback);
+                if (data.status == 'ok' || data.data !== undefined ) {
+                    parseYtsData(hash, data, movies, callback);
                 }
                 else {
                     callback("error");
@@ -132,6 +62,43 @@ var searchMovies = function (sort, keywords, genre, limit, page, order, callback
             callback(JSON.parse(result));
         }
     });
+};
+
+//External functions
+var searchMovieDetail = function (id, callback) {
+    $ = window.$;
+
+    console.log(ytsEndpoint+"movie_details.json?movie_id="+id+"&with_images=true");
+    $.getJSON(ytsEndpoint+"movie_details.json?movie_id="+id+"&with_images=true", function (data) {
+    }).success(function (data) {
+            if (data.status == 'ok' || data.data !== undefined ) {
+                var movie =  {
+                    "id" : data.data.id,
+                    "title" : data.data.title,
+                    "movieYear" : data.data.year,
+                    "imdbCode" : data.data.imdb_code,
+                    "genre" : data.data.genres,
+                    "rating" : data.data.rating,
+                    "trailer" : data.data.yt_trailer_code,
+                    "runtime" : data.data.runtime,
+                    "overview" : data.data.description_full,
+                    "tagline" : data.data.description_intro,
+                    "ageRating": data.data.mpa_rating,
+                    "poster" : data.data.images.medium_cover_image,
+                    "fanart" : data.data.images.background_image,
+                    "torrents": data.data.torrents
+                };
+
+                callback(movie);
+            }
+            else {
+                callback("error");
+            }
+        }).error(function () {
+            utilities.showPrompt("An uncaughtException was found", "<span>"+translations.translate("Eztv is unavailable. Please try it again later")+"</span>.", "ok", function(answer) {
+            });
+            callback("error");
+        });
 };
 
 //External functions
@@ -251,6 +218,7 @@ var searchTorrents = function (keywords, category, sortBy, page, callback) {
 
 //Exports
 module.exports.searchMovies = searchMovies;
+module.exports.searchMovieDetail = searchMovieDetail;
 module.exports.searchSeries = searchSeries;
 module.exports.searchSerieDetail = searchSerieDetail;
 module.exports.searchAnimes = searchAnimes;

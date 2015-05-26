@@ -34,8 +34,7 @@ function appendResult(result) {
             }
 
             content += "<div id='" + movie.imdbCode + "' class='element transition isotope-item'>" +
-                "<a class='shadow' onClick='showDetails(this);'>" +
-                "<div style='display: none'>"+JSON.stringify(movie)+"</div> " +
+                "<a class='shadow' onClick='showDetails(" + "\"" + movie.id + "\"" + ");'>" +
                 "<img alt='image' src='" + movie.poster + "' style='width:160px; height:230px;'>" +
                 "</a>" +
                 "<div class='p-5' style='max-width:160px;'>" +

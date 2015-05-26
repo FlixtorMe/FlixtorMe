@@ -2,7 +2,7 @@
 var fs = require('fs');
 var data_path = global.window.nwDispatcher.requireNwGui().App.dataPath;
 var defaults = {"language":"en","cacheDir":"./data","subtitle":"","subtitleColor":"#ffffff","connectionLimit":"100","dht":"500",
-    "streamingPort":"","clearCache":true,"metaProvider":"trakt","ytsEndpoint":"https://yts.re/api/","eztvEndpoint":"http://eztvapi.re/","kickassEndpoint":"https://kickass.so"};
+    "streamingPort":"","clearCache":true,"metaProvider":"trakt","ytsEndpoint":"https://yts.to/api/v2/","eztvEndpoint":"http://eztvapi.re/","kickassEndpoint":"https://kickass.to"};
 
 var Settings = function() {
 
