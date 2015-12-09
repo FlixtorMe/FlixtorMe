@@ -31,12 +31,13 @@ function parseYtsData(cacheFile, data, movies, callback) {
 //External functions
 var searchMovies = function (sort, keywords, genre, limit, page, order, callback) {
     if( genre === undefined ) {
-        genre = 'All';
+        genre = '';
     }
     $ = window.$;
 
     var movies = {};
-    var ytsUrl = ytsEndpoint+"list_movies.json?sort_by="+sort+"&limit="+limit+"&genre="+genre+"&query_term="+keywords+"&order_by="+order+"&page="+page+"";
+    var ytsUrl = ytsEndpoint+"list_movies.json?limit="+limit+"&genre="+genre+"&query_term="+keywords+"&order_by="+order+"&page="+page+"";
+    //var ytsUrl = ytsEndpoint+"list_movies.json?sort_by="+sort+"&limit="+limit+"&genre="+genre+"&query_term="+keywords+"&order_by="+order+"&page="+page+"";
     console.log(ytsUrl);
 
     // Check if request is cached
